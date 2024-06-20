@@ -1,10 +1,10 @@
-site_name: ds-project-template
-site_url: https://github.com/in-RET/ds-project-template
+site_name: Zero Carbon Cross Energy System - Phase 2 (ZO.RRO II)
+site_url: https://github.com/in-RET/ZO.RRO2
 site_author: in.RET
 
 # Repository
-repo_name: in-RET/ds-project-template
-repo_url: https://github.com/in-RET/ds-project-template
+repo_name: in-RET/ZO.RRO2
+repo_url: https://github.com/in-RET/ZO.RRO2
 
 markdown_extensions:
     - toc:
