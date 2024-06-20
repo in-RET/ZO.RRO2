@@ -1,0 +1,79 @@
+site_name: ds-project-template
+site_url: https://github.com/in-RET/ds-project-template
+site_author: in.RET
+
+# Repository
+repo_name: in-RET/ds-project-template
+repo_url: https://github.com/in-RET/ds-project-template
+
+markdown_extensions:
+    - toc:
+        permalink: true
+    - attr_list
+    - md_in_html
+    - admonition
+    - pymdownx.details
+    - pymdownx.highlight:
+          anchor_linenums: true
+          use_pygments: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.superfences:
+        custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+    - pymdownx.arithmatex:
+        generic: true
+    - pymdownx.tabbed:
+        alternate_style: true
+    - pymdownx.tasklist:
+        custom_checkbox: true
+extra_javascript:
+    - js/mathjax.js
+    - https://polyfill.io/v3/polyfill.min.js?features=es6
+    - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+nav:
+    - 'Home': index.md
+    - 'Possibilities': 'possibilities.md'
+    - 'Data Aquisition':
+        - 'First Steps': data_aquisition/firststeps.md
+    - 'Release Notes': release-notes.md
+theme:
+    name: material
+    favicon: assets/favicon.svg
+    logo: assets/favicon.svg
+    icon:
+        repo: fontawesome/brands/github
+        admonition:
+            <type>: material/alert-outline
+    palette:
+        # Palette toggle for light mode
+        - media: "(prefers-color-scheme: light)"
+          scheme: default
+          primary: teal
+          accent: teal
+          toggle:
+            icon: material/brightness-7
+            name: Switch to dark mode
+
+
+        # Palette toggle for dark mode
+        - media: "(prefers-color-scheme: dark)"
+          scheme: slate
+          primary: teal
+          accent: teal
+          toggle:
+            icon: material/brightness-4
+            name: Switch to light mode
+
+    language: en
+    features:
+        - content.tabs.link
+
+extra:
+    social:
+        - icon: fontawesome/solid/envelope
+          link: mailto:andreas.lubojanski@hs-nordhausen.de
+    generator: true
+copyright: Copyright &copy; 2024 Institut für regenerative Energietechnik
