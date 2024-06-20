@@ -1,4 +1,7 @@
-﻿# Zero Carbon Cross Energy System - Phase 2 (ZO.RRO II)
+# Zero Carbon Cross Energy System - Phase 2 (ZO.RRO II)
+## Programming Parameter
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6ea8d776d6a849a6a2dbfec3f16506a8)](https://app.codacy.com/gh/in-RET/ZO.RRO2/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 ## Thuringian energy research project ZO.RRO II supports industrial companies in designing a climate-friendly energy supply
  
 In order to optimize the use of energy resources and thus reduce CO2 emissions, a consortium of the Nordhausen University of Applied Sciences (HSN) and the Thuringian Renewable Energies Network (ThEEN) e.V. has come together in Thuringia.
