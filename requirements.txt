@@ -71,7 +71,7 @@ tabulate==0.8.10
 tespy==0.7.3
 typing_extensions==4.11.0
 tzdata==2024.1
-urllib3==2.2.1
+urllib3==2.2.2
 watchdog==4.0.0
 windpowerlib==0.0.4
 xyzservices==2024.4.0
