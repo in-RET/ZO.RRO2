@@ -8,3 +8,4 @@ In the meantime, the first phase of concept development has been completed, and 
 ### Project Goal
 
 The objective of the current demonstration phase is to holistically optimize the energy supply of Thuringian industrial companies to prove their carbon footprint and to reduce it. 
+23234
