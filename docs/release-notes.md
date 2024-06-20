@@ -1,10 +1,11 @@
 # Release Notes
 
 !!! info 
-    Under Development
+    Stets zu pflegen!
 
-## Version 0.2a
+## Variation Initial
 
+[[initial]]
 ### Features
 - added support for open energy platform
 - added documentation
@@ -14,6 +15,3 @@
 - minor fixes
 - major fixes
 - thousand fixes
-
-## Version 0.1a
-- initial alpha-release
