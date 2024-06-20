@@ -18,8 +18,8 @@ Suitable options, for example, are the use of (additional) photovoltaics in comb
 ZO.RRO additionally considers the possibility of demand side management in order to be able to react even better to future price fluctuations.
 This refers to an adjustment of energy consumption in which temporally independent production stages take place when sufficient low-cost, renewable energy is available.
 
-*detailed measurements to evaluate suitable options in energy supply
-*identification of hidden savings potentials and largest CO2 sources
-*economic and ecological evaluation of individual plants
-*verification of CO2 footprint and sustainable development
-*optimization of the design of new plants and supply concepts (e.g. by using photovoltaics, energy storage, flexibility potentials, electromobility)
+* detailed measurements to evaluate suitable options in energy supply
+* identification of hidden savings potentials and largest CO2 sources
+* economic and ecological evaluation of individual plants
+* verification of CO2 footprint and sustainable development
+* optimization of the design of new plants and supply concepts (e.g. by using photovoltaics, energy storage, flexibility potentials, electromobility)
