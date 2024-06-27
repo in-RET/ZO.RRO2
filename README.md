@@ -3,6 +3,14 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6ea8d776d6a849a6a2dbfec3f16506a8)](https://app.codacy.com/gh/in-RET/ZO.RRO2/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/6ea8d776d6a849a6a2dbfec3f16506a8)](https://app.codacy.com/gh/in-RET/ZO.RRO2/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 
+### Creating a virtual Environment
+All required python packages are named in the file "requirements.txt". 
+If you create a new environment use
+```
+pip install -r requirements.txt
+```
+to setup all dependencies.
+
 ## Thuringian energy research project ZO.RRO II supports industrial companies in designing a climate-friendly energy supply
  
 In order to optimize the use of energy resources and thus reduce CO2 emissions, a consortium of the Nordhausen University of Applied Sciences (HSN) and the Thuringian Renewable Energies Network (ThEEN) e.V. has come together in Thuringia.
