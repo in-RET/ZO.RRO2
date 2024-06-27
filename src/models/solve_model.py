@@ -51,16 +51,16 @@ def solveModels(
 
         logging.info("Berechne automatische Kosten")
 
-        # result = cost_calculation_from_es_and_results(
-        #     energysystem=energysystem,
-        #     results=solph.processing.results(model),
-        # )
+        result = cost_calculation_from_es_and_results(
+            energysystem=energysystem,
+            results=solph.processing.results(model),
+        )
 
-        # df_costs = pd.DataFrame(result)
+        df_costs = pd.DataFrame(result)
 
-        # energysystem.results["main"] = solph.processing.results(model)
+        energysystem.results["main"] = solph.processing.results(model)
         # energysystem.results['meta'] = solph.processing.meta_results(model) % TODO: Why is it bugging?
-        # energysystem.results["costs"] = df_costs.to_dict()
+        energysystem.results["costs"] = df_costs.to_dict()
 
         energysystem.dump(
             dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + ".dump"
