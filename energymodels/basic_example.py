@@ -1,8 +1,7 @@
 import os
 
 import pandas as pd
-
-from oemof import solph, network
+from oemof import network, solph
 from oemof.tools import economics
 
 from src.preprocessing.create_input_dataframe import createDataFrames

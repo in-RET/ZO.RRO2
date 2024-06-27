@@ -5,10 +5,11 @@ Created on Fri Mar 15 16:50:12 2024
 @author: treinhardt01
 """
 
-from graphviz import Digraph
-from oemof import solph, network
 import logging
 import os
+
+from graphviz import Digraph
+from oemof import network, solph
 
 
 def draw_energy_system(
