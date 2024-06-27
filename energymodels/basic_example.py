@@ -28,4 +28,20 @@ def basic_example(PERMUATION: str) -> solph.EnergySystem:
         timeindex=date_time_index, infer_last_interval=False
     )
 
+    el = solph.Bus(label="el")
+
+    energysystem.add(el)
+
+    energysystem.add(
+        solph.components.Sink(
+            inputs={el: solph.Flow(nominal_value=10)},
+        )
+    )
+
+    energysystem.add(
+        solph.components.Source(
+            outputs={el: solph.Flow()},
+        )
+    )
+
     return energysystem
