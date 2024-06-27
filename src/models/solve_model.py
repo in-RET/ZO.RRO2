@@ -1,12 +1,12 @@
 import logging
 import os
 
+import pandas as pd
 from oemof import solph
 
-from models.basic_example import basic_example
-from src.postprocessing.plot_energysystemgraph import draw_energy_system
+from energymodels.basic_example import basic_example
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
-import pandas as pd
+from src.postprocessing.plot_energysystemgraph import draw_energy_system
 
 
 def solveModels(
@@ -25,9 +25,7 @@ def solveModels(
 
     for permutation in permutations:
         DUMP_PATH = os.path.abspath(os.path.join(os.getcwd(), "dumps", permutation))
-        FIGURE_PATH = os.path.abspath(
-            os.path.join(os.getcwd(), "postprocessing", permutation)
-        )
+        FIGURE_PATH = os.path.abspath(os.path.join(os.getcwd(), "figures", permutation))
 
         os.makedirs(DUMP_PATH, exist_ok=True)
         os.makedirs(FIGURE_PATH, exist_ok=True)

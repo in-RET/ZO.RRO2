@@ -1,9 +1,8 @@
 import os
-
-import pandas as pd
-
 from os import listdir
 from os.path import isfile, join
+
+import pandas as pd
 
 
 def readInFiles(folder) -> dict:
@@ -27,7 +26,7 @@ def readInFiles(folder) -> dict:
 
 def createDataFrames() -> (dict, dict):
     dataRoot = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "preprocessing")
+        os.path.join(os.path.dirname(__file__), "..", "..", "data")
     )
 
     sequenceFolder = os.path.join(dataRoot, "sequences")

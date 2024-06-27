@@ -1,5 +1,6 @@
-from src.models.solve_model import solveModels
 import logging
+
+from src.models.solve_model import solveModels
 
 FORMAT = "%(asctime)s %(message)s"
 
