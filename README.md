@@ -14,10 +14,6 @@ If you create a new environment use
 pip install -r requirements.txt
 ```
 to setup all dependencies.
-=======
-
-![Codacy Badge](https://app.codacy.com/project/badge/Grade/6ea8d776d6a849a6a2dbfec3f16506a8)
->>>>>>> Stashed changes
 
 ## Thuringian energy research project ZO.RRO II supports industrial companies in designing a climate-friendly energy supply
 
