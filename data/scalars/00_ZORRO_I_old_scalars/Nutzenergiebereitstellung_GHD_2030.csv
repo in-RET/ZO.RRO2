@@ -1,0 +1,12 @@
+index;EER;Raumwaerme;Prozesswaerme;Klima- und Prozesskaelte;Strom
+PtH Heizstab;0,99;4;20;0;0
+PtH Luftwaermepumpe;3,4;3;5;0;0
+PtH Erdwaermepumpe;3,8;3;5;0;0
+Festbrennstoffkessel;0,85;25;15;0;0
+Heizkessel Gas;0,93;25;22;0;0
+Heizkessel Oel;0,9;23;10;0;0
+Waermeuebergabestation;0,91;17;23;0;0
+Kompressionskaelte;3,3;0;0;90;0
+Sorptionskaelte;1;0;0;10;0
+Elektrogeraete;1;0;0;0;100
+Summe;;14,1;1,8;5,1;8,8

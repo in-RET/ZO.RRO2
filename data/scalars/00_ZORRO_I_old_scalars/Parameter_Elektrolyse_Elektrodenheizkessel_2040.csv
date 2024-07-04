@@ -1,0 +1,6 @@
+index;Einheit;Elektrolyse;Elektrodenheizkessel
+CAPEX;€/MW;666700;100000
+OPEX;%*CAPEX/a;0,83;2
+Amortisierungszeit;a;16;20
+Wirkungsgrad;-;0,84;0,99
+Potential;MW;2375;0

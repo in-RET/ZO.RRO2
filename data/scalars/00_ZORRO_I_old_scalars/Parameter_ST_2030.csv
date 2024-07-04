@@ -1,0 +1,6 @@
+index;Einheit;Solarthermie
+CAPEX;Û/m2;270
+OPEX;%*CAPEX/a;1,5
+Amortisierungszeit;a;20
+EE_Faktor;-;-1
+Potential;m2;353090000

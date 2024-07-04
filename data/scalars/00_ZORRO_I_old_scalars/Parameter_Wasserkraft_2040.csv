@@ -1,0 +1,6 @@
+index;Einheit;Wasserkraft
+CAPEX;€/MW;5000000
+OPEX;%*CAPEX/a;5
+Amortisierungszeit;a;60
+EE_Faktor;-;-1
+Potential;MW;31

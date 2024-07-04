@@ -1,0 +1,13 @@
+index;EER;Personenverkehr;Gueterverkehr
+PKW - batterieelektrisch;0,75;20,00;0,00
+PKW - wasserstoffelektrisch;0,50;0,00;0,00
+PKW - Verbrenner CNG;0,23;5,00;0,00
+PKW - Verbrenner sonst.;0,23;61,00;0,00
+LKW - elektrisch;0,75;0,00;5,00
+LKW - wasserstoffelektrisch;0,50;0,00;0,00
+LKW - Verbrenner CNG;0,23;0,00;5,00
+LKW - Verbrenner sonst.;0,23;0,00;65,00
+Schiene - elektrisch;0,75;10,00;15,00
+Schiene - wasserstoffelektrisch;0,50;0,00;0,00
+Schiene - Verbrenner;0,30;4,00;10,00
+Summe;;6,90;3,60

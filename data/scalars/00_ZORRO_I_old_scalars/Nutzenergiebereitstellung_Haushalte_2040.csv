@@ -1,0 +1,13 @@
+index;EER;Raumwaerme;Klima- und Prozesskaelte;Strom;Stoffl. Nutzung
+PtH Heizstab;0,99;5,00;0,00;0,00;0,00
+PtH Luftwaermepumpe;3,60;14,00;0,00;0,00;0,00
+PtH Erdwaermepumpe;4,00;10,00;0,00;0,00;0,00
+Festbrennstoffkessel;0,88;25,00;0,00;0,00;0,00
+Heizkessel Gas;0,96;22,00;0,00;0,00;0,00
+Heizkessel Oel;0,96;6,00;0,00;0,00;0,00
+Waermeuebergabestation;0,92;18,00;0,00;0,00;0,00
+Kompressionskaelte;3,50;0,00;100,00;0,00;0,00
+Sorptionskaelte;1,20;0,00;0,00;0,00;0,00
+Elektrogeraete;1,00;0,00;0,00;100,00;0,00
+Papierfabrik;1,00;0,00;0,00;0,00;0,00
+Summe;;29,00;0,50;6,90;0,00

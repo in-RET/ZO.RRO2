@@ -1,0 +1,11 @@
+index;Einheit;Waermespeicher
+CAPEX;€/MWh;750
+OPEX;%*CAPEX/a;0,25
+Amortisierungszeit;a;20
+Einspeicherwirkungsgrad;-;1
+Ausspeicherwirkungsgrad;-;1
+Verlustrate;1/d;0,002094
+inverse_C_Rate;h;10
+Potential;MWh;500000
+balanced;bool;1
+Anfangsspeicherlevel;-;0,5

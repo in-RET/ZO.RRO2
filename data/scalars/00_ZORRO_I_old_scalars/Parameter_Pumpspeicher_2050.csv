@@ -1,0 +1,11 @@
+index;Einheit;Pumpspeicherkraftwerk
+CAPEX;€/MWh;112500
+OPEX;%*CAPEX/a;1
+Amortisierungszeit;a;80
+Einspeicherwirkungsgrad;-;1
+Ausspeicherwirkungsgrad;-;0,8
+inverse_C_Rate;h;8
+Potential;MWh;9360
+balanced;bool;1
+Anfangsspeicherlevel;-;0,5
+Potential_min;MWh;2304

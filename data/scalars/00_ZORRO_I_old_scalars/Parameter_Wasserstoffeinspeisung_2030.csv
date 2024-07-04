@@ -1,0 +1,6 @@
+index;Einheit;Wasserstoffeinspeisung
+CAPEX;€/MW;35000
+OPEX;%*CAPEX/a;1
+Amortisierungszeit;a;20
+Wirkungsgrad;-;0,95
+Potential;/Energiemenge;0,05

@@ -1,0 +1,8 @@
+index;Einheit;Biogaseinspeisung_Bestandsanlagen;Biogaseinspeisung_Neuanlagen
+CAPEX;€/MW;250000;2150000
+OPEX;%*CAPEX/a;5;5
+Amortisierungszeit;a;25;25
+EE_Faktor;-;-1;-1
+Wirkungsgrad_el;-;0,9;0,9
+Potential_Summe;MWh;2784931;6269233
+BiogasBestand;-;1;0

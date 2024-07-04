@@ -1,0 +1,13 @@
+index;EER;Raumwaerme;Prozesswaerme;Klima- und Prozesskaelte;Strom;Stoffl_Nutzung_Gas;Stoffl_Nutzung_Oel
+PtH Heizstab;0,99;2;5;0;0;0;0
+PtH Luftwaermepumpe;3,8;7;10;0;0;0;0
+PtH Erdwaermepumpe;4,2;7;10;0;0;0;0
+Festbrennstoffkessel;0,88;35;30;0;0;0;0
+Heizkessel Gas;0,98;33;36;0;0;0;0
+Heizkessel Oel;0,98;1;1;0;0;0;0
+Waermeuebergabestation;0,93;15;8;0;0;0;0
+Kompressionskaelte;3,7;0;0;70;0;0;0
+Sorptionskaelte;1,4;0;0;30;0;0;0
+Elektrogeraete;1;0;0;0;100;0;0
+Materialnutzung;1;0;0;0;0;100;100
+Summe;;2,4;21;7,3;13,4;0,1;4,1

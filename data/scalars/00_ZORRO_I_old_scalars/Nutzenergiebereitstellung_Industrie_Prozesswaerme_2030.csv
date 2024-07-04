@@ -1,0 +1,14 @@
+index;EER;Prozesswaerme
+PtH Heizstab;0,99;5,00
+PtH Luftwaermepumpe;3,40;5,00
+PtH Erdwaermepumpe;3,80;4,00
+Festbrennstoffkessel;0,88;30,00
+Heizkessel Gas;0,95;46,00
+Heizkessel Oel;0,91;2,00
+Waermeuebergabestation;0,91;8,00
+Kompressionskaelte;3,30;0,00
+Sorptionskaelte;1,00;0,00
+Elektrogeraete;1,00;0,00
+Papierfabrik;1,00;0,00
+Materialnutzung;1,00;0,00
+Summe;;25,70

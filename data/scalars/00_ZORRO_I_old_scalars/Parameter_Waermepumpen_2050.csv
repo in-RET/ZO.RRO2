@@ -1,0 +1,6 @@
+index;Einheit;Waermepumpe_Fluss;Waermepumpe_Abwaerme
+CAPEX;€/MW;1232000;956000
+OPEX;%*CAPEX/a;3,5;3,5
+Amortisierungszeit;a;20;20
+COP;-;2,5;3,5
+Potential;MW;101;55

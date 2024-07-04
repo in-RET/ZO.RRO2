@@ -1,0 +1,7 @@
+index;Einheit;GuD
+CAPEX;€/MW;1020000
+OPEX;%*CAPEX/a;4,02
+Amortisierungszeit;a;30
+Wirkungsgrad_el;-;0,45
+Wirkungsgrad_th;-;0,43
+Potential;MW_el;444,5

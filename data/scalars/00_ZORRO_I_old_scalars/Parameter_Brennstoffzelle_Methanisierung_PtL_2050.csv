@@ -1,0 +1,6 @@
+index;Einheit;Brennstoffzelle;Methanisierung;PtL
+CAPEX;€/MW;700000;130000;195000
+OPEX;%*CAPEX/a;2;2,31;9,74
+Amortisierungszeit;a;20;25;25
+Wirkungsgrad;-;0,6;0,9;0,66
+Potential;MW;1427;6584;7772

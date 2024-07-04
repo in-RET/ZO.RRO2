@@ -1,0 +1,9 @@
+index;Einheit;PV_Aufdach;PV_Freifeld;Wind
+CAPEX;€/MW;547000;483000;938000
+OPEX;%*CAPEX/a;3,1;3,1;1,84
+Amortisierungszeit;a;25;25;25
+EE_Faktor;-;-1;-1;-1
+Potential_Nordhausen_Nord;MW;1120;4070;1210
+Potential_Erfurt_Mitte;MW;1610;5920;1640
+Potential_Gera_Ost;MW;1680;4740;1820
+Potential_Hildburghausen_Südwest;MW;1260;2680;900

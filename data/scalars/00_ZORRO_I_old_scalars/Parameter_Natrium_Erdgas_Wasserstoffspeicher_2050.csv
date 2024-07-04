@@ -1,0 +1,10 @@
+index;Einheit;Natriumspeicher;Erdgasspeicher;Wasserstoffspeicher
+CAPEX;€/MWh;87500;18,2;53
+OPEX;%*CAPEX/a;0,3;5;5,47
+Amortisierungszeit;a;15;20;20
+Einspeicherwirkungsgrad;-;1;1;1
+Ausspeicherwirkungsgrad;-;0,9;0,95;0,6
+inverse_C_Rate;h;4;800;1276,7
+Potential;MWh;5000;1100000;1255000
+balanced;bool;1;1;1
+Anfangsspeicherlevel;-;0,5;0,5;0,5
