@@ -35,7 +35,7 @@ def read_input_files(folder_name, sub_folder_name= None):
         if filename.endswith('.csv'):
             file_path = os.path.join(path,filename)
             filename = filename[:-4]                            # to remove the file format from the file name (eg. removing .csv)
-            files[filename] = pd.read_csv(file_path, sep=';', decimal = ',',encoding = 'unicode_escape')
+            files[filename] = pd.read_csv(file_path, sep=';', decimal = ',',encoding = 'unicode_escape', index_col=0)
     
     return(files)
 
