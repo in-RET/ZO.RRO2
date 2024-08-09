@@ -133,7 +133,8 @@ class Location(object):
                         - 'insulated_back'
         """
         model_parameter = 'open_rack_glass_glass'#
-        racking_model = 'open_rack'
+        racking_model_open_field = 'open_rack'
+        racking_model_rooftop = 'close_mount'
         temperature_model_parameters = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['sapm'][model_parameter]
         
         # Define system parameters
@@ -157,7 +158,7 @@ class Location(object):
                       #array_losses_parameters= 
                       )
 
-        system = PVSystem(
+        system_openfield = PVSystem(
                           arrays = [array],
                           surface_tilt = surface_tilt,
                           surface_azimuth = surface_azimuth,
@@ -165,27 +166,58 @@ class Location(object):
                           module_parameters = module,
                           inverter = inverter,
                           inverter_parameters = inverter,
-                          racking_model= racking_model,
+                          racking_model= racking_model_open_field,
+                          temperature_model_parameters = temperature_model_parameters,
+                          losses_parameters = pvwatts_losses()
+                          )
+        
+        system_rooftop = PVSystem(
+                          arrays = [array],
+                          surface_tilt = surface_tilt,
+                          surface_azimuth = surface_azimuth,
+                          module = module,
+                          module_parameters = module,
+                          inverter = inverter,
+                          inverter_parameters = inverter,
+                          racking_model= racking_model_rooftop,
                           temperature_model_parameters = temperature_model_parameters,
                           losses_parameters = pvwatts_losses()
                           )
 
-        mc = ModelChain(system, location,aoi_model="no_loss", spectral_model="no_loss")
-        mc.run_model(weather)
-        
+        mc_openfield = ModelChain(system_openfield, location,aoi_model="no_loss", spectral_model="no_loss")
+        mc_rooftop = ModelChain(system_rooftop, location,aoi_model="no_loss", spectral_model="no_loss")
+        mc_openfield.run_model(weather)
+        mc_rooftop.run_model(weather)
+       
         # Accessing the results
-
-        DC_annual = mc.results.dc.p_mp
+        ## Openfield    
+        DC_annual = mc_openfield.results.dc.p_mp
         DC_power = pd.DataFrame(data = DC_annual/1000)
         DC_power.columns = ['DC_Power']
         DC_power_nom = DC_power/capacity
-        self.PV_DC_power = DC_power
+        self.PV_DC_power_openfield = DC_power
         
-        AC_annual = mc.results.ac
-        AC_power = pd.DataFrame(data = AC_annual/1000)
+        AC_annual_1 = mc_openfield.results.ac
+        AC_power_1 = pd.DataFrame(data = AC_annual_1/1000)
+        AC_power_1.columns = ['AC_Power']
+        AC_power_1[AC_power_1<0]= 0                         # Due to system losses you get a small negative value which is neglected by setting the value to zero 
+        AC_power_nom_1 = AC_power_1/capacity
+        self.PV_AC_power_openfield = AC_power_1
+        self.PV_feed_in_profile_openfield = (AC_power_nom_1/int(AC_power_nom_1.sum()))*950
+        self.PV_full_load_hours_openfield = int(AC_power_nom_1.sum())
+        
+        ## Rooftop    
+        DC_annual = mc_rooftop.results.dc.p_mp
+        DC_power = pd.DataFrame(data = DC_annual/1000)
+        DC_power.columns = ['DC_Power']
+        DC_power_nom = DC_power/capacity
+        self.PV_DC_power_rooftop = DC_power
+        
+        AC_annual_2 = mc_rooftop.results.ac
+        AC_power = pd.DataFrame(data = AC_annual_2/1000)
         AC_power.columns = ['AC_Power']
         AC_power[AC_power<0]= 0                         # Due to system losses you get a small negative value which is neglected by setting the value to zero 
         AC_power_nom = AC_power/capacity
-        self.PV_AC_power = AC_power
-        self.PV_feed_in_profile = AC_power_nom
-        self.PV_full_load_hours = int(AC_power_nom.sum())
+        self.PV_AC_power_rooftop = AC_power
+        self.PV_feed_in_profile_rooftop = (AC_power_nom/int(AC_power_nom.sum()))*915
+        self.PV_full_load_hours_rooftop = int(AC_power_nom.sum())
