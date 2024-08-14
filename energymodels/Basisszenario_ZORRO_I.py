@@ -35,7 +35,7 @@ import pyomo.environ as po
 
 
 name = os.path.basename(__file__)
-name = 'Basisszenario_2030_brain'#name.replace(".py", "")
+name = 'BS030002'#name.replace(".py", "")
 my_path = os.path.abspath(os.path.dirname(__file__))
 results_path = os.path.abspath(os.path.join(my_path, '..', 'results', name))
 if not os.path.isdir(results_path):
@@ -53,18 +53,21 @@ Einspeiseprofile_Stundenwerte = pd.read_csv(pfad, encoding = 'unicode_escape', s
 pfad = os.path.join(Zeitreihen,'Einspeiseprofile_Viertelstundenwerte.csv')
 Einspeiseprofile_Viertelstundenwerte = pd.read_csv(pfad, encoding = 'unicode_escape', sep=';', decimal=',')
 ###############################################################################
+pfad = os.path.join(Zeitreihen,'Einspeiseprofile_neu_2024_nicht skaliert.csv')
+Einspeiseprofile_stundenwerte_neu = pd.read_csv(pfad, encoding = 'unicode_escape', sep=';', decimal=',')
+###############################################################################
 pfad = os.path.join(Zeitreihen,'Lastprofile_Stundenwerte.csv')
 Lastprofile_Stundenwerte = pd.read_csv(pfad, encoding = 'unicode_escape', sep=';', decimal=',')
 ###############################################################################
 pfad = os.path.join(Zeitreihen,'Lastprofile_Viertelstundenwerte.csv')
 Lastprofile_Viertelstundenwerte = pd.read_csv(pfad, encoding = 'unicode_escape', sep=';', decimal=',')
 ###############################################################################
-pfad = os.path.join(Zeitreihen,'Preise_2030_Stundenwerte_Variation10047.csv')
-Preise_2030_Stundenwerte = pd.read_csv(pfad, encoding = 'unicode_escape', sep=';', decimal=',')
+# pfad = os.path.join(Zeitreihen,'Preise_2030_Stundenwerte_Variation10047.csv')
+# Preise_2030_Stundenwerte = pd.read_csv(pfad, encoding = 'unicode_escape', sep=';', decimal=',') 
 ###############################################################################
 
 pfad = os.path.join(Zeitreihen,'Preise_2030_Stundenwerte.csv')
-Preise_2030_Stundenwerte_alt = pd.read_csv(pfad, encoding = 'unicode_escape', sep=';', decimal=',')
+Preise_2030_Stundenwerte = pd.read_csv(pfad, encoding = 'unicode_escape', sep=';', decimal=',') #alte Brainpool preiszeitreihen
 
 'Eingangsdaten'
 ###############################################################################
@@ -149,18 +152,18 @@ for a in range(0, number_of_time_steps):
     
 #%% Umrechnung von Viertelstunden- auf Stundenwerte
 
-data_Wind_Erfurt = [None]*number_of_time_steps
-data_Wind_Nordhausen = [None]*number_of_time_steps
-data_Wind_Gera = [None]*number_of_time_steps
-data_Wind_Hildburghausen = [None]*number_of_time_steps
-data_PV_Aufdach_Erfurt = [None]*number_of_time_steps
-data_PV_Aufdach_Nordhausen = [None]*number_of_time_steps
-data_PV_Aufdach_Gera = [None]*number_of_time_steps
-data_PV_Aufdach_Hildburghausen = [None]*number_of_time_steps
-data_PV_Freifeld_Erfurt = [None]*number_of_time_steps
-data_PV_Freifeld_Nordhausen = [None]*number_of_time_steps
-data_PV_Freifeld_Gera = [None]*number_of_time_steps
-data_PV_Freifeld_Hildburghausen = [None]*number_of_time_steps
+# data_Wind_Erfurt = [None]*number_of_time_steps
+# data_Wind_Nordhausen = [None]*number_of_time_steps
+# data_Wind_Gera = [None]*number_of_time_steps
+# data_Wind_Hildburghausen = [None]*number_of_time_steps
+# data_PV_Aufdach_Erfurt = [None]*number_of_time_steps
+# data_PV_Aufdach_Nordhausen = [None]*number_of_time_steps
+# data_PV_Aufdach_Gera = [None]*number_of_time_steps
+# data_PV_Aufdach_Hildburghausen = [None]*number_of_time_steps
+# data_PV_Freifeld_Erfurt = [None]*number_of_time_steps
+# data_PV_Freifeld_Nordhausen = [None]*number_of_time_steps
+# data_PV_Freifeld_Gera = [None]*number_of_time_steps
+# data_PV_Freifeld_Hildburghausen = [None]*number_of_time_steps
 data_Wasserkraft = [None]*number_of_time_steps
 data_G3 = [None]*number_of_time_steps
 data_G0 = [None]*number_of_time_steps
@@ -168,59 +171,71 @@ data_H0 = [None]*number_of_time_steps
 
 i = 0
 for a in range(0, number_of_time_steps):
-    Summe_Wind_Erfurt = 0
-    Summe_Wind_Nordhausen = 0
-    Summe_Wind_Gera = 0
-    Summe_Wind_Hildburghausen = 0
-    Summe_PV_Aufdach_Erfurt = 0
-    Summe_PV_Aufdach_Nordhausen = 0
-    Summe_PV_Aufdach_Gera = 0
-    Summe_PV_Aufdach_Hildburghausen = 0
-    Summe_PV_Freifeld_Erfurt = 0
-    Summe_PV_Freifeld_Nordhausen = 0
-    Summe_PV_Freifeld_Gera = 0
-    Summe_PV_Freifeld_Hildburghausen = 0
+    # Summe_Wind_Erfurt = 0
+    # Summe_Wind_Nordhausen = 0
+    # Summe_Wind_Gera = 0
+    # Summe_Wind_Hildburghausen = 0
+    # Summe_PV_Aufdach_Erfurt = 0
+    # Summe_PV_Aufdach_Nordhausen = 0
+    # Summe_PV_Aufdach_Gera = 0
+    # Summe_PV_Aufdach_Hildburghausen = 0
+    # Summe_PV_Freifeld_Erfurt = 0
+    # Summe_PV_Freifeld_Nordhausen = 0
+    # Summe_PV_Freifeld_Gera = 0
+    # Summe_PV_Freifeld_Hildburghausen = 0
     Summe_Wasserkraft = 0
     Summe_data_G3 = 0
     Summe_data_G0 = 0
     Summe_data_H0 = 0
     #Bilde die Summe von 4 Werten hintereinander (den Werten von 4 Viertelstunden, sprich einer Stunde)
     for k in range(0, 4):
-        Summe_Wind_Erfurt += Einspeiseprofile_Viertelstundenwerte['Wind_Erfurt'][i]
-        Summe_Wind_Nordhausen += Einspeiseprofile_Viertelstundenwerte['Wind_Nordhausen'][i]
-        Summe_Wind_Gera += Einspeiseprofile_Viertelstundenwerte['Wind_Gera'][i]
-        Summe_Wind_Hildburghausen += Einspeiseprofile_Viertelstundenwerte['Wind_Hildburghausen'][i]
-        Summe_PV_Aufdach_Erfurt += Einspeiseprofile_Viertelstundenwerte['PV_Aufdach_Erfurt'][i]
-        Summe_PV_Aufdach_Nordhausen += Einspeiseprofile_Viertelstundenwerte['PV_Aufdach_Nordhausen'][i]
-        Summe_PV_Aufdach_Gera += Einspeiseprofile_Viertelstundenwerte['PV_Aufdach_Gera'][i]
-        Summe_PV_Aufdach_Hildburghausen += Einspeiseprofile_Viertelstundenwerte['PV_Aufdach_Hildburghausen'][i]
-        Summe_PV_Freifeld_Erfurt += Einspeiseprofile_Viertelstundenwerte['PV_Freifeld_Erfurt'][i]
-        Summe_PV_Freifeld_Nordhausen += Einspeiseprofile_Viertelstundenwerte['PV_Freifeld_Nordhausen'][i]
-        Summe_PV_Freifeld_Gera += Einspeiseprofile_Viertelstundenwerte['PV_Freifeld_Gera'][i]
-        Summe_PV_Freifeld_Hildburghausen += Einspeiseprofile_Viertelstundenwerte['PV_Freifeld_Hildburghausen'][i]
+        # Summe_Wind_Erfurt += Einspeiseprofile_Viertelstundenwerte['Wind_Erfurt'][i]
+        # Summe_Wind_Nordhausen += Einspeiseprofile_Viertelstundenwerte['Wind_Nordhausen'][i]
+        # Summe_Wind_Gera += Einspeiseprofile_Viertelstundenwerte['Wind_Gera'][i]
+        # Summe_Wind_Hildburghausen += Einspeiseprofile_Viertelstundenwerte['Wind_Hildburghausen'][i]
+        # Summe_PV_Aufdach_Erfurt += Einspeiseprofile_Viertelstundenwerte['PV_Aufdach_Erfurt'][i]
+        # Summe_PV_Aufdach_Nordhausen += Einspeiseprofile_Viertelstundenwerte['PV_Aufdach_Nordhausen'][i]
+        # Summe_PV_Aufdach_Gera += Einspeiseprofile_Viertelstundenwerte['PV_Aufdach_Gera'][i]
+        # Summe_PV_Aufdach_Hildburghausen += Einspeiseprofile_Viertelstundenwerte['PV_Aufdach_Hildburghausen'][i]
+        # Summe_PV_Freifeld_Erfurt += Einspeiseprofile_Viertelstundenwerte['PV_Freifeld_Erfurt'][i]
+        # Summe_PV_Freifeld_Nordhausen += Einspeiseprofile_Viertelstundenwerte['PV_Freifeld_Nordhausen'][i]
+        # Summe_PV_Freifeld_Gera += Einspeiseprofile_Viertelstundenwerte['PV_Freifeld_Gera'][i]
+        # Summe_PV_Freifeld_Hildburghausen += Einspeiseprofile_Viertelstundenwerte['PV_Freifeld_Hildburghausen'][i]
         Summe_Wasserkraft += Einspeiseprofile_Viertelstundenwerte['Wasserkraft'][i]
         Summe_data_G3 += (Lastprofile_Viertelstundenwerte['G3'][i])*4
         Summe_data_G0 += (Lastprofile_Viertelstundenwerte['G0'][i])*4
         Summe_data_H0 += (Lastprofile_Viertelstundenwerte['H0'][i])*4
         i += 1
     #Bilde ein Viertel vom stündlichen Mittelwert
-    data_Wind_Erfurt[a]=Summe_Wind_Erfurt/4
-    data_Wind_Nordhausen[a]=Summe_Wind_Nordhausen/4
-    data_Wind_Gera[a]=Summe_Wind_Gera/4
-    data_Wind_Hildburghausen[a]=Summe_Wind_Hildburghausen/4
-    data_PV_Aufdach_Erfurt[a] = Summe_PV_Aufdach_Erfurt/4
-    data_PV_Aufdach_Nordhausen[a] = Summe_PV_Aufdach_Nordhausen/4
-    data_PV_Aufdach_Gera[a] = Summe_PV_Aufdach_Gera/4
-    data_PV_Aufdach_Hildburghausen[a] = Summe_PV_Aufdach_Hildburghausen/4
-    data_PV_Freifeld_Erfurt[a] = Summe_PV_Freifeld_Erfurt/4
-    data_PV_Freifeld_Nordhausen[a] = Summe_PV_Freifeld_Nordhausen/4
-    data_PV_Freifeld_Gera[a] = Summe_PV_Freifeld_Gera/4
-    data_PV_Freifeld_Hildburghausen[a] = Summe_PV_Freifeld_Hildburghausen/4
+    # data_Wind_Erfurt[a]=Summe_Wind_Erfurt/4
+    # data_Wind_Nordhausen[a]=Summe_Wind_Nordhausen/4
+    # data_Wind_Gera[a]=Summe_Wind_Gera/4
+    # data_Wind_Hildburghausen[a]=Summe_Wind_Hildburghausen/4
+    # data_PV_Aufdach_Erfurt[a] = Summe_PV_Aufdach_Erfurt/4
+    # data_PV_Aufdach_Nordhausen[a] = Summe_PV_Aufdach_Nordhausen/4
+    # data_PV_Aufdach_Gera[a] = Summe_PV_Aufdach_Gera/4
+    # data_PV_Aufdach_Hildburghausen[a] = Summe_PV_Aufdach_Hildburghausen/4
+    # data_PV_Freifeld_Erfurt[a] = Summe_PV_Freifeld_Erfurt/4
+    # data_PV_Freifeld_Nordhausen[a] = Summe_PV_Freifeld_Nordhausen/4
+    # data_PV_Freifeld_Gera[a] = Summe_PV_Freifeld_Gera/4
+    # data_PV_Freifeld_Hildburghausen[a] = Summe_PV_Freifeld_Hildburghausen/4
     data_Wasserkraft[a] = Summe_Wasserkraft/4
     data_G3[a] = Summe_data_G3/4
     data_G0[a] = Summe_data_G0/4
     data_H0[a] = Summe_data_H0/4
     
+data_Wind_Erfurt=Einspeiseprofile_stundenwerte_neu['Wind_Erfurt']
+data_Wind_Nordhausen=Einspeiseprofile_stundenwerte_neu['Wind_Nordhausen']
+data_Wind_Gera=Einspeiseprofile_stundenwerte_neu['Wind_Gera']
+data_Wind_Hildburghausen=Einspeiseprofile_stundenwerte_neu['Wind_Hildburghausen']
+data_PV_Aufdach_Erfurt = Einspeiseprofile_stundenwerte_neu['PV_rooftop_Erfurt']
+data_PV_Aufdach_Nordhausen = Einspeiseprofile_stundenwerte_neu['PV_rooftop_Nordhausen']
+data_PV_Aufdach_Gera = Einspeiseprofile_stundenwerte_neu['PV_rooftop_Gera']
+data_PV_Aufdach_Hildburghausen = Einspeiseprofile_stundenwerte_neu['PV_rooftop_Hildburghausen']
+data_PV_Freifeld_Erfurt = Einspeiseprofile_stundenwerte_neu['PV_open_Erfurt']
+data_PV_Freifeld_Nordhausen = Einspeiseprofile_stundenwerte_neu['PV_open_Nordhausen']
+data_PV_Freifeld_Gera = Einspeiseprofile_stundenwerte_neu['PV_open_Gera']
+data_PV_Freifeld_Hildburghausen = Einspeiseprofile_stundenwerte_neu['PV_open_Hildburghausen']
 #%%
 def Nutz_zu_Endenergieumrechnung (NE_ges, NE_proz, h_voll, EER):
     # absoluter Nutzenergieanteil
@@ -1863,21 +1878,21 @@ plt.title('Fernwaerme 2030')
 plt.show()
 
 #%%
-fig.canvas.set_window_title('Strompreis 2030')
-fig, ax = plt.subplots(figsize=(19.1, 10.5))
-Preise_2030_Stundenwerte['Strompreis_2030'].plot(
-    ax=ax, kind="line", drawstyle="steps-post",color ='green'
-)
-Preise_2030_Stundenwerte_alt['Strompreis_2030_brain'].plot(
-    ax=ax, kind="line", drawstyle="steps-post"
-)
-plt.legend()
-plt.ylabel('Preis in EUR/MWh')
-plt.xlabel('Zeit')
-plt.xlim(0,8760)
-plt.grid()
-plt.title('Strompreis 2030')
-plt.show()
+# fig.canvas.set_window_title('Strompreis 2030')
+# fig, ax = plt.subplots(figsize=(19.1, 10.5))
+# Preise_2030_Stundenwerte['Strompreis_2030'].plot(
+#     ax=ax, kind="line", drawstyle="steps-post",color ='green'
+# )
+# Preise_2030_Stundenwerte_alt['Strompreis_2030_brain'].plot(
+#     ax=ax, kind="line", drawstyle="steps-post"
+# )
+# plt.legend()z
+# plt.ylabel('Preis in EUR/MWh')
+# plt.xlabel('Zeit')
+# plt.xlim(0,8760)
+# plt.grid()
+# plt.title('Strompreis 2030')
+# plt.show()
 #%% CO2-Berechnung
 Emissionen_Gasimport=(Gasbus['sequences'][('Import_Gas', 'Gas'), 'flow'].sum()*data_Systemeigenschaften['System']['Emission_Erdgas']/1000)
 Emissionen_Oelimport=(Oelbus['sequences'][('Import_Oel', 'Oel_Kraftstoffe'), 'flow'].sum()*data_Systemeigenschaften['System']['Emission_Oel']/1000)
