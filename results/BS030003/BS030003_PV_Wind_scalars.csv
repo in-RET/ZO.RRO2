@@ -1,0 +1,16 @@
+,0
+Leistungen,------------------------------------------------------------------
+PV_Dach_Erfurt,0.0
+PV_Dach_Gera,0.0
+PV_Dach_Nordhausen,0.0
+PV_Dach_Hildburghausen,0.0
+Freifeld,------------------------------------------------------------------
+PV_Feld_Erfurt,1136.801780280223
+PV_Feld_Gera,1112.0114932405177
+PV_Feld_Nordhausen,840.3414922621689
+PV_Feld_Hildburghausen,1639.9163079283628
+Wind,------------------------------------------------------------------
+Wind_Erfurt,1640.0
+Wind_Gera,1820.0
+Wind_Nordhausen,1210.0
+Wind_Hildburghausen,900.0

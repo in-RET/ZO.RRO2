@@ -1,3 +1,5 @@
 ModellNr.;Änderungen;Jahre;Vergleich mit ;Fragestelllung;Erkenntnisse
 BS030001;neue Einspeiseprofil;2030;Basisszenario;Was passiert bei Aktualisierung der Einspeiseprofile, der mit Open-source tools ermittelt?;"PV- 100MW kleiner; heizstab ein tick großer und speicher ein tick kleiner. Damit ist die Gesamtkosten auch ein tick kleiner."
 BS030002;neue Einspeiseprofil aber nicht runterskaliert;2030;Basisszenario;Was passiert bei Aktualisierung der Einspeiseprofile, der mit Open-source tools ermittelt und nicht gleichmäßig skaliert?;gar kein PV, heizstab ähnlich wie in letztes Szenario, ein Tick großer Batteriespeicher und relativ kleiner Wärmespeicher, daher Gesamtkosten deutlich geringer.
+BS030003;Strompreis Zeitreihen;2030;Basisszenario;Die neue Einspeiseprofile sind nicht mit dem Stompreiskorreliert, daher erst das BS mit originalen Brainpool-daten zu rechnen.;4fach größerer Heizstab, kleiner Speicher, importiert bisschen mehr Strom--> Gesamtkosten steigt bisschen
+BS030004;neue Einspeiseprofil;2030;BS030003;Strompreisänderung und Aktualisierung der Einspeiseprofile;baut völlig unterschiedliche Größen, kein PV in Hildburghausen, Wind macht kein Probleme 
