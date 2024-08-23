@@ -11,11 +11,13 @@ TEST:
 
 import sys,os
 sys.path.append('../')
-from preprocessing import files,conversion
-from preprocessing.location import Location
+workdir= os.getcwd()
+#from src import preprocessing
+from preprocessing.files import read_input_files
+from src.preprocessing.location import Location
 from oemof.tools import economics
 
-workdir= os.getcwd()
+
 
 
 simulation_year = [2030]
@@ -40,17 +42,18 @@ for year in simulation_year:
 #%%
 Timeseries = files.read_input_files(folder_name = 'data/sequences', sub_folder_name='00_ZORRO_I_old_sequences')
 Eingangsdaten = files.read_input_files(folder_name = 'data/scalars', sub_folder_name='00_ZORRO_I_old_scalars')
+Parameter = files.read_input_files(folder_name = 'data/scalars')
 #%%
 '''
 Function to calculate epc costs and store it as a variable for all technologies
 '''
 
-T_list = ['Waermespeicher']
-# for i in Eingangsdaten:
-#     if i.startswith('Parameter'):
-#         i = i[10:]
-#         i = i[:-5]
-#         T_list.append(i) 
+T_list = []
+for i in Parameter:
+    if i.startswith('Parameter'):
+        i = i[10:]
+        i = i[:-5]
+        T_list.append(i) 
 
 my_dict={}
 for name in T_list:
