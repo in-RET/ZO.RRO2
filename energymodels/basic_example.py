@@ -170,7 +170,7 @@ def basic_example(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Hydrogen_demand_total', 
-        inputs={b_was: solph.Flow(fix=Last_H2_Zusammen, 
+        inputs={b_H2: solph.Flow(fix=Last_H2_Zusammen, 
                                   nominal_value=1,
         )}))
     
@@ -682,7 +682,7 @@ def basic_example(PERMUATION: str) -> solph.EnergySystem:
         inputs={b_el: solph.Flow()},
         outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_Waermepumpe_Abwaerme, 
                                                                   maximum=Parameter_Waermepumpen_2030['Waermepumpe_Abwaerme']['Potential']))},
-        conversion_factors={b_fern: Parameter_Waermepumpen_2030['Waermepumpe_Abwaerme']['COP']},    
+        conversion_factors={b_dist_heat: Parameter_Waermepumpen_2030['Waermepumpe_Abwaerme']['COP']},    
         ))
     
     #------------------------------------------------------------------------------
