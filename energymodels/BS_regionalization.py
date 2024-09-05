@@ -2653,4 +2653,4 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         inputs={b_H2_s: solph.Flow(variable_costs = 10000000
         )}))
     
-    return(energysystem)
+    return energysystem
