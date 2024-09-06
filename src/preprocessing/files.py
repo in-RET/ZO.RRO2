@@ -25,9 +25,9 @@ import pandas as pd
 
 def read_input_files(folder_name, sub_folder_name= None):
     if sub_folder_name != None:
-        path = os.path.abspath(os.path.join(workdir, '../..',folder_name,sub_folder_name))
+        path = os.path.abspath(os.path.join(workdir, '../',folder_name,sub_folder_name))
     else:
-        path = os.path.abspath(os.path.join(workdir, '../..',folder_name))
+        path = os.path.abspath(os.path.join(workdir, '../',folder_name))
     
     files = dict()
       

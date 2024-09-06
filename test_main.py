@@ -13,7 +13,7 @@ import sys,os
 sys.path.append('../')
 workdir= os.getcwd()
 #from src import preprocessing
-from preprocessing.files import read_input_files
+from src.preprocessing.files import read_input_files
 from src.preprocessing.location import Location
 from oemof.tools import economics
 

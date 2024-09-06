@@ -44,7 +44,7 @@ def convert_into_hourly_values (data, simulation_year, existing_res = '15min'):
             return(data)
         
 
-def investment_parameter(data,simulation_year):
+def investment_parameter(data,simulation_year, Model_ID):
 
     '''
     data : dictionary with all the techno-economical parameters (csv file)
@@ -58,15 +58,15 @@ def investment_parameter(data,simulation_year):
     for i in data:
         if i.startswith('Parameter'):
             i = i[10:]
-            i = i[:-5]
+            #i = i[:-5]
             T_list.append(i) 
 
     my_dict={}
     for name in T_list:
-        n = "Parameter_"+ name +'_' + str(simulation_year)
+        n = "Parameter_"+ name 
         my_dict[name]= {}
-        my_dict[name]['investk'] = economics.annuity(capex=data[n][name]['CAPEX'], n=data[n][name]['Amortisierungszeit'], wacc=data['Systemeigenschaften']['System']['Zinssatz']/100)
-        my_dict[name]['betriebsk'] = data[n][name]['CAPEX'] * (data[n][name]['OPEX']/100)
+        my_dict[name]['investk'] = economics.annuity(capex=data[n]['investment_costs_'+str(simulation_year)][Model_ID], n=data[n]['lifetime_'+str(simulation_year)][Model_ID], wacc=data['System_configurations']['System']['Zinssatz']/100)
+        my_dict[name]['betriebsk'] = data[n]['investment_costs_'+str(simulation_year)][Model_ID] * (data[n]['operating_costs_'+str(simulation_year)][Model_ID]/100)
         my_dict[name]['epc'] = my_dict[name]['investk'] + my_dict[name]['betriebsk']
         
     return(my_dict)
