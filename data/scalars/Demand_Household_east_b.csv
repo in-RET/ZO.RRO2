@@ -1,0 +1,14 @@
+Index;EER_2030;Raumwaerme_2030;Klima- und Prozesskaelte_2030;Strom_2030;Stoffl. Nutzung_2030;EER_2040;Raumwaerme_2040;Klima- und Prozesskaelte_2040;Strom_2040;Stoffl. Nutzung_2040;EER_2045;Raumwaerme_2045;Klima- und Prozesskaelte_2045;Strom_2045;Stoffl. Nutzung_2045
+PtH Heizstab;0.99;3;0;0;0;0.99;3;0;0;0;0.99;2;0;0;0
+PtH Luftwaermepumpe;3.4;14;0;0;0;3.6;27;0;0;0;3.8;33;0;0;0
+PtH Erdwaermepumpe;3.8;8;0;0;0;4;14;0;0;0;4.2;17;0;0;0
+Solarthermie;1;2;0;0;0;1;3;0;0;0;1;4;0;0;0
+Festbrennstoffkessel;0.85;15;0;0;0;0.88;15;0;0;0;0.88;16;0;0;0
+Heizkessel Gas;0.93;37;0;0;0;0.96;23.5;0;0;0;0.98;12;0;0;0
+Heizkessel Oel;0.9;9;0;0;0;0.96;0.5;0;0;0;0.98;0;0;0;0
+Waermeuebergabestation;0.91;12;0;0;0;0.92;14;0;0;0;0.93;15;0;0;0
+Kompressionskaelte;3.3;0;100;0;0;3.5;0;100;0;0;3.7;0;100;0;0
+Sorptionskaelte;1;0;0;0;0;1;0;0;0;0;1;0;0;0;0
+Elektrogeraete;1;0;0;100;0;1;0;0;100;0;1;0;0;100;0
+Papierfabrik;1;0;0;0;0;1;0;0;0;0;1;0;0;0;0
+Summe;;3.048;0.037;0.626;0;;2.349;0.045;0.58;0;;1.977;0.05;0.557;0

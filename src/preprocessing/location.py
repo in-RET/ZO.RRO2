@@ -47,7 +47,7 @@ class Location(object):
         
         # Import power curve of the Wind turbines
         
-        inputfile_Windanlage = os.path.abspath(os.path.join(workdir, '../..','data/scalars','Wind_powercurve.csv'))
+        inputfile_Windanlage = os.path.abspath(os.path.join(workdir, './','data/scalars','Wind_powercurve.csv'))
         Windanlagen = pd.read_csv(inputfile_Windanlage,sep=";", decimal=',',encoding='latin-1')
         p_Anlage = Windanlagen['Enercon E101']
         

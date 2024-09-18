@@ -15,6 +15,7 @@ workdir= os.getcwd()
 #from src import preprocessing
 from src.preprocessing.files import read_input_files
 from src.preprocessing.location import Location
+from src.preprocessing import conversion
 from oemof.tools import economics
 
 
@@ -24,7 +25,7 @@ simulation_year = [2030]
 #%% 
 """   Define Location by importing weather data as input file  """
 
-Weather_dir = os.path.abspath(os.path.join(workdir,'../..', 'data','weatherdata'))
+Weather_dir = os.path.abspath(os.path.join(workdir,'./', 'data','weatherdata'))
 
 Erfurt = Location(os.path.join(Weather_dir,'Erfurt_Binderslebn-hour.csv'), os.path.join(Weather_dir,'Erfurt_Binderslebn-min.dat'))
 Nordhausen= Location(os.path.join(Weather_dir,'Nordhausen-hour.csv'), os.path.join(Weather_dir,'Nordhausen-min.dat'))
@@ -40,9 +41,11 @@ for year in simulation_year:
         L.Wind_feed_in_profile(year)
         L.PV_feed_in_profile(year)
 #%%
-Timeseries = files.read_input_files(folder_name = 'data/sequences', sub_folder_name='00_ZORRO_I_old_sequences')
-Eingangsdaten = files.read_input_files(folder_name = 'data/scalars', sub_folder_name='00_ZORRO_I_old_scalars')
-Parameter = files.read_input_files(folder_name = 'data/scalars')
+Timeseries = read_input_files(folder_name = 'data/sequences', sub_folder_name='00_ZORRO_I_old_sequences')
+Eingangsdaten = read_input_files(folder_name = 'data/scalars', sub_folder_name='00_ZORRO_I_old_scalars')
+Parameter = read_input_files(folder_name = 'data/scalars')
+
+
 #%%
 '''
 Function to calculate epc costs and store it as a variable for all technologies

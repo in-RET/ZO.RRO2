@@ -18,10 +18,72 @@ from src.preprocessing.conversion import investment_parameter
 
 YEAR = 2030
 Model_ID = 'BS0001'
-sequences = read_input_files(folder_name = 'ESM_ZORRO_II/data/sequences', sub_folder_name='00_ZORRO_I_old_sequences')
-scalars = read_input_files(folder_name = 'ESM_ZORRO_II/data/scalars', sub_folder_name=None)
+sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
+scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
 
-investment_parameter = investment_parameter(scalars, YEAR, Model_ID)
+
+
+
+profile = []             # Sorting only the timeseies from the list of all files in the sequences folder
+for i in sequences: 
+    if i.endswith('profile'):
+        profile.append(i)
+
+load_profile_nom = {}
+for name in profile:
+    load_profile_nom[name]= sequences[name]/sequences[name].sum() # Normalising the timeseries to scale the profile to respective energy demand.
+
+sector = ['electricity', 'gas', 'dist_heating', 'biomass', 'oil&fuel', 'material_usage_gas', 'material_usage_oil_fuel']
+region = ['north', 'middle', 'east', 'swest']
+demand_profile_dict={}
+#%%
+
+for s in sector:
+    demand_profile_dict[s] = {}
+    for r in region:
+           
+        if s == 'electricity':
+                # Load profile * (total demand * (percentage share/100)/ EER) 
+            demand_profile_dict[s][r]= ((load_profile_nom['other_demand_profile']['G3'] * (float(scalars['Demand_Industry_' + r + '_b']['Strom_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Strom_' + str(YEAR)]['Elektrogeraete'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Elektrogeraete'])))+
+                                            (load_profile_nom['Heat_demand_profile']['HA4_'+ r] *(float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Heizstab'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['PtH Heizstab'])))+
+                                            (load_profile_nom['Heat_demand_profile']['HA4_'+ r] *(float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Luftwaermepumpe'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['PtH Luftwaermepumpe'])))+
+                                            (load_profile_nom['Heat_demand_profile']['HA4_'+ r] *(float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Erdwaermepumpe'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['PtH Erdwaermepumpe'])))+
+                                            (load_profile_nom['other_demand_profile']['Prozessgas'] *(float(scalars['Demand_Industry_' + r + '_b']['Prozesswaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Prozesswaerme_' + str(YEAR)]['PtH Heizstab'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['PtH Heizstab'])))+
+                                            (load_profile_nom['other_demand_profile']['Prozessgas'] *(float(scalars['Demand_Industry_' + r + '_b']['Prozesswaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Prozesswaerme_' + str(YEAR)]['PtH Luftwaermepumpe'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['PtH Luftwaermepumpe'])))+
+                                            (load_profile_nom['other_demand_profile']['Prozessgas'] *(float(scalars['Demand_Industry_' + r + '_b']['Prozesswaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Prozesswaerme_' + str(YEAR)]['PtH Erdwaermepumpe'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['PtH Erdwaermepumpe'])))+
+                                            (load_profile_nom['Electricity_household_demand_profile'][r +'_'+ str(YEAR)] *(float(scalars['Demand_Household_' + r + '_b']['Strom_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Household_'+ r + '_b']['Strom_' + str(YEAR)]['Elektrogeraete'])/100) /float(scalars['Demand_Household_'+ r + '_b']['EER_' + str(YEAR)]['Elektrogeraete'])))+
+                                            (load_profile_nom['Heat_demand_profile']['Household_'+ r] *(float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Household_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Heizstab'])/100) /float(scalars['Demand_Household_'+ r + '_b']['EER_' + str(YEAR)]['PtH Heizstab'])))+
+                                            (load_profile_nom['Heat_demand_profile']['Household_'+ r] *(float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Household_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Luftwaermepumpe'])/100) /float(scalars['Demand_Household_'+ r + '_b']['EER_' + str(YEAR)]['PtH Luftwaermepumpe'])))+
+                                            (load_profile_nom['Heat_demand_profile']['Household_'+ r] *(float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Household_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Erdwaermepumpe'])/100) /float(scalars['Demand_Household_'+ r + '_b']['EER_' + str(YEAR)]['PtH Erdwaermepumpe'])))+
+                                            (load_profile_nom['Cooling_demand_profile'][r] *(float(scalars['Demand_Household_' + r + '_b']['Klima- und Prozesskaelte_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Household_'+ r + '_b']['Klima- und Prozesskaelte_' + str(YEAR)]['Kompressionskaelte'])/100) /float(scalars['Demand_Household_'+ r + '_b']['EER_' + str(YEAR)]['Kompressionskaelte'])))+
+                                            (load_profile_nom['Cooling_demand_profile'][r] *(float(scalars['Demand_Household_' + r + '_b']['Klima- und Prozesskaelte_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Household_'+ r + '_b']['Klima- und Prozesskaelte_' + str(YEAR)]['Sorptionskaelte'])/100) /float(scalars['Demand_Household_'+ r + '_b']['EER_' + str(YEAR)]['Sorptionskaelte'])))+
+                                            (load_profile_nom['Cooling_demand_profile'][r] *(float(scalars['Demand_Industry_' + r + '_b']['Klima- und Prozesskaelte_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Klima- und Prozesskaelte_' + str(YEAR)]['Kompressionskaelte'])/100) /float(scalars['Demand_Household_'+ r + '_b']['EER_' + str(YEAR)]['Kompressionskaelte'])))
+                                            )*1000000 # TWh to MWh noch GHD und Verkehr
+        elif s == 'gas':
+            if YEAR == 2030:
+                demand_profile_dict[s][r] = ((load_profile_nom['Heat_demand_profile']['HA4_'+ r]* (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['Heizkessel Gas'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Heizkessel Gas'])))+
+                                           (load_profile_nom['other_demand_profile']['Prozessgas'] *(float(scalars['Demand_Industry_' + r + '_b']['Prozesswaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Prozesswaerme_' + str(YEAR)]['Heizkessel Gas'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Heizkessel Gas'])))+
+                                              (load_profile_nom['Heat_demand_profile']['Household_'+ r] *(float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Household_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['Heizkessel Gas'])/100) /float(scalars['Demand_Household_'+ r + '_b']['EER_' + str(YEAR)]['Heizkessel Gas'])))
+                                              *1000000)
+            else:
+                demand_profile_dict[s][r] = ((load_profile_nom['Heat_demand_profile']['HA4_'+ r]* (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['Heizkessel Gas_1'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Heizkessel Gas_1'])))+
+                                           (load_profile_nom['other_demand_profile']['Prozessgas'] *(float(scalars['Demand_Industry_' + r + '_b']['Prozesswaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Prozesswaerme_' + str(YEAR)]['Heizkessel Gas_1'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Heizkessel Gas_1'])))+
+                                              (load_profile_nom['Heat_demand_profile']['Household_'+ r] *(float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Household_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['Heizkessel Gas_1'])/100) /float(scalars['Demand_Household_'+ r + '_b']['EER_' + str(YEAR)]['Heizkessel Gas_1'])))
+                                              *1000000)
+                    
+                    
+#             demand_dict[name]['Middle']= scalars[name][16:29].fillna(0)
+#             demand_dict[name]['East']= scalars[name][31:45].fillna(0)
+#             demand_dict[name]['Swest']= scalars[name][48:62].fillna(0)
+#         if name.endswith('Industry_b'):
+#             demand_dict[name]['North']= scalars[name][0:16].fillna(0)
+#             demand_dict[name]['Middle']= scalars[name][20:36].fillna(0)
+#             demand_dict[name]['East']= scalars[name][40:56].fillna(0)
+#             demand_dict[name]['Swest']= scalars[name][60:76].fillna(0)
+        
+        
+
+#investment_parameter = investment_parameter(scalars, YEAR, Model_ID)
 #%%
 # ------------------------------------------------------------------------------
 # Modellbildung
