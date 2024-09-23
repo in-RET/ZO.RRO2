@@ -16,7 +16,7 @@ from src.preprocessing.files import read_input_files
 from src.preprocessing.conversion import investment_parameter, load_profile_scaling
 
 
-YEAR = 2030
+YEAR = 2040
 Model_ID = 'BS0001'
 sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
 scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)

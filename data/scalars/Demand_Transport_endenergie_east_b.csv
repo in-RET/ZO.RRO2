@@ -1,0 +1,14 @@
+Index;Personenverkehr_2030;Gueterverkehr_2030;Personenverkehr_2040;Gueterverkehr_2040;Personenverkehr_2045;Gueterverkehr_2045
+PKW Verbrenner;0.91;0;0.67;0;0.26;0
+PKW Verbrenner CNG;0;0;0;0;0;0
+PKW - Batterie;0.03;0;0.19;0;0.53;0
+PKW - Wasserstoff;0;0;0;0;0;0
+Busse - Verbrenner;0.02;0;0.05;0;0.03;0
+Busse - Batterie;0;0;0.02;0;0.06;0
+Schiene - Verbrenner;0.02;0.04;0.04;0.03;0.04;0.02
+Schiene - Batterie;0.02;0.02;0.03;0.02;0.08;0.03
+Schiene - Wasserstoff;0;0;0;0;0;0
+LKW - Verbrenner;0;0.75;0;0.53;0;0.41
+LKW - Batterie;0;0.2;0;0.41;0;0.54
+LKW - Wasserstoff;0;0;0;0;0;0
+Summe;3.152791793;1.58933098;1.732149769;1.683905713;0.915110131;1.704846622
