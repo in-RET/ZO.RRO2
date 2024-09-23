@@ -1,5 +1,5 @@
 model_ID;investment_costs_2020;investment_costs_2025;investment_costs_2030;investment_costs_20235;investment_costs_2040;investment_costs_2045;investment_costs_2050;operating_costs_2020;operating_costs_2025;operating_costs_2030;operatingt_costs_20235;operating_costs_2040;operating_costs_2045;operating_costs_2050;lifetime_2020;lifetime_2025;lifetime_2030;lifetime_20235;lifetime_2040;lifetime_2045;lifetime_2050;efficiency_in_2020;efficiency_in_2025;efficiency_in_2030;efficiency_in_2035;efficiency_in_2040;efficiency_in_2045;efficiency_in_2050;efficiency_out_2020;efficiency_out_2025;efficiency_out_2030;efficiency_out_2035;efficiency_out_2040;efficiency_out_2045;efficiency_out_2050;potential
-modelID;;;87500;;87500;;87500;;;0,3;;0,3;;0,3;;;15;;15;;15;;;;;;;;;;0,9;;0,9;;0,9;5000
-modelID;400;289,4325;244,582;221,7655;187,932;154,0985;120;1;1;1;1;1;1;1;12,5;12,5;15;15;17,5;17,5;17,5;92;92,16666667;92,33333334;92,5;92,66666667;92,83333334;93;94;94,33333333;94,66666667;95;95,33333333;95,66666667;96;
+BS0001;;;87500;;87500;;87500;;;0,3;;0,3;;0,3;;;15;;15;;15;;;;;;;;;;0,9;;0,9;;0,9;5000
+BS0002;400;289,4325;244,582;221,7655;187,932;154,0985;120;1;1;1;1;1;1;1;12,5;12,5;15;15;17,5;17,5;17,5;92;92,16666667;92,33333334;92,5;92,66666667;92,83333334;93;94;94,33333333;94,66666667;95;95,33333333;95,66666667;96;
 modelID;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 modelID;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
