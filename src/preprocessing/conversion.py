@@ -88,10 +88,34 @@ def load_profile_scaling(scalars, sequences, YEAR):
         
     for s in sector:
         demand_profile_dict[s] = {}
-        for r in region:      
+        for r in region: 
+            """ 
+            Total electricity load profile consists of:
+            Industry electricity demand - G3 SLP 
+            Electricity demand for industry space heating: PtH Heating rod - HA4 
+            Electricity demand for industry space heating: PtH Air heatpump - HA4 
+            Electricity demand for industry space heating: PtH Geothermal heatpump - HA4 
+            Electricity demand for industry Process heating: PtH Heating rod - ACS Prozessgas profile  
+            Electricity demand for industry Process heating: PtH Air heatpump - ACS Prozessgas profile 
+            Electricity demand for industry Process heating: PtH Geothermal heatpump - ACS Prozessgas profile
+            Household electricity demand - RAMP profile
+            Electricity demand for household space heating: PtH Heating rod - 5RC profile 
+            Electricity demand for household space heating: PtH Air heatpump - 5RC profile
+            Electricity demand for household space heating: PtH Geothermal heatpump - 5RC profile
+            Electricity demand for household space cooling: Kompressionskälte - 5RC profile 
+            Electricity demand for household space cooling: Scorptionskälte- 5RC profile
+            Electricity demand for Industry space cooling: Kompressionskälte - 5RC profile 
+            Mobility demand Personenverkehr: Car - RAMP
+            Mobility demand Personenverkehr: Bus - RAMP
+            Mobility demand Personenverkehr: Train - RAMP
+            Mobility demand Güterverkehr: Train - RAMP
+            Mobility demand Güterverkehr: LKW - base load
+
+            """
             if s == 'electricity':
                                 # Load profile * (total demand * (percentage share/100)/ EER) 
-                demand_profile_dict[s][r]= ((load_profile_nom['other_demand_profile']['G3'] * (float(scalars['Demand_Industry_' + r + '_b']['Strom_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Strom_' + str(YEAR)]['Elektrogeraete'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Elektrogeraete'])))+
+                        
+                    demand_profile_dict[s][r]= ((load_profile_nom['other_demand_profile']['G3'] * (float(scalars['Demand_Industry_' + r + '_b']['Strom_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Strom_' + str(YEAR)]['Elektrogeraete'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Elektrogeraete'])))+
                                                 (load_profile_nom['Heat_demand_profile']['HA4_'+ r] *(float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Heizstab'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['PtH Heizstab'])))+
                                                     (load_profile_nom['Heat_demand_profile']['HA4_'+ r] *(float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Luftwaermepumpe'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['PtH Luftwaermepumpe'])))+
                                                 (load_profile_nom['Heat_demand_profile']['HA4_'+ r] *(float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Erdwaermepumpe'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['PtH Erdwaermepumpe'])))+
@@ -111,6 +135,8 @@ def load_profile_scaling(scalars, sequences, YEAR):
                                                 (load_profile_nom['Mobility_demand_profile']['train_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Gueterverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Gueterverkehr_'+str(YEAR)]['Schiene - Batterie']))))+
                                                 (load_profile_nom['Base_demand_profile']['base_load']* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Gueterverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Gueterverkehr_'+str(YEAR)]['LKW - Batterie']))))
                                                 )*1000000 # TWh to MWh noch GHD 
+           
+            
             elif s == 'gas':
                 if YEAR == 2030:
                     demand_profile_dict[s][r] = ((load_profile_nom['Heat_demand_profile']['HA4_'+ r]* (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Raumwaerme_' + str(YEAR)]['Heizkessel Gas'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Heizkessel Gas'])))+
@@ -180,3 +206,19 @@ def load_profile_scaling(scalars, sequences, YEAR):
                                              )*1000000
                 
     return (demand_profile_dict)
+
+def CO2_price_addition(scalars,sequences,YEAR):
+    data_dict = {}
+    
+    if YEAR <= 2030:
+        data_dict['import_gas_price'] = sequences['Energy_price']['Gas_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Erdgas']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
+        data_dict['import_oil_price'] = sequences['Energy_price']['Oil_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Oel']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
+        data_dict['import_hard_coal_price'] = sequences['Energy_price']['Hard_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Steinkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
+        data_dict['import_brown_coal_price'] = sequences['Energy_price']['Brown_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Braunkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
+    
+    else:
+        data_dict['import_gas_price'] = sequences['Energy_price']['Gas_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Erdgas']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
+        data_dict['import_oil_price'] = sequences['Energy_price']['Oil_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Oel']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
+    
+    
+    return (data_dict)

@@ -1,4 +1,11 @@
-index;Einheit;Strom
-Max_Bezugsleistung;MW;20000
-Netzentgelt_Arbeitspreis;€/MWh;26,6
-Netzentgelt_Jahresleistungspreis;€/MW/a;10720
+index;Einheit;electricity;Schnittstelle
+max_power;MW;20000;
+grid_operating_fee;€/MWh;26,6;
+grid_annualperformance_fee;€/MW/a;10720;TEN - Hochspannung
+max_power_north;MW;640;1
+max_power_swest;MW;300;2
+max_power_middle;MW;1350;3,4
+max_power_east;MW;1100;5,6,7
+connection_north_middle;MW;460;
+connection_middle_swest;MW;1060;
+connection_east_middle;MW;1360;

@@ -54,17 +54,28 @@ energysystem.add(b_hös, b_hs, b_el_east, b_el_middle, b_el_north, b_el_swest)
 # Unrestricted electricity import from german grid
 energysystem.add(solph.components.Source(
     label='Import_electricity',
-    outputs={b_hös: solph.Flow(nominal_value=Parameter_Stromnetz_2030['Strom']['Max_Bezugsleistung'],
-                              variable_costs = [i+Parameter_Stromnetz_2030['Strom']['Netzentgelt_Arbeitspreis'] for i in Preise_2030_Stundenwerte['Strompreis_2030']],
-                              custom_attributes={'CO2_factor': data_Systemeigenschaften['System']['Emission_Strom_2030']},
+    outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
+                              variable_costs = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Strompreis_brain_'+str(YEAR)]],
+                              custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]},
                               
         )}))
+
+"""Link between HöS & HS""" 
+energysystem.add(solph.components.Link(
+    label='HöS<->HS',
+    inputs= {b_hös: solph.Flow(),
+             b_hs: solph.Flow()},
+    outputs= {b_hs: solph.Flow(),
+             b_hös: solph.Flow()},
+    conversion_factors = {(b_hös,b_hs): 1, (b_hs,b_hös):1}
+    
+    ))
 # define links between grids and regions
 """Link between HS & North""" 
 energysystem.add(solph.components.Link(
     label='HS<->North',
     inputs= {b_hs: solph.Flow()},
-    outputs= {b_el_north: solph.Flow()},
+    outputs= {b_el_north: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_north'])},
     conversion_factors = {(b_hs,b_el_north): 1}
     ))
 
@@ -72,7 +83,7 @@ energysystem.add(solph.components.Link(
 energysystem.add(solph.components.Link(
     label='HS<->East',
     inputs= {b_hs: solph.Flow()},
-    outputs= {b_el_east: solph.Flow()},
+    outputs= {b_el_east: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_east'])},
     conversion_factors = {(b_hs,b_el_east): 1}
     ))
 
@@ -80,7 +91,7 @@ energysystem.add(solph.components.Link(
 energysystem.add(solph.components.Link(
     label='HS<->Middle',
     inputs= {b_hs: solph.Flow()},
-    outputs= {b_el_middle: solph.Flow()},
+    outputs= {b_el_middle: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_middle'])},
     conversion_factors = {(b_hs,b_el_middle): 1}
     ))
 
@@ -88,26 +99,16 @@ energysystem.add(solph.components.Link(
 energysystem.add(solph.components.Link(
     label='HS<->Swest',
     inputs= {b_hs: solph.Flow()},
-    outputs= {b_el_swest: solph.Flow()},
+    outputs= {b_el_swest: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_swest'])},
     conversion_factors = {(b_hs,b_el_swest): 1}
     ))
 
-"""Link between HöS & HS""" 
-energysystem.add(solph.components.Link(
-    label='HöS<->HS',
-    inputs= {b_hös: solph.Flow(nominal_value = 640),
-             b_hs: solph.Flow(nominal_value = 640)},
-    outputs= {b_hs: solph.Flow(),
-             b_hös: solph.Flow()},
-    conversion_factors = {(b_hös,b_hs): 1, (b_hs,b_hös):1}
-    
-    ))
 
 """Link between HS & different regions""" 
 energysystem.add(solph.components.Link(
     label='North<->Middel',
-    inputs= {b_el_north: solph.Flow(nominal_value = 0),
-             b_el_middle: solph.Flow(nominal_value = 0)},
+    inputs= {b_el_north: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle']),
+             b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle'])},
     outputs= {b_el_middle: solph.Flow(),
              b_el_north: solph.Flow()},
     conversion_factors = {(b_el_north,b_el_middle): 1, (b_el_middle,b_el_north):1}
@@ -116,8 +117,8 @@ energysystem.add(solph.components.Link(
 
 energysystem.add(solph.components.Link(
     label='Middel<->Swest',
-    inputs= {b_el_middle: solph.Flow(nominal_value = 0),
-             b_el_swest: solph.Flow(nominal_value = 0)},
+    inputs= {b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_middle_swest']),
+             b_el_swest: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_middle_swest'])},
     outputs= {b_el_swest: solph.Flow(),
              b_el_middle: solph.Flow()},
     conversion_factors = {(b_el_middle,b_el_swest): 1, (b_el_swest,b_el_middle):1}
@@ -126,8 +127,8 @@ energysystem.add(solph.components.Link(
 
 energysystem.add(solph.components.Link(
      label='East<->Middel',
-     inputs= {b_el_east: solph.Flow(nominal_value = 0),
-              b_el_middle: solph.Flow(nominal_value = 0)},
+     inputs= {b_el_east: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_east_middle']),
+              b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_east_middle'])},
      outputs= {b_el_middle: solph.Flow(),
               b_el_east: solph.Flow()},
      conversion_factors = {(b_el_east,b_el_middle): 1, (b_el_middle,b_el_east):1}

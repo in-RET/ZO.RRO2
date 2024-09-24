@@ -6,21 +6,40 @@ Created on Wed Sep  4 13:18:19 2024
 """
 
 import os
-
+workdir= os.getcwd()
 import pandas as pd
 from oemof import network, solph
 from oemof.tools import economics
 
 from src.preprocessing.create_input_dataframe import createDataFrames
 from src.preprocessing.files import read_input_files
-from src.preprocessing.conversion import investment_parameter
+from src.preprocessing.conversion import investment_parameter, load_profile_scaling, CO2_price_addition
+from src.preprocessing.location import Location
 
 
 def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     YEAR, VARIATION = PERMUATION.split("_")
     YEAR = int(YEAR)
-    sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name='00_ZORRO_I_old_sequences')
-    scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name='00_ZORRO_I_old_scalars')
+    model_ID = 'BS0001'
+    
+    sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
+    scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
+    demand = load_profile_scaling(scalars,sequences,YEAR)
+    epc_costs = investment_parameter(scalars, YEAR, model_ID)
+    import_price = CO2_price_addition(scalars,sequences, YEAR)
+    
+    Weather_dir = os.path.abspath(os.path.join(workdir,'./', 'data','weatherdata'))
+    middle = Location(os.path.join(Weather_dir,'Erfurt_Binderslebn-hour.csv'), os.path.join(Weather_dir,'Erfurt_Binderslebn-min.dat'))
+    north = Location(os.path.join(Weather_dir,'Nordhausen-hour.csv'), os.path.join(Weather_dir,'Nordhausen-min.dat'))
+    swest= Location(os.path.join(Weather_dir,'Hildburghausen-hour.csv'), os.path.join(Weather_dir,'Hildburghausen-min.dat'))
+    east = Location(os.path.join(Weather_dir,'Gera-Leumnitz-hour.csv'), os.path.join(Weather_dir,'Gera-Leumnitz-min.dat'))
+  
+    Planing_region = [middle, north, swest, east]
+    """ Simulate Wind feed-in profile for the desired location """
+    for L in Planing_region:
+        L.Wind_feed_in_profile(YEAR)
+        #L.PV_feed_in_profile(YEAR)
+    
     
     # ------------------------------------------------------------------------------
     # Modellbildung
@@ -52,80 +71,80 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     # Unrestricted electricity import from german grid
     energysystem.add(solph.components.Source(
         label='Import_electricity',
-        outputs={b_hös: solph.Flow(nominal_value=Parameter_Stromnetz_2030['Strom']['Max_Bezugsleistung'],
-                                  variable_costs = [i+Parameter_Stromnetz_2030['Strom']['Netzentgelt_Arbeitspreis'] for i in Preise_2030_Stundenwerte['Strompreis_2030']],
-                                  custom_attributes={'CO2_factor': data_Systemeigenschaften['System']['Emission_Strom_2030']},
+        outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
+                                  variable_costs = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Strompreis_brain_'+str(YEAR)]],
+                                  custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]},
                                   
             )}))
-    # define links between grids and regions
-    """Link between HS & North""" 
-    energysystem.add(solph.components.Link(
-        label='HS<->North',
-        inputs= {b_hs: solph.Flow()},
-        outputs= {b_el_north: solph.Flow()},
-        conversion_factors = {(b_hs,b_el_north): 1}
-        ))
-    
-    """Link between HS & East""" 
-    energysystem.add(solph.components.Link(
-        label='HS<->East',
-        inputs= {b_hs: solph.Flow()},
-        outputs= {b_el_east: solph.Flow()},
-        conversion_factors = {(b_hs,b_el_east): 1}
-        ))
-    
-    """Link between HS & Middle""" 
-    energysystem.add(solph.components.Link(
-        label='HS<->Middle',
-        inputs= {b_hs: solph.Flow()},
-        outputs= {b_el_middle: solph.Flow()},
-        conversion_factors = {(b_hs,b_el_middle): 1}
-        ))
-    
-    """Link between HS & Swest""" 
-    energysystem.add(solph.components.Link(
-        label='HS<->Swest',
-        inputs= {b_hs: solph.Flow()},
-        outputs= {b_el_swest: solph.Flow()},
-        conversion_factors = {(b_hs,b_el_swest): 1}
-        ))
-    
     """Link between HöS & HS""" 
     energysystem.add(solph.components.Link(
         label='HöS<->HS',
-        inputs= {b_hös: solph.Flow(nominal_value = 640),
-                 b_hs: solph.Flow(nominal_value = 640)},
+        inputs= {b_hös: solph.Flow(),
+                 b_hs: solph.Flow()},
         outputs= {b_hs: solph.Flow(),
                  b_hös: solph.Flow()},
         conversion_factors = {(b_hös,b_hs): 1, (b_hs,b_hös):1}
         
         ))
-    
+    # define links between grids and regions
+    """Link between HS & North""" 
+    energysystem.add(solph.components.Link(
+        label='HS<->North',
+        inputs= {b_hs: solph.Flow()},
+        outputs= {b_el_north: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_north'])},
+        conversion_factors = {(b_hs,b_el_north): 1}
+        ))
+
+    """Link between HS & East""" 
+    energysystem.add(solph.components.Link(
+        label='HS<->East',
+        inputs= {b_hs: solph.Flow()},
+        outputs= {b_el_east: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_east'])},
+        conversion_factors = {(b_hs,b_el_east): 1}
+        ))
+
+    """Link between HS & Middle""" 
+    energysystem.add(solph.components.Link(
+        label='HS<->Middle',
+        inputs= {b_hs: solph.Flow()},
+        outputs= {b_el_middle: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_middle'])},
+        conversion_factors = {(b_hs,b_el_middle): 1}
+        ))
+
+    """Link between HS & Swest""" 
+    energysystem.add(solph.components.Link(
+        label='HS<->Swest',
+        inputs= {b_hs: solph.Flow()},
+        outputs= {b_el_swest: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_swest'])},
+        conversion_factors = {(b_hs,b_el_swest): 1}
+        ))
+
+
     """Link between HS & different regions""" 
     energysystem.add(solph.components.Link(
         label='North<->Middel',
-        inputs= {b_el_north: solph.Flow(nominal_value = 0),
-                 b_el_middle: solph.Flow(nominal_value = 0)},
+        inputs= {b_el_north: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle']),
+                 b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle'])},
         outputs= {b_el_middle: solph.Flow(),
                  b_el_north: solph.Flow()},
         conversion_factors = {(b_el_north,b_el_middle): 1, (b_el_middle,b_el_north):1}
         
         ))
-    
+
     energysystem.add(solph.components.Link(
         label='Middel<->Swest',
-        inputs= {b_el_middle: solph.Flow(nominal_value = 0),
-                 b_el_swest: solph.Flow(nominal_value = 0)},
+        inputs= {b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_middle_swest']),
+                 b_el_swest: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_middle_swest'])},
         outputs= {b_el_swest: solph.Flow(),
                  b_el_middle: solph.Flow()},
         conversion_factors = {(b_el_middle,b_el_swest): 1, (b_el_swest,b_el_middle):1}
         
         ))
-    
+
     energysystem.add(solph.components.Link(
          label='East<->Middel',
-         inputs= {b_el_east: solph.Flow(nominal_value = 0),
-                  b_el_middle: solph.Flow(nominal_value = 0)},
+         inputs= {b_el_east: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_east_middle']),
+                  b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_east_middle'])},
          outputs= {b_el_middle: solph.Flow(),
                   b_el_east: solph.Flow()},
          conversion_factors = {(b_el_east,b_el_middle): 1, (b_el_middle,b_el_east):1}
@@ -175,8 +194,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Export_Electricity_n', 
-        inputs={b_el_north: solph.Flow(nominal_value = scalars['Parameter_Stromnetz_' + str(YEAR)]['Strom']['Max_Bezugsleistung'],
-                                 variable_costs = [i*(-1) for i in sequences['Preise_2030_Stundenwerte']['Strompreis_2030']]
+        inputs={b_el_north: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_north'],
+                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Strompreis_brain_'+str(YEAR)]],
         )}))
 
     #------------------------------------------------------------------------------
@@ -184,8 +203,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Export_Hydrogen_n', 
-        inputs={b_H2_n: solph.Flow(nominal_value = scalars['Parameter_Wasserstoffnetz_'+ str(YEAR)]['Wasserstoff']['Max_Bezugsleistung'],
-                                 variable_costs = [i*(-1) for i in sequences['Preise_2030_Stundenwerte']['Wasserstoffpreis_2030']]
+        inputs={b_H2_n: solph.Flow(nominal_value = scalars['Hydrogen_grid']['hydrogen']['max_power'],
+                                 variable_costs = [i*(-1) for i in sequences['Energy_price']['Hydrogen_' + str(YEAR)]]
                                   
         )}))
     
@@ -197,7 +216,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Electricity_demand_total_n', 
-        inputs={b_el_north: solph.Flow(fix=Last_Strom_Zusammen, 
+        inputs={b_el_north: solph.Flow(fix=demand['electricity']['north'], 
                                  nominal_value=1,
         )}))
     #------------------------------------------------------------------------------
@@ -205,7 +224,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Biomass_demand_total_n', 
-        inputs={b_solidf_n: solph.Flow(fix=Last_Bio_Zusammen, 
+        inputs={b_solidf_n: solph.Flow(fix=demand['biomass']['north'], 
                                    nominal_value=1,
         )}))
     
@@ -214,7 +233,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Gas_demand_total_n', 
-        inputs={b_gas_n: solph.Flow(fix=Last_Gas_Zusammen, 
+        inputs={b_gas_n: solph.Flow(fix=demand['gas']['north'], 
                                   nominal_value=1,
         )}))
     
@@ -223,8 +242,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Material_demand_Gas_n', 
-        inputs={b_gas_n: solph.Flow(fix=Einspeiseprofile_Stundenwerte['Grundlast'], 
-                                  nominal_value=P_nom_Gas_Grundlast_Materialnutzung,
+        inputs={b_gas_n: solph.Flow(fix=demand['material_usage_gas']['north'], 
+                                  nominal_value=1,
         )}))
 
     #------------------------------------------------------------------------------
@@ -232,7 +251,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Oil_demand_total_n', 
-        inputs={b_oil_fuel_n: solph.Flow(fix=Last_Oel_Zusammen, 
+        inputs={b_oil_fuel_n: solph.Flow(fix=demand['oil']['north'], 
                                               nominal_value=1,
         )}))
 
@@ -241,7 +260,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Mobility_demand_total_n', 
-        inputs={b_oil_fuel_n: solph.Flow(fix=Last_Verbrenner_Zusammen, 
+        inputs={b_oil_fuel_n: solph.Flow(fix=demand['fuel']['north'], 
                                               nominal_value=1,
         )}))
 
@@ -250,8 +269,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Material_demand_Oil_n', 
-        inputs={b_oil_fuel_n: solph.Flow(fix=Einspeiseprofile_Stundenwerte['Grundlast'], 
-                                              nominal_value=P_nom_Oel_Grundlast_Materialnutzung,
+        inputs={b_oil_fuel_n: solph.Flow(fix=demand['material_usage_oil']['north'], 
+                                              nominal_value=1,
         )}))
 
     #------------------------------------------------------------------------------
@@ -259,7 +278,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Heat_demand_total_n', 
-        inputs={b_dist_heat_n: solph.Flow(fix=Last_Fernw_Zusammen, 
+        inputs={b_dist_heat_n: solph.Flow(fix=demand['dist_heating']['north'], 
                                    nominal_value=1,
         )}))
 
@@ -268,7 +287,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Hydrogen_demand_total_n', 
-        inputs={b_H2_n: solph.Flow(fix=Last_H2_Zusammen, 
+        inputs={b_H2_n: solph.Flow(fix=demand['H2']['north'], 
                                   nominal_value=1,
         )}))
 
@@ -281,30 +300,30 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Wind_Nordhausen', 
-        outputs={b_el_north: solph.Flow(fix=data_Wind_Nordhausen,
-                                        custom_attributes={'emission_factor': Parameter_PV_Wind_2030['Wind']['EE_Faktor']},
-                                        investment=solph.Investment(ep_costs=epc_Wind, 
-                                                                    maximum=Parameter_PV_Wind_2030['Wind']['Potential_Nordhausen_Nord'])
+        outputs={b_el_north: solph.Flow(fix=north.Wind_feed_in_profiel['Wind_feed_in'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_Factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=investment_parameter['onshore_wind_power_plant']['epc'], 
+                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_nord'][model_ID])
         )}))
     #------------------------------------------------------------------------------
     # Photovoltaic Rooftop systems
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='PV_rooftop_Nordhausen', 
-        outputs={b_el_north: solph.Flow(fix=data_PV_Aufdach_Nordhausen,
-                                        custom_attributes={'emission_factor': Parameter_PV_Wind_2030['PV_Aufdach']['EE_Faktor']},
-                                        investment=solph.Investment(ep_costs=epc_PV_Aufdach, 
-                                                                    maximum=Parameter_PV_Wind_2030['PV_Aufdach']['Potential_Nordhausen_Nord'])
+        outputs={b_el_north: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_north'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_Factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=investment_parameter['rooftop_photovoltaic_power_plant']['epc'], 
+                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_nord'][model_ID])
         )}))
     #------------------------------------------------------------------------------
     # Photovoltaic Openfield systems
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='PV_Freifeld_Nordhausen', 
-        outputs={b_el_north: solph.Flow(fix=data_PV_Freifeld_Nordhausen,
-                                        custom_attributes={'emission_factor': Parameter_PV_Wind_2030['PV_Freifeld']['EE_Faktor']},
-                                        investment=solph.Investment(ep_costs=epc_PV_Freifeld, 
-                                                                    maximum=Parameter_PV_Wind_2030['PV_Freifeld']['Potential_Nordhausen_Nord'])
+        outputs={b_el_north: solph.Flow(fix=sequences['feed_in_profile']['PV_openfield_north'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_field_photovoltaic_power_plant']['EE_Factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=investment_parameter['field_photovoltaic_power_plant']['epc'], 
+                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_nord'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -312,11 +331,11 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Hydro power plant_n', 
-        outputs={b_el_north: solph.Flow(fix=data_Wasserkraft,
-                                        custom_attributes={'emission_factor': Parameter_Wasserkraft_2030['Wasserkraft']['EE_Faktor']},
-                                        investment=solph.Investment(ep_costs=epc_Wasserkraft, 
-                                                                    minimum=Parameter_Wasserkraft_2030['Wasserkraft']['Potential'], 
-                                                                    maximum = Parameter_Wasserkraft_2030['Wasserkraft']['Potential'])
+        outputs={b_el_north: solph.Flow(fix=sequences['feed_in_profile']['Hydro_power'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_run_river_power_plant']['EE_Factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=investment_parameter['run_river_power_plant']['epc'], 
+                                                                    minimum=scalars['Parameter_run_river_power_plant']['potential_nord'][model_ID], 
+                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_nord'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -324,10 +343,10 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='ST_n', 
-        outputs={b_dist_heat_n: solph.Flow(fix=Einspeiseprofile_Stundenwerte['Solarthermie'], 
-                                          custom_attributes={'emission_factor': Parameter_ST_2030['Solarthermie']['EE_Faktor']},
-                                          investment=solph.Investment(ep_costs=epc_ST, 
-                                                                      maximum=Parameter_ST_2030['Solarthermie']['Potential'])
+        outputs={b_dist_heat_n: solph.Flow(fix=sequences['feed_in_profile']['Solarthermal'], 
+                                          custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_Factor'][model_ID]},
+                                          investment=solph.Investment(ep_costs=investment_parameter['solar_thermal_power_plant']['epc'], 
+                                                                      maximum=scalars['Parameter_solar_thermal_power_plant']['potential_nord'][model_ID])
         )}))
     
     """ Imports """
@@ -337,7 +356,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Import_solid_fuel_n',
-        outputs={b_bio_n: solph.Flow(variable_costs = Preise_2030_Stundenwerte['Biomassepreis_2030'],
+        outputs={b_bio_n: solph.Flow(variable_costs = sequences['Energy_price']['Biomass_'+ str(YEAR)],
                                          custom_attributes={'BiogasNeuanlagen_factor': 1},
                                    
         )}))
@@ -347,7 +366,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Import_Wood_n',
-        outputs={b_bioWood_n: solph.Flow(variable_costs = Preise_2030_Stundenwerte['Biomassepreis_2030'],
+        outputs={b_bioWood_n: solph.Flow(variable_costs =sequences['Energy_price']['Biomass_'+ str(YEAR)],
                                              custom_attributes={'Biomasse_factor': 1},
                                        
         )}))
@@ -357,12 +376,12 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Import_brown_coal_n',
-        outputs={b_solidf_n: solph.Flow(variable_costs = Import_Braunkohlepreis_2030,
-                                    fix=Einspeiseprofile_Stundenwerte['Grundlast'], 
+        outputs={b_solidf_n: solph.Flow(variable_costs = import_price['import_brown_coal_price'],
+                                    fix=sequences['base_demand_load']['base_load'], 
                                     #nominal_value = 1,
                                     investment = solph.Investment(ep_costs=0),
-                                    summed_max=data_Systemeigenschaften['System']['Menge_Braunkohle']*number_of_time_steps,
-                                    custom_attributes={'CO2_factor': data_Systemeigenschaften['System']['Emission_Braunkohle']},
+                                    summed_max=scalars['System_configurations']['System']['Menge_Braunkohle']*len(import_price['import_brown_coal_price']),
+                                    custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Braunkohle']},
         )}))
     
     #------------------------------------------------------------------------------
@@ -370,12 +389,12 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Import_hard_coal_n',
-        outputs={b_solidf_n: solph.Flow(variable_costs = Import_Steinkohlepreis_2030,
-                                    fix=Einspeiseprofile_Stundenwerte['Grundlast'], 
+        outputs={b_solidf_n: solph.Flow(variable_costs = import_price['import_hard_coal_price'],
+                                    fix=sequences['base_demand_load']['base_load'], 
                                     #nominal_value = 1,
                                     investment = solph.Investment(ep_costs=0),
-                                    summed_max=data_Systemeigenschaften['System']['Menge_Steinkohle']*number_of_time_steps,
-                                    custom_attributes={'CO2_factor': data_Systemeigenschaften['System']['Emission_Steinkohle']},
+                                    summed_max=scalars['System_configurations']['System']['Menge_Steinkohle']*len(import_price['import_brown_coal_price']),
+                                    custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Steinkohle']},
                                     
         )}))
     
@@ -384,8 +403,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Import_Gas_n',
-        outputs={b_gas_n: solph.Flow(variable_costs = Import_Erdgaspreis_2030,
-                                         custom_attributes={'CO2_factor': data_Systemeigenschaften['System']['Emission_Erdgas']},
+        outputs={b_gas_n: solph.Flow(variable_costs = import_price['import_gas_price'],
+                                         custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Erdgas']},
                                    
         )}))
     
@@ -394,8 +413,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Import_Oil_n',
-        outputs={b_oil_fuel_n: solph.Flow(variable_costs = Import_Oelpreis_2030,
-                                                     custom_attributes={'CO2_factor': data_Systemeigenschaften['System']['Emission_Oel']}
+        outputs={b_oil_fuel_n: solph.Flow(variable_costs = import_price['import_oil_price'],
+                                                     custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Oel']}
                                                
             )}))
     
@@ -404,7 +423,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Import_Synthetic_fuel_n',
-        outputs={b_oil_fuel_n: solph.Flow(variable_costs = Preise_2030_Stundenwerte['Synthetische_Kraftstoffe_2030'],
+        outputs={b_oil_fuel_n: solph.Flow(variable_costs = sequences['Energy_price']['Synthetic_fuel_'+ str(YEAR)],
             )}))
     
     """
