@@ -9,9 +9,9 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
 
     solveModels(
-        variations=["A", "B"],
-        years=[2025, 2030, 2035, 2040, 2045],
-        model_name="basic_example",
+        variations=["BS0001"],
+        years=[2030, 2040, 2050],
+        model_name="BS_regionalization",
         solver="gurobi",
         gap=0.0,
         solver_output=False,

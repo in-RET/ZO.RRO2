@@ -4,13 +4,13 @@ import os
 import pandas as pd
 from oemof import solph
 
-from energymodels.basic_example import basic_example
+from energymodels.BS_regionalization import BS_regionalization
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
 
 
 def solveModels(
-    variations: [int],
+    variations: [str],
     years: [int],
     model_name: str,
     solver: str = "gurobi",
@@ -31,7 +31,7 @@ def solveModels(
         os.makedirs(FIGURE_PATH, exist_ok=True)
 
         logging.info(f"Löse %s", permutation)
-        energysystem = basic_example(permutation)
+        energysystem,sim_data = BS_regionalization(permutation)
 
         if print_graph:
             draw_energy_system(
