@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     solveModels(
         variations=["BS0001"],
-        years=[2030],#, 2040, 2050],
+        years=[2030, 2040, 2050],
         model_name="BS_regionalization",
         solver="gurobi",
         gap=0.0,
