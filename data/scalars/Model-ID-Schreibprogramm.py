@@ -20,7 +20,7 @@ def process_csv_files():
             if len(df) >= 3:
                 try:
                     # Spalten 2 bis 8 in der 3. Zeile (index 2) mit 1000 multiplizieren, falls numerisch
-                    df.iloc[1, 1:8] = pd.to_numeric(df.iloc[2, 1:8], errors='coerce') * 1000
+                    df.iloc[1, 1:8] = pd.to_numeric(df.iloc[1, 1:8], errors='coerce') * 1000
                     
                     # Datei nach Anpassung speichern
                     df.to_csv(filename, sep=';', decimal=',', index=False)
