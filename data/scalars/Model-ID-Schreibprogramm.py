@@ -6,31 +6,32 @@ Created on Thu Sep 19 15:27:10 2024
 """
 
 import os
-import pandas as pd
+import csv
 
-# Ordnerpfad, in dem das Skript liegt
-folder_path = os.path.dirname(os.path.abspath(__file__))
+def multiply_second_row_by_1000(directory):
+    # Alle Dateien im angegebenen Verzeichnis durchsuchen
+    for filename in os.listdir(directory):
+        # Nur Dateien, die mit 'Parameter_' beginnen und auf '.csv' enden, werden verarbeitet
+        if filename.startswith("Parameter_") and filename.endswith(".csv"):
+            file_path = os.path.join(directory, filename)
+            
+            # CSV-Datei einlesen
+            with open(file_path, newline='', encoding='utf-8') as csvfile:
+                reader = list(csv.reader(csvfile))
+                
+                # Sicherstellen, dass es mindestens drei Zeilen gibt (Überschrift + mindestens 2 Datenzeilen)
+                if len(reader) >= 3:
+                    # Die zweite Zeile (Index 2, da die Überschrift die erste ist) bearbeiten
+                    reader[2] = [str(float(value) * 1000) for value in reader[2]]
+            
+            # Datei mit den neuen Werten überschreiben
+            with open(file_path, mode='w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerows(reader)
 
-# Alle CSV-Dateien, die mit "Parameter_" beginnen
-csv_files = [f for f in os.listdir(folder_path) if f.startswith("Parameter_") and f.endswith(".csv")]
 
-# Durchlaufe alle gefundenen Dateien
-for file in csv_files:
-    file_path = os.path.join(folder_path, file)
-    
-    try:
-        # CSV-Datei mit Fehlerbehebung einlesen (inkonsistente Spaltenanzahl ignorieren)
-        df = pd.read_csv(file_path, error_bad_lines=False, warn_bad_lines=True)
-        
-        # In die erste Spalte der zweiten Zeile "BS0001" einfügen (Index 1 für die zweite Zeile)
-        df.iloc[1, 0] = "BS0001"
-        
-        # Datei wieder speichern
-        df.to_csv(file_path, index=False)
-        
-        print(f"Datei {file} erfolgreich angepasst.")
-    
-    except Exception as e:
-        print(f"Fehler beim Verarbeiten der Datei {file}: {e}")
+current_dir = os.getcwd()
 
-print(f"{len(csv_files)} Dateien wurden bearbeitet.")
+# Beispielaufruf: Verzeichnis angeben, in dem die CSV-Dateien liegen
+multiply_second_row_by_1000(os.listdir(current_dir))
+
