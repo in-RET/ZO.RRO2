@@ -56,15 +56,16 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     # Electricity Bus                                                                                      # Class Bus sind jetzt in module buses verschoben (solph.buses.Bus)
     #------------------------------------------------------------------------------
-    b_hös = solph.buses.Bus(label = "Electricity_HöS") 
+    #b_hös = solph.buses.Bus(label = "Electricity_HöS") 
     b_hs = solph.buses.Bus(label = "Electricity_HS")
     
-    b_el_north = solph.buses.Bus(label="Electricity_north")
-    b_el_middle = solph.buses.Bus(label="Electricity_middle")
-    b_el_east = solph.buses.Bus(label="Electricity_east")
-    b_el_swest = solph.buses.Bus(label="Electricity_swest")
+    b_el_north = solph.Bus(label="Electricity_north")
+    b_el_middle = solph.Bus(label="Electricity_middle")
+    b_el_east = solph.Bus(label="Electricity_east")
+    b_el_swest = solph.Bus(label="Electricity_swest")
     
-    energysystem.add(b_hös, b_hs, b_el_north, b_el_east, b_el_middle,  b_el_swest)
+    #energysystem.add(b_hös, b_hs, b_el_north, b_el_east, b_el_middle,  b_el_swest)
+    energysystem.add(b_hs, b_el_north, b_el_east, b_el_middle,  b_el_swest)
     
     #------------------------------------------------------------------------------
     # Electricity grid interconnection
@@ -72,21 +73,23 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     # Unrestricted electricity import from german grid
     energysystem.add(solph.components.Source(
         label='Import_electricity',
-        outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
+        outputs={b_hs: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
                                   variable_costs = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Strompreis_brain_'+str(YEAR)]],
                                   custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]},
                                   
             )}))
-    """Link between HöS & HS""" 
-    energysystem.add(solph.components.Link(
-        label='HöS<->HS',
-        inputs= {b_hös: solph.Flow(),
-                 b_hs: solph.Flow()},
-        outputs= {b_hs: solph.Flow(),
-                 b_hös: solph.Flow()},
-        conversion_factors = {(b_hös,b_hs): 1, (b_hs,b_hös):1}
+    
         
-        ))
+    # """Link between HöS & HS""" 
+    # energysystem.add(solph.components.Link(
+    #     label='HöS<->HS',
+    #     inputs= {b_hös: solph.Flow(),
+    #              b_hs: solph.Flow()},
+    #     outputs= {b_hs: solph.Flow(),
+    #              b_hös: solph.Flow()},
+    #     conversion_factors = {(b_hös,b_hs): 1, (b_hs,b_hös):1}
+        
+    #     ))
     # define links between grids and regions
     """Link between HS & North""" 
     energysystem.add(solph.components.Link(
@@ -2192,7 +2195,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     # Wind power plants
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
-        label='Wind_Erfurt', 
+        label='Wind_Hildburghausen', 
         outputs={b_el_swest: solph.Flow(fix=swest.Wind_feed_in_profile['Wind_feed_in'],
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
@@ -2202,7 +2205,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     # Photovoltaic Rooftop systems
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
-        label='PV_rooftop_Erfurt', 
+        label='PV_rooftop_Hildburghausen', 
         outputs={b_el_swest: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_swest'],
                                         custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
@@ -2212,7 +2215,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     # Photovoltaic Openfield systems
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
-        label='PV_Freifeld_Erfurt', 
+        label='PV_Freifeld_Hildburghausen', 
         outputs={b_el_swest: solph.Flow(fix=sequences['feed_in_profile']['PV_openfield_swest'],
                                         custom_attributes={'emission_factor': scalars['Parameter_field_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['field_photovoltaic_power_plant']['epc'], 
