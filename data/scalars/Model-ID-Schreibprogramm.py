@@ -8,8 +8,11 @@ Created on Thu Sep 19 15:27:10 2024
 import os
 import csv
 
-def multiply_second_row_by_1000(directory):
-    # Alle Dateien im angegebenen Verzeichnis durchsuchen
+def multiply_second_row_by_1000():
+    # Verzeichnis des laufenden Skripts ermitteln
+    directory = os.path.dirname(os.path.abspath(__file__))
+    
+    # Alle Dateien im aktuellen Verzeichnis durchsuchen
     for filename in os.listdir(directory):
         # Nur Dateien, die mit 'Parameter_' beginnen und auf '.csv' enden, werden verarbeitet
         if filename.startswith("Parameter_") and filename.endswith(".csv"):
@@ -29,9 +32,7 @@ def multiply_second_row_by_1000(directory):
                 writer = csv.writer(csvfile)
                 writer.writerows(reader)
 
+# Funktion aufrufen
+multiply_second_row_by_1000()
 
-current_dir = os.getcwd()
-
-# Beispielaufruf: Verzeichnis angeben, in dem die CSV-Dateien liegen
-multiply_second_row_by_1000(os.listdir(current_dir))
 
