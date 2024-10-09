@@ -30,8 +30,8 @@ except ImportError:
     plt = None
 from oemof.tools import economics
 matplotlib.pyplot.margins
-from oemof.solph._plumbing import sequence            # _plumbing statt plumbing, war in neue version umbennant
-from oemof.solph import constraints
+# from oemof.solph._plumbing import sequence            # _plumbing statt plumbing, war in neue version umbennant
+# from oemof.solph import constraints
 import pyomo.environ as po
 from src.preprocessing.create_input_dataframe import createDataFrames
 from src.preprocessing.files import read_input_files
@@ -54,7 +54,7 @@ scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
 demand = load_profile_scaling(scalars,sequences,YEAR)
 epc_costs = investment_parameter(scalars, YEAR, model_ID)
 import_price = CO2_price_addition(scalars,sequences, YEAR)
-
+#%%
 
 Weather_dir = os.path.abspath(os.path.join(workdir, 'data','weatherdata'))
 middle = Location(os.path.join(Weather_dir,'Erfurt_Binderslebn-hour.csv'), os.path.join(Weather_dir,'Erfurt_Binderslebn-min.dat'))
