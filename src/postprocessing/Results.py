@@ -7,11 +7,9 @@ Created on Wed Oct  9 01:27:40 2024
 """
 import os
 workdir= os.getcwd()
-import oemof.solph as solph
 import pandas as pd
 from oemof import network, solph
 from oemof.tools import economics
-import oemof.solph._plumbing
 
 # name = os.path.basename(__file__)
 # name = name.replace(".py", "")
@@ -21,10 +19,11 @@ import oemof.solph._plumbing
 my_path = os.path.abspath(os.path.dirname(__file__))
 
 energysystem = solph.EnergySystem()
-energysystem.restore(my_path,'../../dumps/2030_BS0001/BS_regionalization_2030_BS0001.dump')
+energysystem.restore(my_path, os.path.join(workdir, '..', '..', 'dumps', '2030_BS0001', 'BS_regionalization_2030_BS0001.dump'))
 
 results = energysystem.results["main"]
 
+print("Ende")
 
 # store energy system with results
 # energysystem.dump(dpath=None, filename=None)
