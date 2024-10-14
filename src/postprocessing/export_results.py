@@ -40,29 +40,29 @@ def export_csv_region(results, YEAR, permutation, model_name):
         Battery = solph.views.node(results, 'Battery_'+ r)
         Heat_storage = solph.views.node(results, 'Heat storage_'+ r)
         Pumped_hydro_storage = solph.views.node(results, 'Pumped_hydro_storage_' + r)
-        Gas_storage = solph.views.node(results, 'Gas storage_'+ r)
+        Gas_storage = solph.views.node(results, 'Gas_storage_'+ r)
         H2_storage = solph.views.node(results, 'H2_storage_'+ r)
         
-        Emissionen_Gasimport=(b_gas['sequences'][('Import_Gas_'+ r, 'Gas_'+r), 'flow'].sum()*scalars['System']['System_configurations']['Emission_Erdgas']/1000)
-        Emissionen_Oelimport=(b_oil['sequences'][('Import_Oil_'+r, 'Oil_fuel_'+r), 'flow'].sum()*scalars['System']['System_configurations']['Emission_Oel']/1000)
-        Emissionen_Steinkohleimport=(b_solidf['sequences'][('Import_hard_coal_'+r, 'Solidfuel_'+r), 'flow'].sum()*scalars['System']['System_configurations']['Emission_Steinkohle']/1000)
-        Emissionen_Braunkohleimport=(b_solidf['sequences'][('Import_brown_coal_'+r, 'Solidfuel_'+r), 'flow'].sum()*scalars['System']['System_configurations']['Emission_Braunkohle']/1000)
+        Emissionen_Gasimport=(b_gas['sequences'][('Import_Gas_'+ r, 'Gas_'+r), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Erdgas']/1000)
+        Emissionen_Oelimport=(b_oil['sequences'][('Import_Oil_'+r, 'Oil_fuel_'+r), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Oel']/1000)
+        Emissionen_Steinkohleimport=(b_solidf['sequences'][('Import_hard_coal_'+r, 'Solidfuel_'+r), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Steinkohle']/1000)
+        Emissionen_Braunkohleimport=(b_solidf['sequences'][('Import_brown_coal_'+r, 'Solidfuel_'+r), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Braunkohle']/1000)
         
 #------------------------------------------------------------------------------
 # Allgemeine Simulationsergebnisse zum Abgleich
 #------------------------------------------------------------------------------
         NaN=str('------------------------------------------------------------------') 
         if r == 'n':
-            Emissionen_Stromimport=(b_el['sequences'][('HS<->North', 'Electricity_'+r), 'flow'].sum()*scalars['System']['System_configurations']['Emission_Strom_'+ str(YEAR)]/1000)
+            Emissionen_Stromimport=(b_el['sequences'][('HS<->North', 'Electricity_'+r), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]/1000)
             import_el = b_el['sequences'][('HS<->North','Electricity_'+r),'flow'].sum()
         elif r == 'm':
-            Emissionen_Stromimport=(b_el['sequences'][('HS<->Middle', 'Electricity_'+r), 'flow'].sum()*scalars['System']['System_configurations']['Emission_Strom_'+ str(YEAR)]/1000)
+            Emissionen_Stromimport=(b_el['sequences'][('HS<->Middle', 'Electricity_'+r), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]/1000)
             import_el = b_el['sequences'][('HS<->Middle','Electricity_'+r),'flow'].sum()
         elif r == 'e':
-            Emissionen_Stromimport=(b_el['sequences'][('HS<->East', 'Electricity_'+r), 'flow'].sum()*scalars['System']['System_configurations']['Emission_Strom_'+ str(YEAR)]/1000)
+            Emissionen_Stromimport=(b_el['sequences'][('HS<->East', 'Electricity_'+r), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]/1000)
             import_el = b_el['sequences'][('HS<->East','Electricity_'+r),'flow'].sum()
         elif r == 's':
-            Emissionen_Stromimport=(b_el['sequences'][('HS<->Swest', 'Electricity_'+r), 'flow'].sum()*scalars['System']['System_configurations']['Emission_Strom_'+ str(YEAR)]/1000)
+            Emissionen_Stromimport=(b_el['sequences'][('HS<->Swest', 'Electricity_'+r), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]/1000)
             import_el = b_el['sequences'][('HS<->Swest','Electricity_'+r),'flow'].sum()
             
         Summe_Emissionen = Emissionen_Gasimport+Emissionen_Oelimport+Emissionen_Stromimport+Emissionen_Steinkohleimport+Emissionen_Braunkohleimport
@@ -88,7 +88,7 @@ def export_csv_region(results, YEAR, permutation, model_name):
                         b_oil['scalars'][('PtL_'+r,'Oil_fuel_'+r),'invest'],
                         NaN,
                         Battery['scalars'][('Battery_'+r,'None'),'invest'] ,
-                        Heat_storage['scalars'][('Heat_storage_'+r,'None'),'invest'],
+                        Heat_storage['scalars'][('Heat storage_'+r,'None'),'invest'],
                         Pumped_hydro_storage['scalars'][('Pumped_hydro_storage_'+r,'None'),'invest'] ,
                         Gas_storage['scalars'][('Gas_storage_'+r,'None'),'invest'],
                         H2_storage['scalars'][('H2_storage_'+r,'None'),'invest'],
@@ -142,12 +142,15 @@ def export_csv_region(results, YEAR, permutation, model_name):
                        ])
         
         if r == 'n':
-            Region_csv['north'] = pd.concat([Region_csv,Ergebnisse], ignore_index =True)
+            Region_csv['north'] = Ergebnisse
         elif r =='m':
-            Region_csv['middle'] = pd.concat([Region_csv,Ergebnisse], ignore_index =True)
+            Region_csv['middle'] = Ergebnisse
         elif r =='e':
-            Region_csv['east'] = pd.concat([Region_csv,Ergebnisse], ignore_index =True)
+            Region_csv['east'] = Ergebnisse
         elif r =='s':
-            Region_csv['swest'] = pd.concat([Region_csv,Ergebnisse], ignore_index =True)
+            Region_csv['swest'] = Ergebnisse
             
-        Region_csv.to_csv(CSV_PATH + model_name + "_" + str(permutation)+ "_" + r + ".csv", decimal = ',')
+            
+    Region_csv['summe'] = Region_csv['north']+Region_csv['middle'] +Region_csv['east'] +Region_csv['swest']     
+    Region_csv.to_csv(CSV_PATH + '/'+ model_name + ".csv", decimal = ',')
+    return Region_csv
