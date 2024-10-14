@@ -128,19 +128,25 @@ bus_pattern = re.compile(r"'(.*?)'")
 
 # Hauptschleife durch die Results-Keys
 for key, value in results.items():
+    print(key)
     log_message(f"Verarbeite Key: {key}")  # Loggen des aktuellen Keys
+    if key is None:
+        log_message("Key ist None, wird übersprungen.")
+        continue  # Ignoriere None-Elemente
 
     # Variable für den Bus-Namen, der ausgelesen werden soll
     bus_name = None
 
     # Schleife durch die Elemente des Tuples
     for element in key:
+        print(element)
         if element is None:
             log_message("Element ist None, wird übersprungen.")
             continue  # Ignoriere None-Elemente
 
         # Überprüfen, ob es sich um einen Bus handelt
-        if "solph.buses._bus.Bus" in str(element):
+        if "solph.buses._bus.Bus" in str(key):
+            print(element)
             log_message(f"Bus gefunden im Element: {element}")
             # Extrahiere den Busnamen mit regulärem Ausdruck
             match = bus_pattern.search(element)
