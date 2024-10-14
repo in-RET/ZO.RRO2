@@ -182,11 +182,8 @@ for key, value in results.items():
             log_message(f"CSV für {extracted_name} gespeichert unter: {csv_path_bus}")
 
             csv_path_bussum = os.path.join(output_dir, f"{extracted_name}_bussum.csv")
-            # (pd.concat
-            (node_data['sequences'].sum()).applymap(lambda x: str(x).replace('.', ',')).to_csv(csv_path_bussum, sep=';', index=True)
-             # )
+            (pd.concat(node_data['sequences'].sum())).applymap(lambda x: str(x).replace('.', ',')).to_csv(csv_path_bussum, sep=';', index=True)
             log_message(f"CSV für {extracted_name} gespeichert unter: {csv_path_bussum}")
-
 
             
             # Markiere den Namen als verarbeitet
