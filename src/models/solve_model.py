@@ -7,6 +7,7 @@ from oemof import solph
 from energymodels.BS_regionalization import BS_regionalization
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
+from src.postprocessing.export_results import export_csv_region
 
 
 def solveModels(
@@ -65,3 +66,6 @@ def solveModels(
         energysystem.dump(
             dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + ".dump"
         )
+        export_csv_region(result, [y for y in years], permutation, model_name )
+        
+        return sim_data,result

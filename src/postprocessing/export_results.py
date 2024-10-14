@@ -17,11 +17,16 @@ this script consists:
 
 from oemof import solph
 import pandas as pd
+import os
+workdir= os.getcwd()
 from src.preprocessing.files import read_input_files
 
-def export_csv_region(results, YEAR):
+def export_csv_region(results, YEAR, permutation, model_name):
+    CSV_PATH = os.path.abspath(os.path.join(os.getcwd(), "results", permutation))
+    os.makedirs(CSV_PATH, exist_ok=True)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
     region = ['n','s', 'e', 'm']
+    Region_csv = pd.DataFrame()
     for r in region:
         b_el = solph.views.node(results, 'Electricity_'+ r)
         b_gas = solph.views.node(results, 'Gas_'+ r)
@@ -135,3 +140,14 @@ def export_csv_region(results, YEAR):
                        'Stromimport',
                        'Stromexport'
                        ])
+        
+        if r == 'n':
+            Region_csv['north'] = pd.concat([Region_csv,Ergebnisse], ignore_index =True)
+        elif r =='m':
+            Region_csv['middle'] = pd.concat([Region_csv,Ergebnisse], ignore_index =True)
+        elif r =='e':
+            Region_csv['east'] = pd.concat([Region_csv,Ergebnisse], ignore_index =True)
+        elif r =='s':
+            Region_csv['swest'] = pd.concat([Region_csv,Ergebnisse], ignore_index =True)
+            
+        Region_csv.to_csv(CSV_PATH + model_name + "_" + str(permutation)+ "_" + r + ".csv", decimal = ',')
