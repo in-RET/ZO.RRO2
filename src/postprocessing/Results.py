@@ -109,8 +109,8 @@ output_dir = 'results_csv_output'
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-# Dictionary zur Verfolgung von bereits verarbeiteten Bussen
-processed_buses = {}
+# Dictionary zur Verfolgung von bereits verarbeiteten Namen
+processed_names = {}
 
 # Funktion, um Ergebnisse in Spyder zu speichern
 def save_to_spyder(name, data):
@@ -120,72 +120,76 @@ def save_to_spyder(name, data):
 def log_message(message):
     print(message)
 
+# Regulärer Ausdruck zum Extrahieren von Namen in Hochkommas
+name_pattern = re.compile(r"(?:Bus:|GenericStorage:)\s*'([^']*)'")
+
 # Anzahl der Einträge in results ausgeben
 log_message(f"Anzahl der Einträge in results: {len(results)}")
 
-# Regulärer Ausdruck, um den Namen nach dem Doppelpunkt und dem Leerzeichen zu extrahieren
-bus_pattern = re.compile(r"'(.*?)'")
-
 # Hauptschleife durch die Results-Keys
 for key, value in results.items():
-    print(key)
     log_message(f"Verarbeite Key: {key}")  # Loggen des aktuellen Keys
-    if key is None:
-        log_message("Key ist None, wird übersprungen.")
-        continue  # Ignoriere None-Elemente
 
-    # Variable für den Bus-Namen, der ausgelesen werden soll
-    bus_name = None
+    # Variable für den extrahierten Namen (Bus oder GenericStorage)
+    extracted_name = None
 
     # Schleife durch die Elemente des Tuples
     for element in key:
-        print(element)
         if element is None:
             log_message("Element ist None, wird übersprungen.")
             continue  # Ignoriere None-Elemente
 
         # Überprüfen, ob es sich um einen Bus handelt
         if "solph.buses._bus.Bus" in str(key):
-            print(element)
-            log_message(f"Bus gefunden im Element: {element}")
+            log_message(f"Bus gefunden im Key: {key}")
             # Extrahiere den Busnamen mit regulärem Ausdruck
-            match = bus_pattern.search(element)
+            match = name_pattern.search(str(key))
             if match:
-                bus_name = match.group(1)
-                log_message(f"Bus-Name extrahiert: {bus_name}")
+                extracted_name = match.group(1)
+                log_message(f"Bus-Name extrahiert: {extracted_name}")
                 break  # Sobald ein Bus gefunden wurde, Schleife abbrechen
-            else:
-                log_message(f"Fehler beim Extrahieren des Bus-Namens aus: {element}")
-                continue
 
-    # Wenn kein Busname gefunden wurde, überspringen
-    if not bus_name:
-        log_message("Kein gültiger Busname gefunden, Eintrag wird übersprungen.")
+        # Überprüfen, ob es sich um einen GenericStorage handelt
+        elif "solph.components._generic_storage.GenericStorage" in str(key):
+            log_message(f"GenericStorage gefunden im Key: {key}")
+            # Extrahiere den GenericStorage-Namen mit regulärem Ausdruck
+            match = name_pattern.search(str(key))
+            if match:
+                extracted_name = match.group(1)
+                log_message(f"GenericStorage-Name extrahiert: {extracted_name}")
+                break  # Sobald ein GenericStorage gefunden wurde, Schleife abbrechen
+
+    # Wenn kein Name gefunden wurde, überspringen
+    if not extracted_name:
+        log_message("Kein gültiger Name gefunden, Eintrag wird übersprungen.")
         continue
 
-    # Bus verarbeiten, wenn noch nicht verarbeitet
-    if bus_name not in processed_buses:
-        # Bus mit solph auslesen
+    # Verarbeite den Namen, wenn er noch nicht verarbeitet wurde
+    if extracted_name not in processed_names:
+        # Versuche, die Daten mit solph auszulesen
         try:
-            bus_data = views.node(results, bus_name)
-            if bus_data is None:
-                log_message(f"Keine Daten für Bus: {bus_name}")
+            node_data = views.node(results, extracted_name)
+            if node_data is None:
+                log_message(f"Keine Daten für: {extracted_name}")
                 continue
 
             # Speichern in Spyder-Variable
-            save_to_spyder(bus_name, bus_data)
+            save_to_spyder(extracted_name, node_data)
 
             # Als CSV speichern
-            csv_path = os.path.join(output_dir, f"{bus_name}.csv")
-            bus_data.to_csv(csv_path)
-            log_message(f"CSV für Bus {bus_name} gespeichert unter: {csv_path}")
+            csv_path = os.path.join(output_dir, f"{extracted_name}.csv")
+            node_data.to_csv(csv_path)
+            log_message(f"CSV für {extracted_name} gespeichert unter: {csv_path}")
             
-            # Markiere den Bus als verarbeitet
-            processed_buses[bus_name] = True
+            # Markiere den Namen als verarbeitet
+            processed_names[extracted_name] = True
 
         except Exception as e:
-            log_message(f"Fehler beim Auslesen oder Speichern des Busses {bus_name}: {e}")
+            log_message(f"Fehler beim Auslesen oder Speichern für {extracted_name}: {e}")
 
+        Gasbus = solph.views.node(results, 'Gas')
+
+        Strombus['sequences'].to_csv('../04_Ergebnisse/'+name+'Strombus_sequences.csv', decimal=',')
 
 #%%
 # Gasbus = solph.views.node(results, 'Gas')

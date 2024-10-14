@@ -1,0 +1,125 @@
+,"('Biogas_e', 'District heating_e')","('Biogas_e', 'District heating_e')","('Biomasse_heat_e', 'District heating_e')","('Biomasse_heat_e', 'District heating_e')","('District heating_e', 'Heat storage_e')","('District heating_e', 'Heat storage_e')","('Electric boiler_e', 'District heating_e')","('Electric boiler_e', 'District heating_e')","('Heat storage_e', 'District heating_e')","('Heat storage_e', 'District heating_e')","('Heatpump_air_e', 'District heating_e')","('Heatpump_air_e', 'District heating_e')","('Heatpump_water_e', 'District heating_e')","('Heatpump_water_e', 'District heating_e')","('ST_e', 'District heating_e')","('ST_e', 'District heating_e')","('Biogas_e', 'District heating_e')","('Biomasse_heat_e', 'District heating_e')","('District heating_e', 'Heat storage_e')","('District heating_e', 'Heat_demand_total_e')","('District heating_e', 'excess_b_distheat_e')","('Electric boiler_e', 'District heating_e')","('GuD_e', 'District heating_e')","('Heat storage_e', 'District heating_e')","('Heatpump_air_e', 'District heating_e')","('Heatpump_water_e', 'District heating_e')","('ST_e', 'District heating_e')"
+,invest,total,invest,total,invest,total,invest,total,invest,total,invest,total,invest,total,invest,total,flow,flow,flow,flow,flow,flow,flow,flow,flow,flow,flow
+scalars,0.0,0.0,0.0,0.0,2355.3256104367906,2355.3256104367906,0.0,0.0,2355.3256104367906,2355.3256104367906,0.0,0.0,0.0,0.0,0.0,0.0,,,,,,,,,,,
+sequences,,,,,,,,,,,,,,,,,"2030-01-01 00:00:00    0.0
+2030-01-01 01:00:00    0.0
+2030-01-01 02:00:00    0.0
+2030-01-01 03:00:00    0.0
+2030-01-01 04:00:00    0.0
+                      ... 
+2030-12-31 19:00:00    0.0
+2030-12-31 20:00:00    0.0
+2030-12-31 21:00:00    0.0
+2030-12-31 22:00:00    0.0
+2030-12-31 23:00:00    NaN
+Freq: H, Name: ((Biogas_e, District heating_e), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00    0.0
+2030-01-01 01:00:00    0.0
+2030-01-01 02:00:00    0.0
+2030-01-01 03:00:00    0.0
+2030-01-01 04:00:00    0.0
+                      ... 
+2030-12-31 19:00:00    0.0
+2030-12-31 20:00:00    0.0
+2030-12-31 21:00:00    0.0
+2030-12-31 22:00:00    0.0
+2030-12-31 23:00:00    NaN
+Freq: H, Name: ((Biomasse_heat_e, District heating_e), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00    47.138570
+2030-01-01 01:00:00    40.271142
+2030-01-01 02:00:00    33.780929
+2030-01-01 03:00:00    28.981152
+2030-01-01 04:00:00    24.980989
+                         ...    
+2030-12-31 19:00:00     0.000000
+2030-12-31 20:00:00     0.000000
+2030-12-31 21:00:00     0.000000
+2030-12-31 22:00:00     0.000000
+2030-12-31 23:00:00          NaN
+Freq: H, Name: ((District heating_e, Heat storage_e), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00     51.544133
+2030-01-01 01:00:00     58.411562
+2030-01-01 02:00:00     64.901774
+2030-01-01 03:00:00     69.701551
+2030-01-01 04:00:00     73.701714
+                          ...    
+2030-12-31 19:00:00    105.997446
+2030-12-31 20:00:00    106.314222
+2030-12-31 21:00:00    106.287665
+2030-12-31 22:00:00    106.265888
+2030-12-31 23:00:00           NaN
+Freq: H, Name: ((District heating_e, Heat_demand_total_e), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00    0.0
+2030-01-01 01:00:00    0.0
+2030-01-01 02:00:00    0.0
+2030-01-01 03:00:00    0.0
+2030-01-01 04:00:00    0.0
+                      ... 
+2030-12-31 19:00:00    0.0
+2030-12-31 20:00:00    0.0
+2030-12-31 21:00:00    0.0
+2030-12-31 22:00:00    0.0
+2030-12-31 23:00:00    NaN
+Freq: H, Name: ((District heating_e, excess_b_distheat_e), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00    0.0
+2030-01-01 01:00:00    0.0
+2030-01-01 02:00:00    0.0
+2030-01-01 03:00:00    0.0
+2030-01-01 04:00:00    0.0
+                      ... 
+2030-12-31 19:00:00    0.0
+2030-12-31 20:00:00    0.0
+2030-12-31 21:00:00    0.0
+2030-12-31 22:00:00    0.0
+2030-12-31 23:00:00    NaN
+Freq: H, Name: ((Electric boiler_e, District heating_e), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00    98.682703
+2030-01-01 01:00:00    98.682703
+2030-01-01 02:00:00    98.682703
+2030-01-01 03:00:00    98.682703
+2030-01-01 04:00:00    98.682703
+                         ...    
+2030-12-31 19:00:00    98.682703
+2030-12-31 20:00:00    98.682703
+2030-12-31 21:00:00    98.682703
+2030-12-31 22:00:00    98.682703
+2030-12-31 23:00:00          NaN
+Freq: H, Name: ((GuD_e, District heating_e), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00    0.000000
+2030-01-01 01:00:00    0.000000
+2030-01-01 02:00:00    0.000000
+2030-01-01 03:00:00    0.000000
+2030-01-01 04:00:00    0.000000
+                         ...   
+2030-12-31 19:00:00    7.314743
+2030-12-31 20:00:00    7.631518
+2030-12-31 21:00:00    7.604962
+2030-12-31 22:00:00    7.583184
+2030-12-31 23:00:00         NaN
+Freq: H, Name: ((Heat storage_e, District heating_e), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00    0.0
+2030-01-01 01:00:00    0.0
+2030-01-01 02:00:00    0.0
+2030-01-01 03:00:00    0.0
+2030-01-01 04:00:00    0.0
+                      ... 
+2030-12-31 19:00:00    0.0
+2030-12-31 20:00:00    0.0
+2030-12-31 21:00:00    0.0
+2030-12-31 22:00:00    0.0
+2030-12-31 23:00:00    NaN
+Freq: H, Name: ((Heatpump_air_e, District heating_e), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00    0.0
+2030-01-01 01:00:00    0.0
+2030-01-01 02:00:00    0.0
+2030-01-01 03:00:00    0.0
+2030-01-01 04:00:00    0.0
+                      ... 
+2030-12-31 19:00:00    0.0
+2030-12-31 20:00:00    0.0
+2030-12-31 21:00:00    0.0
+2030-12-31 22:00:00    0.0
+2030-12-31 23:00:00    NaN
+Freq: H, Name: ((Heatpump_water_e, District heating_e), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00    0.0
+2030-01-01 01:00:00    0.0
+2030-01-01 02:00:00    0.0
+2030-01-01 03:00:00    0.0
+2030-01-01 04:00:00    0.0
+                      ... 
+2030-12-31 19:00:00    0.0
+2030-12-31 20:00:00    0.0
+2030-12-31 21:00:00    0.0
+2030-12-31 22:00:00    0.0
+2030-12-31 23:00:00    NaN
+Freq: H, Name: ((ST_e, District heating_e), flow), Length: 8760, dtype: float64"

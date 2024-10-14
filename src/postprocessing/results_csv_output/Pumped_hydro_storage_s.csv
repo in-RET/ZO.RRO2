@@ -1,0 +1,37 @@
+,"('Electricity_swest', 'Pumped_hydro_storage_s')","('Electricity_swest', 'Pumped_hydro_storage_s')","('Pumped_hydro_storage_s', 'Electricity_swest')","('Pumped_hydro_storage_s', 'Electricity_swest')","('Pumped_hydro_storage_s', 'None')","('Pumped_hydro_storage_s', 'None')","('Pumped_hydro_storage_s', 'None')","('Electricity_swest', 'Pumped_hydro_storage_s')","('Pumped_hydro_storage_s', 'Electricity_swest')","('Pumped_hydro_storage_s', 'None')"
+,invest,total,invest,total,init_content,invest,total,flow,flow,storage_content
+scalars,288.0,288.0,288.0,288.0,1152.0,2304.0,2304.0,,,
+sequences,,,,,,,,"2030-01-01 00:00:00      0.0
+2030-01-01 01:00:00      0.0
+2030-01-01 02:00:00    288.0
+2030-01-01 03:00:00    288.0
+2030-01-01 04:00:00    288.0
+                       ...  
+2030-12-31 19:00:00      0.0
+2030-12-31 20:00:00      0.0
+2030-12-31 21:00:00      0.0
+2030-12-31 22:00:00      0.0
+2030-12-31 23:00:00      NaN
+Freq: H, Name: ((Electricity_swest, Pumped_hydro_storage_s), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00      0.0
+2030-01-01 01:00:00      0.0
+2030-01-01 02:00:00      0.0
+2030-01-01 03:00:00      0.0
+2030-01-01 04:00:00      0.0
+                       ...  
+2030-12-31 19:00:00    288.0
+2030-12-31 20:00:00    288.0
+2030-12-31 21:00:00    288.0
+2030-12-31 22:00:00      0.0
+2030-12-31 23:00:00      NaN
+Freq: H, Name: ((Pumped_hydro_storage_s, Electricity_swest), flow), Length: 8760, dtype: float64","2030-01-01 00:00:00    1152.0
+2030-01-01 01:00:00    1152.0
+2030-01-01 02:00:00    1440.0
+2030-01-01 03:00:00    1728.0
+2030-01-01 04:00:00    2016.0
+                        ...  
+2030-12-31 19:00:00    1872.0
+2030-12-31 20:00:00    1512.0
+2030-12-31 21:00:00    1152.0
+2030-12-31 22:00:00    1152.0
+2030-12-31 23:00:00       NaN
+Freq: H, Name: ((Pumped_hydro_storage_s, None), storage_content), Length: 8760, dtype: float64"
