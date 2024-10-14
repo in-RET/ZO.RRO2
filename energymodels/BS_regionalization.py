@@ -74,7 +74,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Source(
         label='Import_electricity',
         outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
-                                  variable_costs = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Strompreis_brain_'+str(YEAR)]],
+                                  variable_costs = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Electricity_'+str(YEAR)]],
                                   custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]},
                                   
             )}))
@@ -211,7 +211,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Sink(
         label='Export_Electricity_n', 
         inputs={b_el_north: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_north'],
-                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Strompreis_brain_'+str(YEAR)]],
+                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Electricity_'+str(YEAR)]],
         )}))
 
     #------------------------------------------------------------------------------
@@ -841,7 +841,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Sink(
         label='Export_Electricity_e', 
         inputs={b_el_east: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_east'],
-                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Strompreis_brain_'+str(YEAR)]]
+                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Electricity_'+str(YEAR)]]
         )}))
 
     #------------------------------------------------------------------------------
@@ -1472,7 +1472,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Sink(
         label='Export_Electricity_m', 
         inputs={b_el_middle: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_middle'],
-                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Strompreis_brain_'+str(YEAR)]]
+                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Electricity_'+str(YEAR)]]
         )}))
 
     #------------------------------------------------------------------------------
@@ -2103,7 +2103,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Sink(
         label='Export_Electricity_s', 
         inputs={b_el_swest: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_swest'],
-                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Strompreis_brain_'+str(YEAR)]]
+                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Electricity_'+str(YEAR)]]
         )}))
 
     #------------------------------------------------------------------------------

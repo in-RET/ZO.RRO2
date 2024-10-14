@@ -66,6 +66,7 @@ def solveModels(
         energysystem.dump(
             dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + ".dump"
         )
-        export_csv_region(result, [y for y in years], permutation, model_name )
+        
+        export_csv_region(energysystem.results["main"], [y for y in years], permutation, model_name)
         
         return sim_data,result
