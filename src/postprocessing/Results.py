@@ -100,6 +100,7 @@ Electricity_swest = solph.views.node(results, 'Electricity_swest')
 
 
 import os
+import re
 import pandas as pd
 from oemof.solph import views
 
@@ -122,6 +123,9 @@ def log_message(message):
 # Anzahl der Einträge in results ausgeben
 log_message(f"Anzahl der Einträge in results: {len(results)}")
 
+# Regulärer Ausdruck, um den Namen nach dem Doppelpunkt und dem Leerzeichen zu extrahieren
+bus_pattern = re.compile(r"'(.*?)'")
+
 # Hauptschleife durch die Results-Keys
 for key, value in results.items():
     log_message(f"Verarbeite Key: {key}")  # Loggen des aktuellen Keys
@@ -138,12 +142,13 @@ for key, value in results.items():
         # Überprüfen, ob es sich um einen Bus handelt
         if "solph.buses._bus.Bus" in str(element):
             log_message(f"Bus gefunden im Element: {element}")
-            # Extrahiere den Busnamen
-            try:
-                bus_name = element.split(: )[1][:-2]
+            # Extrahiere den Busnamen mit regulärem Ausdruck
+            match = bus_pattern.search(element)
+            if match:
+                bus_name = match.group(1)
                 log_message(f"Bus-Name extrahiert: {bus_name}")
                 break  # Sobald ein Bus gefunden wurde, Schleife abbrechen
-            except IndexError:
+            else:
                 log_message(f"Fehler beim Extrahieren des Bus-Namens aus: {element}")
                 continue
 
@@ -174,6 +179,7 @@ for key, value in results.items():
 
         except Exception as e:
             log_message(f"Fehler beim Auslesen oder Speichern des Busses {bus_name}: {e}")
+
 
 #%%
 # Gasbus = solph.views.node(results, 'Gas')
