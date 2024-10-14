@@ -140,7 +140,7 @@ for key, value in results.items():
             log_message(f"Bus gefunden im Element: {element}")
             # Extrahiere den Busnamen
             try:
-                bus_name = element.split(": '")[1][:-2]
+                bus_name = element.split(: )[1][:-2]
                 log_message(f"Bus-Name extrahiert: {bus_name}")
                 break  # Sobald ein Bus gefunden wurde, Schleife abbrechen
             except IndexError:
