@@ -168,7 +168,7 @@ for key, value in results.items():
     if extracted_name not in processed_names:
         # Versuche, die Daten mit solph auszulesen
         try:
-            node_data = views.node(results, extracted_name)
+            node_data = solph.views.node(results, extracted_name)
             if node_data is None:
                 log_message(f"Keine Daten für: {extracted_name}")
                 continue
@@ -177,9 +177,17 @@ for key, value in results.items():
             save_to_spyder(extracted_name, node_data)
 
             # Als CSV speichern
-            csv_path = os.path.join(output_dir, f"{extracted_name}.csv")
-            node_data.to_csv(csv_path)
-            log_message(f"CSV für {extracted_name} gespeichert unter: {csv_path}")
+            csv_path_bus = os.path.join(output_dir, f"{extracted_name}_bus.csv")
+            node_data['sequences'].applymap(lambda x: str(x).replace('.', ',')).to_csv(csv_path_bus, sep=';', index=True)
+            log_message(f"CSV für {extracted_name} gespeichert unter: {csv_path_bus}")
+
+            csv_path_bussum = os.path.join(output_dir, f"{extracted_name}_bussum.csv")
+            # (pd.concat
+            (node_data['sequences'].sum()).applymap(lambda x: str(x).replace('.', ',')).to_csv(csv_path_bussum, sep=';', index=True)
+             # )
+            log_message(f"CSV für {extracted_name} gespeichert unter: {csv_path_bussum}")
+
+
             
             # Markiere den Namen als verarbeitet
             processed_names[extracted_name] = True
@@ -187,9 +195,16 @@ for key, value in results.items():
         except Exception as e:
             log_message(f"Fehler beim Auslesen oder Speichern für {extracted_name}: {e}")
 
-        Gasbus = solph.views.node(results, 'Gas')
-
-        Strombus['sequences'].to_csv('../04_Ergebnisse/'+name+'Strombus_sequences.csv', decimal=',')
+# Busses+name+= pd.concat([
+#                 Strombus['sequences'].sum(),
+#                 Gasbus['sequences'].sum(),
+#                 Oelbus['sequences'].sum(),
+#                 Biobus['sequences'].sum(),
+#                 BioHolzbus['sequences'].sum(),
+#                 Fernwbus['sequences'].sum(),
+#                 Wasserstoffbus['sequences'].sum()
+#                 ])
+# Busse.to_csv('../04_Ergebnisse/'+name+'_Busse.csv', decimal=',', sep=';')
 
 #%%
 # Gasbus = solph.views.node(results, 'Gas')
