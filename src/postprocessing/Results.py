@@ -126,6 +126,11 @@ name_pattern = re.compile(r"(?:Bus:|GenericStorage:)\s*'([^']*)'")
 # Anzahl der Einträge in results ausgeben
 log_message(f"Anzahl der Einträge in results: {len(results)}")
 
+
+# Erstelle einen leeren DataFrame, um die Summen zu sammeln
+summary_df = pd.DataFrame(columns=['Bus', 'Sequence', 'Sum'])
+
+
 # Hauptschleife durch die Results-Keys
 for key, value in results.items():
     log_message(f"Verarbeite Key: {key}")  # Loggen des aktuellen Keys
@@ -178,11 +183,24 @@ for key, value in results.items():
 
             # Als CSV speichern
             csv_path_bus = os.path.join(output_dir, f"{extracted_name}_bus.csv")
-            node_data['sequences'].applymap(lambda x: str(x).replace('.', ',')).to_csv(csv_path_bus, sep=';', index=True)
+            node_data['sequences'].round(2).applymap(lambda x: str(x).replace('.', ',')).to_csv(csv_path_bus, sep=';', index=True)
             log_message(f"CSV für {extracted_name} gespeichert unter: {csv_path_bus}")
 
+            # csv_path_bussum = os.path.join(output_dir, f"{extracted_name}_bussum.csv")
+            # (pd.concat(node_data['sequences'].sum())).applymap(lambda x: str(x).replace('.', ',')).to_csv(csv_path_bussum, sep=';', index=True)
+            # log_message(f"CSV für {extracted_name} gespeichert unter: {csv_path_bussum}")
+
+
+            # Summiere die 'sequences' und füge die Ergebnisse in den DataFrame ein
+            if 'sequences' in node_data:
+                sum_series = node_data['sequences'].sum()
+                for sequence_name, total in sum_series.items():
+                    summary_df = pd.concat([summary_df, pd.DataFrame([[extracted_name, sequence_name, total]], columns=['Bus', 'Sequence', 'Sum'])])
+
+            # Als CSV speichern
+            # node_data['sequences'].to_csv(csv_path_bussum, sep=';')
             csv_path_bussum = os.path.join(output_dir, f"{extracted_name}_bussum.csv")
-            (pd.concat(node_data['sequences'].sum())).applymap(lambda x: str(x).replace('.', ',')).to_csv(csv_path_bussum, sep=';', index=True)
+            summary_df.round(2).applymap(lambda x: str(x).replace('.', ',')).to_csv(csv_path_bussum, sep=';')
             log_message(f"CSV für {extracted_name} gespeichert unter: {csv_path_bussum}")
 
             
@@ -191,6 +209,15 @@ for key, value in results.items():
 
         except Exception as e:
             log_message(f"Fehler beim Auslesen oder Speichern für {extracted_name}: {e}")
+
+
+
+        
+
+
+
+
+
 
 # Busses+name+= pd.concat([
 #                 Strombus['sequences'].sum(),

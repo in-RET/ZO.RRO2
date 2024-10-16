@@ -1,0 +1,4 @@
+;Bus;Sequence;Sum
+0;Battery_e;(('Battery_e', 'Electricity_e'), 'flow');249572,92
+0;Battery_e;(('Battery_e', 'None'), 'storage_content');2742129,0
+0;Battery_e;(('Electricity_e', 'Battery_e'), 'flow');277303,24

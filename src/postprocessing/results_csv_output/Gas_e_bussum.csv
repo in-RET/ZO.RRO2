@@ -1,0 +1,90 @@
+;Bus;Sequence;Sum
+0;Battery_e;(('Battery_e', 'Electricity_e'), 'flow');249572,92
+0;Battery_e;(('Battery_e', 'None'), 'storage_content');2742129,0
+0;Battery_e;(('Electricity_e', 'Battery_e'), 'flow');277303,24
+0;Battery_m;(('Battery_m', 'Electricity_m'), 'flow');302759,17
+0;Battery_m;(('Battery_m', 'None'), 'storage_content');3353678,48
+0;Battery_m;(('Electricity_m', 'Battery_m'), 'flow');336399,08
+0;Battery_n;(('Battery_n', 'Electricity_n'), 'flow');0,0
+0;Battery_n;(('Battery_n', 'None'), 'storage_content');0,0
+0;Battery_n;(('Electricity_n', 'Battery_n'), 'flow');0,0
+0;Battery_s;(('Battery_s', 'Electricity_s'), 'flow');476326,08
+0;Battery_s;(('Battery_s', 'None'), 'storage_content');8734290,93
+0;Battery_s;(('Electricity_s', 'Battery_s'), 'flow');529251,2
+0;Solidfuel_e;(('BioTransformer_e', 'Solidfuel_e'), 'flow');537740,33
+0;Solidfuel_e;(('Import_brown_coal_e', 'Solidfuel_e'), 'flow');0,0
+0;Solidfuel_e;(('Import_hard_coal_e', 'Solidfuel_e'), 'flow');0,0
+0;Solidfuel_e;(('Solidfuel_e', 'Biomass_demand_total_e'), 'flow');537740,33
+0;Solidfuel_m;(('BioTransformer_m', 'Solidfuel_m'), 'flow');542514,45
+0;Solidfuel_m;(('Import_brown_coal_m', 'Solidfuel_m'), 'flow');0,0
+0;Solidfuel_m;(('Import_hard_coal_m', 'Solidfuel_m'), 'flow');0,0
+0;Solidfuel_m;(('Solidfuel_m', 'Biomass_demand_total_m'), 'flow');542514,45
+0;Solidfuel_n;(('BioTransformer_n', 'Solidfuel_n'), 'flow');304671,11
+0;Solidfuel_n;(('Import_brown_coal_n', 'Solidfuel_n'), 'flow');0,0
+0;Solidfuel_n;(('Import_hard_coal_n', 'Solidfuel_n'), 'flow');0,0
+0;Solidfuel_n;(('Solidfuel_n', 'Biomass_demand_total_n'), 'flow');304671,11
+0;Solidfuel_s;(('BioTransformer_s', 'Solidfuel_s'), 'flow');369781,29
+0;Solidfuel_s;(('Import_brown_coal_s', 'Solidfuel_s'), 'flow');0,0
+0;Solidfuel_s;(('Import_hard_coal_s', 'Solidfuel_s'), 'flow');0,0
+0;Solidfuel_s;(('Solidfuel_s', 'Biomass_demand_total_s'), 'flow');369781,29
+0;BioWood_e;(('BioWood_e', 'BioTransformer_e'), 'flow');537740,33
+0;BioWood_e;(('BioWood_e', 'Biomasse_elec_e'), 'flow');0,0
+0;BioWood_e;(('BioWood_e', 'Biomasse_heat_e'), 'flow');0,0
+0;BioWood_e;(('Import_Wood_e', 'BioWood_e'), 'flow');537740,33
+0;BioWood_m;(('BioWood_m', 'BioTransformer_m'), 'flow');542514,45
+0;BioWood_m;(('BioWood_m', 'Biomasse_elec_m'), 'flow');0,0
+0;BioWood_m;(('BioWood_m', 'Biomasse_heat_m'), 'flow');0,0
+0;BioWood_m;(('Import_Wood_m', 'BioWood_m'), 'flow');542514,45
+0;BioWood_n;(('BioWood_n', 'BioTransformer_n'), 'flow');304671,11
+0;BioWood_n;(('BioWood_n', 'Biomasse_elec_n'), 'flow');0,0
+0;BioWood_n;(('BioWood_n', 'Biomasse_heat_n'), 'flow');0,0
+0;BioWood_n;(('Import_Wood_n', 'BioWood_n'), 'flow');304671,11
+0;BioWood_s;(('BioWood_s', 'BioTransformer_s'), 'flow');369781,29
+0;BioWood_s;(('BioWood_s', 'Biomasse_elec_s'), 'flow');0,0
+0;BioWood_s;(('BioWood_s', 'Biomasse_heat_s'), 'flow');0,0
+0;BioWood_s;(('Import_Wood_s', 'BioWood_s'), 'flow');369781,29
+0;District heating_e;(('Biogas_e', 'District heating_e'), 'flow');0,0
+0;District heating_e;(('Biomasse_heat_e', 'District heating_e'), 'flow');0,0
+0;District heating_e;(('District heating_e', 'Heat storage_e'), 'flow');128855,01
+0;District heating_e;(('District heating_e', 'Heat_demand_total_e'), 'flow');401828,11
+0;District heating_e;(('District heating_e', 'excess_b_distheat_e'), 'flow');0,0
+0;District heating_e;(('Electric boiler_e', 'District heating_e'), 'flow');0,0
+0;District heating_e;(('GuD_e', 'District heating_e'), 'flow');412859,3
+0;District heating_e;(('Heat storage_e', 'District heating_e'), 'flow');117823,81
+0;District heating_e;(('Heatpump_air_e', 'District heating_e'), 'flow');0,0
+0;District heating_e;(('Heatpump_water_e', 'District heating_e'), 'flow');0,0
+0;District heating_e;(('ST_e', 'District heating_e'), 'flow');0,0
+0;Electricity_e;(('Battery_e', 'Electricity_e'), 'flow');249572,92
+0;Electricity_e;(('Biogas_e', 'Electricity_e'), 'flow');0,0
+0;Electricity_e;(('Biomasse_elec_e', 'Electricity_e'), 'flow');0,0
+0;Electricity_e;(('East<->Middel', 'Electricity_e'), 'flow');1013,01
+0;Electricity_e;(('Electricity_e', 'Battery_e'), 'flow');277303,24
+0;Electricity_e;(('Electricity_e', 'East<->Middel'), 'flow');29455,96
+0;Electricity_e;(('Electricity_e', 'Electric boiler_e'), 'flow');0,0
+0;Electricity_e;(('Electricity_e', 'Electricity_demand_total_e'), 'flow');4645685,81
+0;Electricity_e;(('Electricity_e', 'Electrolysis_e'), 'flow');762349,0
+0;Electricity_e;(('Electricity_e', 'Export_Electricity_e'), 'flow');2215532,33
+0;Electricity_e;(('Electricity_e', 'HS<->East'), 'flow');80844,0
+0;Electricity_e;(('Electricity_e', 'Heatpump_air_e'), 'flow');0,0
+0;Electricity_e;(('Electricity_e', 'Heatpump_water_e'), 'flow');0,0
+0;Electricity_e;(('Electricity_e', 'Pumped_hydro_storage_e'), 'flow');473270,5
+0;Electricity_e;(('Electricity_e', 'excess_b_el_e'), 'flow');0,0
+0;Electricity_e;(('Fuelcell_e', 'Electricity_e'), 'flow');0,0
+0;Electricity_e;(('GuD_e', 'Electricity_e'), 'flow');432062,06
+0;Electricity_e;(('HS<->East', 'Electricity_e'), 'flow');1217865,88
+0;Electricity_e;(('Hydro power plant_e', 'Electricity_e'), 'flow');0,0
+0;Electricity_e;(('PV_open_e', 'Electricity_e'), 'flow');52550,0
+0;Electricity_e;(('PV_rooftop_e', 'Electricity_e'), 'flow');0,0
+0;Electricity_e;(('Pumped_hydro_storage_e', 'Electricity_e'), 'flow');378616,4
+0;Electricity_e;(('Wind_e', 'Electricity_e'), 'flow');6152760,57
+0;Gas_e;(('Biogas_feedin_existing_e', 'Gas_e'), 'flow');3676637,31
+0;Gas_e;(('Biogas_feedin_new_e', 'Gas_e'), 'flow');0,0
+0;Gas_e;(('Gas_e', 'Gas_demand_total_e'), 'flow');2930217,78
+0;Gas_e;(('Gas_e', 'Gas_storage_e'), 'flow');1018084,39
+0;Gas_e;(('Gas_e', 'GuD_e'), 'flow');960137,91
+0;Gas_e;(('Gas_e', 'Material_demand_Gas_e'), 'flow');3229,63
+0;Gas_e;(('Gas_e', 'excess_b_gas_e'), 'flow');0,0
+0;Gas_e;(('Gas_storage_e', 'Gas_e'), 'flow');967180,17
+0;Gas_e;(('Hydrogen_feedin_e', 'Gas_e'), 'flow');0,0
+0;Gas_e;(('Import_Gas_e', 'Gas_e'), 'flow');267852,24
+0;Gas_e;(('Methanisation_e', 'Gas_e'), 'flow');0,0

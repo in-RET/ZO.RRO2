@@ -1,0 +1,10 @@
+;Bus;Sequence;Sum
+0;Battery_e;(('Battery_e', 'Electricity_e'), 'flow');249572,92
+0;Battery_e;(('Battery_e', 'None'), 'storage_content');2742129,0
+0;Battery_e;(('Electricity_e', 'Battery_e'), 'flow');277303,24
+0;Battery_m;(('Battery_m', 'Electricity_m'), 'flow');302759,17
+0;Battery_m;(('Battery_m', 'None'), 'storage_content');3353678,48
+0;Battery_m;(('Electricity_m', 'Battery_m'), 'flow');336399,08
+0;Battery_n;(('Battery_n', 'Electricity_n'), 'flow');0,0
+0;Battery_n;(('Battery_n', 'None'), 'storage_content');0,0
+0;Battery_n;(('Electricity_n', 'Battery_n'), 'flow');0,0
