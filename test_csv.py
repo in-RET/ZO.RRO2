@@ -26,8 +26,9 @@ energysystem.restore(my_path, os.path.join(workdir,
 # model_name '_' years '_' variations '.dump'
 
 results = energysystem.results["main"]
+year = [2030,2040,2050]
 
-export = export_csv_region(results, 2030, '2030_BS0001', 'BS_regionalization_2030_BS0001')
+export = export_csv_region(results, 2030 , '2030_BS0001', 'BS_regionalization_2030_BS0001')
 
 region = ['n','s', 'e', 'm']
 Region_csv = pd.DataFrame()

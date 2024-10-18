@@ -1,0 +1,1072 @@
+digraph {
+	"Electricity_HöS" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electricity_HS [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electricity_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electricity_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electricity_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electricity_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_electricity [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_electricity [color=blue fontsize=15 shape=invtrapezium]
+	"HöS<->HS" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"HS<->North" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"HS<->East" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"HS<->Middle" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"HS<->Swest" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"North<->Middel" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Middel<->Swest" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"East<->Middel" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Gas_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Oil_fuel_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomass_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	BioWood_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"District heating_n" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Solidfuel_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Electricity_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Electricity_n [color=red fontsize=15 shape=trapezium]
+	Export_Hydrogen_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Hydrogen_n [color=red fontsize=15 shape=trapezium]
+	Electricity_demand_total_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electricity_demand_total_n [color=red fontsize=15 shape=trapezium]
+	Biomass_demand_total_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomass_demand_total_n [color=red fontsize=15 shape=trapezium]
+	Gas_demand_total_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Gas_demand_total_n [color=red fontsize=15 shape=trapezium]
+	Material_demand_Gas_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Material_demand_Gas_n [color=red fontsize=15 shape=trapezium]
+	Oil_demand_total_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Oil_demand_total_n [color=red fontsize=15 shape=trapezium]
+	Mobility_demand_total_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Mobility_demand_total_n [color=red fontsize=15 shape=trapezium]
+	Material_demand_Oil_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Material_demand_Oil_n [color=red fontsize=15 shape=trapezium]
+	Heat_demand_total_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heat_demand_total_n [color=red fontsize=15 shape=trapezium]
+	Hydrogen_demand_total_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_demand_total_n [color=red fontsize=15 shape=trapezium]
+	Wind_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Wind_n [color=blue fontsize=15 shape=invtrapezium]
+	PV_rooftop_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PV_rooftop_n [color=blue fontsize=15 shape=invtrapezium]
+	PV_open_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PV_open_n [color=blue fontsize=15 shape=invtrapezium]
+	"Hydro power plant_n" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Hydro power plant_n" [color=blue fontsize=15 shape=invtrapezium]
+	ST_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	ST_n [color=blue fontsize=15 shape=invtrapezium]
+	Import_solid_fuel_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_solid_fuel_n [color=blue fontsize=15 shape=invtrapezium]
+	Import_Wood_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Wood_n [color=blue fontsize=15 shape=invtrapezium]
+	Import_brown_coal_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_brown_coal_n [color=blue fontsize=15 shape=invtrapezium]
+	Import_hard_coal_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_hard_coal_n [color=blue fontsize=15 shape=invtrapezium]
+	Import_Gas_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Gas_n [color=blue fontsize=15 shape=invtrapezium]
+	Import_Oil_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Oil_n [color=blue fontsize=15 shape=invtrapezium]
+	Import_Synthetic_fuel_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Synthetic_fuel_n [color=blue fontsize=15 shape=invtrapezium]
+	Battery_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Battery_n [color=green fontsize=15 shape=rectangle style=dashed]
+	"Heat storage_n" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Heat storage_n" [color=green fontsize=15 shape=rectangle style=dashed]
+	Pumped_hydro_storage_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Pumped_hydro_storage_n [color=green fontsize=15 shape=rectangle style=dashed]
+	Gas_storage_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Gas_storage_n [color=green fontsize=15 shape=rectangle style=dashed]
+	H2_storage_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	H2_storage_n [color=green fontsize=15 shape=rectangle style=dashed]
+	Electrolysis_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electrolysis_n [color=yellow fontsize=15 shape=rectangle]
+	"Electric boiler_n" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Electric boiler_n" [color=yellow fontsize=15 shape=rectangle]
+	GuD_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	GuD_n [color=yellow fontsize=15 shape=rectangle]
+	Fuelcell_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Fuelcell_n [color=yellow fontsize=15 shape=rectangle]
+	Methanisation_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Methanisation_n [color=yellow fontsize=15 shape=rectangle]
+	Biogas_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_n [color=yellow fontsize=15 shape=rectangle]
+	Biomasse_elec_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomasse_elec_n [color=yellow fontsize=15 shape=rectangle]
+	Biomasse_heat_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomasse_heat_n [color=yellow fontsize=15 shape=rectangle]
+	Biogas_feedin_existing_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_feedin_existing_n [color=yellow fontsize=15 shape=rectangle]
+	Biogas_feedin_new_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_feedin_new_n [color=yellow fontsize=15 shape=rectangle]
+	Hydrogen_feedin_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_feedin_n [color=yellow fontsize=15 shape=rectangle]
+	Heatpump_water_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heatpump_water_n [color=yellow fontsize=15 shape=rectangle]
+	Heatpump_air_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heatpump_air_n [color=yellow fontsize=15 shape=rectangle]
+	PtL_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PtL_n [color=yellow fontsize=15 shape=rectangle]
+	BioTransformer_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	BioTransformer_n [color=yellow fontsize=15 shape=rectangle]
+	excess_b_el_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_el_n [color=red fontsize=15 shape=trapezium]
+	excess_b_gas_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_gas_n [color=red fontsize=15 shape=trapezium]
+	excess_b_oil_fuel_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_oil_fuel_n [color=red fontsize=15 shape=trapezium]
+	excess_b_bio_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_bio_n [color=red fontsize=15 shape=trapezium]
+	excess_b_distheat_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_distheat_n [color=red fontsize=15 shape=trapezium]
+	excess_b_H2_n [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_H2_n [color=red fontsize=15 shape=trapezium]
+	Gas_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Oil_fuel_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomass_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	BioWood_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"District heating_e" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Solidfuel_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Electricity_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Electricity_e [color=red fontsize=15 shape=trapezium]
+	Export_Hydrogen_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Hydrogen_e [color=red fontsize=15 shape=trapezium]
+	Electricity_demand_total_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electricity_demand_total_e [color=red fontsize=15 shape=trapezium]
+	Biomass_demand_total_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomass_demand_total_e [color=red fontsize=15 shape=trapezium]
+	Gas_demand_total_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Gas_demand_total_e [color=red fontsize=15 shape=trapezium]
+	Material_demand_Gas_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Material_demand_Gas_e [color=red fontsize=15 shape=trapezium]
+	Oil_demand_total_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Oil_demand_total_e [color=red fontsize=15 shape=trapezium]
+	Mobility_demand_total_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Mobility_demand_total_e [color=red fontsize=15 shape=trapezium]
+	Material_demand_Oil_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Material_demand_Oil_e [color=red fontsize=15 shape=trapezium]
+	Heat_demand_total_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heat_demand_total_e [color=red fontsize=15 shape=trapezium]
+	Hydrogen_demand_total_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_demand_total_e [color=red fontsize=15 shape=trapezium]
+	Wind_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Wind_e [color=blue fontsize=15 shape=invtrapezium]
+	PV_rooftop_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PV_rooftop_e [color=blue fontsize=15 shape=invtrapezium]
+	PV_open_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PV_open_e [color=blue fontsize=15 shape=invtrapezium]
+	"Hydro power plant_e" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Hydro power plant_e" [color=blue fontsize=15 shape=invtrapezium]
+	ST_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	ST_e [color=blue fontsize=15 shape=invtrapezium]
+	Import_solid_fuel_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_solid_fuel_e [color=blue fontsize=15 shape=invtrapezium]
+	Import_Wood_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Wood_e [color=blue fontsize=15 shape=invtrapezium]
+	Import_brown_coal_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_brown_coal_e [color=blue fontsize=15 shape=invtrapezium]
+	Import_hard_coal_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_hard_coal_e [color=blue fontsize=15 shape=invtrapezium]
+	Import_Gas_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Gas_e [color=blue fontsize=15 shape=invtrapezium]
+	Import_Oil_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Oil_e [color=blue fontsize=15 shape=invtrapezium]
+	Import_Synthetic_fuel_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Synthetic_fuel_e [color=blue fontsize=15 shape=invtrapezium]
+	Battery_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Battery_e [color=green fontsize=15 shape=rectangle style=dashed]
+	"Heat storage_e" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Heat storage_e" [color=green fontsize=15 shape=rectangle style=dashed]
+	Pumped_hydro_storage_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Pumped_hydro_storage_e [color=green fontsize=15 shape=rectangle style=dashed]
+	Gas_storage_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Gas_storage_e [color=green fontsize=15 shape=rectangle style=dashed]
+	H2_storage_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	H2_storage_e [color=green fontsize=15 shape=rectangle style=dashed]
+	Electrolysis_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electrolysis_e [color=yellow fontsize=15 shape=rectangle]
+	"Electric boiler_e" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Electric boiler_e" [color=yellow fontsize=15 shape=rectangle]
+	GuD_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	GuD_e [color=yellow fontsize=15 shape=rectangle]
+	Fuelcell_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Fuelcell_e [color=yellow fontsize=15 shape=rectangle]
+	Methanisation_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Methanisation_e [color=yellow fontsize=15 shape=rectangle]
+	Biogas_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_e [color=yellow fontsize=15 shape=rectangle]
+	Biomasse_elec_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomasse_elec_e [color=yellow fontsize=15 shape=rectangle]
+	Biomasse_heat_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomasse_heat_e [color=yellow fontsize=15 shape=rectangle]
+	Biogas_feedin_existing_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_feedin_existing_e [color=yellow fontsize=15 shape=rectangle]
+	Biogas_feedin_new_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_feedin_new_e [color=yellow fontsize=15 shape=rectangle]
+	Hydrogen_feedin_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_feedin_e [color=yellow fontsize=15 shape=rectangle]
+	Heatpump_water_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heatpump_water_e [color=yellow fontsize=15 shape=rectangle]
+	Heatpump_air_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heatpump_air_e [color=yellow fontsize=15 shape=rectangle]
+	PtL_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PtL_e [color=yellow fontsize=15 shape=rectangle]
+	BioTransformer_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	BioTransformer_e [color=yellow fontsize=15 shape=rectangle]
+	excess_b_el_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_el_e [color=red fontsize=15 shape=trapezium]
+	excess_b_gas_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_gas_e [color=red fontsize=15 shape=trapezium]
+	excess_b_oil_fuel_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_oil_fuel_e [color=red fontsize=15 shape=trapezium]
+	excess_b_bio_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_bio_e [color=red fontsize=15 shape=trapezium]
+	excess_b_distheat_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_distheat_e [color=red fontsize=15 shape=trapezium]
+	excess_b_H2_e [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_H2_e [color=red fontsize=15 shape=trapezium]
+	Gas_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Oil_fuel_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomass_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	BioWood_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"District heating_m" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Solidfuel_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Electricity_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Electricity_m [color=red fontsize=15 shape=trapezium]
+	Export_Hydrogen_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Hydrogen_m [color=red fontsize=15 shape=trapezium]
+	Electricity_demand_total_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electricity_demand_total_m [color=red fontsize=15 shape=trapezium]
+	Biomass_demand_total_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomass_demand_total_m [color=red fontsize=15 shape=trapezium]
+	Gas_demand_total_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Gas_demand_total_m [color=red fontsize=15 shape=trapezium]
+	Material_demand_Gas_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Material_demand_Gas_m [color=red fontsize=15 shape=trapezium]
+	Oil_demand_total_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Oil_demand_total_m [color=red fontsize=15 shape=trapezium]
+	Mobility_demand_total_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Mobility_demand_total_m [color=red fontsize=15 shape=trapezium]
+	Material_demand_Oil_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Material_demand_Oil_m [color=red fontsize=15 shape=trapezium]
+	Heat_demand_total_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heat_demand_total_m [color=red fontsize=15 shape=trapezium]
+	Hydrogen_demand_total_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_demand_total_m [color=red fontsize=15 shape=trapezium]
+	Wind_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Wind_m [color=blue fontsize=15 shape=invtrapezium]
+	PV_rooftop_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PV_rooftop_m [color=blue fontsize=15 shape=invtrapezium]
+	PV_open_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PV_open_m [color=blue fontsize=15 shape=invtrapezium]
+	"Hydro power plant_m" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Hydro power plant_m" [color=blue fontsize=15 shape=invtrapezium]
+	ST_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	ST_m [color=blue fontsize=15 shape=invtrapezium]
+	Import_solid_fuel_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_solid_fuel_m [color=blue fontsize=15 shape=invtrapezium]
+	Import_Wood_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Wood_m [color=blue fontsize=15 shape=invtrapezium]
+	Import_brown_coal_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_brown_coal_m [color=blue fontsize=15 shape=invtrapezium]
+	Import_hard_coal_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_hard_coal_m [color=blue fontsize=15 shape=invtrapezium]
+	Import_Gas_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Gas_m [color=blue fontsize=15 shape=invtrapezium]
+	Import_Oil_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Oil_m [color=blue fontsize=15 shape=invtrapezium]
+	Import_Synthetic_fuel_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Synthetic_fuel_m [color=blue fontsize=15 shape=invtrapezium]
+	Battery_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Battery_m [color=green fontsize=15 shape=rectangle style=dashed]
+	"Heat storage_m" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Heat storage_m" [color=green fontsize=15 shape=rectangle style=dashed]
+	Pumped_hydro_storage_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Pumped_hydro_storage_m [color=green fontsize=15 shape=rectangle style=dashed]
+	Gas_storage_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Gas_storage_m [color=green fontsize=15 shape=rectangle style=dashed]
+	H2_storage_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	H2_storage_m [color=green fontsize=15 shape=rectangle style=dashed]
+	Electrolysis_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electrolysis_m [color=yellow fontsize=15 shape=rectangle]
+	"Electric boiler_m" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Electric boiler_m" [color=yellow fontsize=15 shape=rectangle]
+	GuD_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	GuD_m [color=yellow fontsize=15 shape=rectangle]
+	Fuelcell_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Fuelcell_m [color=yellow fontsize=15 shape=rectangle]
+	Methanisation_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Methanisation_m [color=yellow fontsize=15 shape=rectangle]
+	Biogas_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_m [color=yellow fontsize=15 shape=rectangle]
+	Biomasse_elec_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomasse_elec_m [color=yellow fontsize=15 shape=rectangle]
+	Biomasse_heat_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomasse_heat_m [color=yellow fontsize=15 shape=rectangle]
+	Biogas_feedin_existing_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_feedin_existing_m [color=yellow fontsize=15 shape=rectangle]
+	Biogas_feedin_new_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_feedin_new_m [color=yellow fontsize=15 shape=rectangle]
+	Hydrogen_feedin_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_feedin_m [color=yellow fontsize=15 shape=rectangle]
+	Heatpump_water_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heatpump_water_m [color=yellow fontsize=15 shape=rectangle]
+	Heatpump_air_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heatpump_air_m [color=yellow fontsize=15 shape=rectangle]
+	PtL_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PtL_m [color=yellow fontsize=15 shape=rectangle]
+	BioTransformer_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	BioTransformer_m [color=yellow fontsize=15 shape=rectangle]
+	excess_b_el_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_el_m [color=red fontsize=15 shape=trapezium]
+	excess_b_gas_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_gas_m [color=red fontsize=15 shape=trapezium]
+	excess_b_oil_fuel_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_oil_fuel_m [color=red fontsize=15 shape=trapezium]
+	excess_b_bio_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_bio_m [color=red fontsize=15 shape=trapezium]
+	excess_b_distheat_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_distheat_m [color=red fontsize=15 shape=trapezium]
+	excess_b_H2_m [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_H2_m [color=red fontsize=15 shape=trapezium]
+	Gas_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Oil_fuel_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomass_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	BioWood_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"District heating_s" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Solidfuel_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Electricity_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Electricity_s [color=red fontsize=15 shape=trapezium]
+	Export_Hydrogen_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Export_Hydrogen_s [color=red fontsize=15 shape=trapezium]
+	Electricity_demand_total_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electricity_demand_total_s [color=red fontsize=15 shape=trapezium]
+	Biomass_demand_total_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomass_demand_total_s [color=red fontsize=15 shape=trapezium]
+	Gas_demand_total_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Gas_demand_total_s [color=red fontsize=15 shape=trapezium]
+	Material_demand_Gas_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Material_demand_Gas_s [color=red fontsize=15 shape=trapezium]
+	Oil_demand_total_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Oil_demand_total_s [color=red fontsize=15 shape=trapezium]
+	Mobility_demand_total_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Mobility_demand_total_s [color=red fontsize=15 shape=trapezium]
+	Material_demand_Oil_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Material_demand_Oil_s [color=red fontsize=15 shape=trapezium]
+	Heat_demand_total_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heat_demand_total_s [color=red fontsize=15 shape=trapezium]
+	Hydrogen_demand_total_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_demand_total_s [color=red fontsize=15 shape=trapezium]
+	Wind_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Wind_s [color=blue fontsize=15 shape=invtrapezium]
+	PV_rooftop_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PV_rooftop_s [color=blue fontsize=15 shape=invtrapezium]
+	PV_open_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PV_open_s [color=blue fontsize=15 shape=invtrapezium]
+	"Hydro power plant_s" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Hydro power plant_s" [color=blue fontsize=15 shape=invtrapezium]
+	ST_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	ST_s [color=blue fontsize=15 shape=invtrapezium]
+	Import_solid_fuel_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_solid_fuel_s [color=blue fontsize=15 shape=invtrapezium]
+	Import_Wood_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Wood_s [color=blue fontsize=15 shape=invtrapezium]
+	Import_brown_coal_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_brown_coal_s [color=blue fontsize=15 shape=invtrapezium]
+	Import_hard_coal_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_hard_coal_s [color=blue fontsize=15 shape=invtrapezium]
+	Import_Gas_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Gas_s [color=blue fontsize=15 shape=invtrapezium]
+	Import_Oil_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Oil_s [color=blue fontsize=15 shape=invtrapezium]
+	Import_Synthetic_fuel_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Import_Synthetic_fuel_s [color=blue fontsize=15 shape=invtrapezium]
+	Battery_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Battery_s [color=green fontsize=15 shape=rectangle style=dashed]
+	"Heat storage_s" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Heat storage_s" [color=green fontsize=15 shape=rectangle style=dashed]
+	Pumped_hydro_storage_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Pumped_hydro_storage_s [color=green fontsize=15 shape=rectangle style=dashed]
+	Gas_storage_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Gas_storage_s [color=green fontsize=15 shape=rectangle style=dashed]
+	H2_storage_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	H2_storage_s [color=green fontsize=15 shape=rectangle style=dashed]
+	Electrolysis_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Electrolysis_s [color=yellow fontsize=15 shape=rectangle]
+	"Electric boiler_s" [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	"Electric boiler_s" [color=yellow fontsize=15 shape=rectangle]
+	GuD_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	GuD_s [color=yellow fontsize=15 shape=rectangle]
+	Fuelcell_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Fuelcell_s [color=yellow fontsize=15 shape=rectangle]
+	Methanisation_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Methanisation_s [color=yellow fontsize=15 shape=rectangle]
+	Biogas_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_s [color=yellow fontsize=15 shape=rectangle]
+	Biomasse_elec_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomasse_elec_s [color=yellow fontsize=15 shape=rectangle]
+	Biomasse_heat_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biomasse_heat_s [color=yellow fontsize=15 shape=rectangle]
+	Biogas_feedin_existing_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_feedin_existing_s [color=yellow fontsize=15 shape=rectangle]
+	Biogas_feedin_new_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Biogas_feedin_new_s [color=yellow fontsize=15 shape=rectangle]
+	Hydrogen_feedin_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Hydrogen_feedin_s [color=yellow fontsize=15 shape=rectangle]
+	Heatpump_water_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heatpump_water_s [color=yellow fontsize=15 shape=rectangle]
+	Heatpump_air_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	Heatpump_air_s [color=yellow fontsize=15 shape=rectangle]
+	PtL_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	PtL_s [color=yellow fontsize=15 shape=rectangle]
+	BioTransformer_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	BioTransformer_s [color=yellow fontsize=15 shape=rectangle]
+	excess_b_el_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_el_s [color=red fontsize=15 shape=trapezium]
+	excess_b_gas_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_gas_s [color=red fontsize=15 shape=trapezium]
+	excess_b_oil_fuel_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_oil_fuel_s [color=red fontsize=15 shape=trapezium]
+	excess_b_bio_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_bio_s [color=red fontsize=15 shape=trapezium]
+	excess_b_distheat_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_distheat_s [color=red fontsize=15 shape=trapezium]
+	excess_b_H2_s [fixedsize=shape fontsize=15 height=0.6 shape=rectangle width=2.1]
+	excess_b_H2_s [color=red fontsize=15 shape=trapezium]
+	"HöS<->HS" -> "Electricity_HöS"
+	Import_electricity -> "Electricity_HöS"
+	"Electricity_HöS" -> "HöS<->HS"
+	"HS<->East" -> Electricity_HS
+	"HS<->North" -> Electricity_HS
+	"HS<->Middle" -> Electricity_HS
+	"HöS<->HS" -> Electricity_HS
+	"HS<->Swest" -> Electricity_HS
+	Electricity_HS -> "HöS<->HS"
+	Electricity_HS -> "HS<->North"
+	Electricity_HS -> "HS<->East"
+	Electricity_HS -> "HS<->Middle"
+	Electricity_HS -> "HS<->Swest"
+	Pumped_hydro_storage_n -> Electricity_n
+	PV_rooftop_n -> Electricity_n
+	Biomasse_elec_n -> Electricity_n
+	"HS<->North" -> Electricity_n
+	"Hydro power plant_n" -> Electricity_n
+	Fuelcell_n -> Electricity_n
+	Biogas_n -> Electricity_n
+	PV_open_n -> Electricity_n
+	"North<->Middel" -> Electricity_n
+	GuD_n -> Electricity_n
+	Battery_n -> Electricity_n
+	Wind_n -> Electricity_n
+	Electricity_n -> "HS<->North"
+	Electricity_n -> "North<->Middel"
+	Electricity_n -> Export_Electricity_n
+	Electricity_n -> Electricity_demand_total_n
+	Electricity_n -> Battery_n
+	Electricity_n -> Pumped_hydro_storage_n
+	Electricity_n -> Electrolysis_n
+	Electricity_n -> "Electric boiler_n"
+	Electricity_n -> Heatpump_water_n
+	Electricity_n -> Heatpump_air_n
+	Electricity_n -> excess_b_el_n
+	Wind_e -> Electricity_e
+	Pumped_hydro_storage_e -> Electricity_e
+	Biogas_e -> Electricity_e
+	Biomasse_elec_e -> Electricity_e
+	Fuelcell_e -> Electricity_e
+	GuD_e -> Electricity_e
+	"East<->Middel" -> Electricity_e
+	"Hydro power plant_e" -> Electricity_e
+	PV_open_e -> Electricity_e
+	"HS<->East" -> Electricity_e
+	PV_rooftop_e -> Electricity_e
+	Battery_e -> Electricity_e
+	Electricity_e -> "HS<->East"
+	Electricity_e -> "East<->Middel"
+	Electricity_e -> Export_Electricity_e
+	Electricity_e -> Electricity_demand_total_e
+	Electricity_e -> Battery_e
+	Electricity_e -> Pumped_hydro_storage_e
+	Electricity_e -> Electrolysis_e
+	Electricity_e -> "Electric boiler_e"
+	Electricity_e -> Heatpump_water_e
+	Electricity_e -> Heatpump_air_e
+	Electricity_e -> excess_b_el_e
+	Battery_m -> Electricity_m
+	"Hydro power plant_m" -> Electricity_m
+	PV_rooftop_m -> Electricity_m
+	PV_open_m -> Electricity_m
+	"East<->Middel" -> Electricity_m
+	Pumped_hydro_storage_m -> Electricity_m
+	Fuelcell_m -> Electricity_m
+	"Middel<->Swest" -> Electricity_m
+	Biomasse_elec_m -> Electricity_m
+	Biogas_m -> Electricity_m
+	"HS<->Middle" -> Electricity_m
+	"North<->Middel" -> Electricity_m
+	Wind_m -> Electricity_m
+	GuD_m -> Electricity_m
+	Electricity_m -> "HS<->Middle"
+	Electricity_m -> "North<->Middel"
+	Electricity_m -> "Middel<->Swest"
+	Electricity_m -> "East<->Middel"
+	Electricity_m -> Export_Electricity_m
+	Electricity_m -> Electricity_demand_total_m
+	Electricity_m -> Battery_m
+	Electricity_m -> Pumped_hydro_storage_m
+	Electricity_m -> Electrolysis_m
+	Electricity_m -> "Electric boiler_m"
+	Electricity_m -> Heatpump_water_m
+	Electricity_m -> Heatpump_air_m
+	Electricity_m -> excess_b_el_m
+	PV_rooftop_s -> Electricity_s
+	Biomasse_elec_s -> Electricity_s
+	Biogas_s -> Electricity_s
+	"Hydro power plant_s" -> Electricity_s
+	GuD_s -> Electricity_s
+	Pumped_hydro_storage_s -> Electricity_s
+	Battery_s -> Electricity_s
+	"Middel<->Swest" -> Electricity_s
+	"HS<->Swest" -> Electricity_s
+	Fuelcell_s -> Electricity_s
+	Wind_s -> Electricity_s
+	PV_open_s -> Electricity_s
+	Electricity_s -> "HS<->Swest"
+	Electricity_s -> "Middel<->Swest"
+	Electricity_s -> Export_Electricity_s
+	Electricity_s -> Electricity_demand_total_s
+	Electricity_s -> Battery_s
+	Electricity_s -> Pumped_hydro_storage_s
+	Electricity_s -> Electrolysis_s
+	Electricity_s -> "Electric boiler_s"
+	Electricity_s -> Heatpump_water_s
+	Electricity_s -> Heatpump_air_s
+	Electricity_s -> excess_b_el_s
+	Import_electricity -> "Electricity_HöS"
+	"Electricity_HöS" -> "HöS<->HS"
+	Electricity_HS -> "HöS<->HS"
+	"HöS<->HS" -> Electricity_HS
+	"HöS<->HS" -> "Electricity_HöS"
+	Electricity_n -> "HS<->North"
+	Electricity_HS -> "HS<->North"
+	"HS<->North" -> Electricity_n
+	"HS<->North" -> Electricity_HS
+	Electricity_e -> "HS<->East"
+	Electricity_HS -> "HS<->East"
+	"HS<->East" -> Electricity_e
+	"HS<->East" -> Electricity_HS
+	Electricity_m -> "HS<->Middle"
+	Electricity_HS -> "HS<->Middle"
+	"HS<->Middle" -> Electricity_m
+	"HS<->Middle" -> Electricity_HS
+	Electricity_s -> "HS<->Swest"
+	Electricity_HS -> "HS<->Swest"
+	"HS<->Swest" -> Electricity_s
+	"HS<->Swest" -> Electricity_HS
+	Electricity_n -> "North<->Middel"
+	Electricity_m -> "North<->Middel"
+	"North<->Middel" -> Electricity_m
+	"North<->Middel" -> Electricity_n
+	Electricity_m -> "Middel<->Swest"
+	Electricity_s -> "Middel<->Swest"
+	"Middel<->Swest" -> Electricity_s
+	"Middel<->Swest" -> Electricity_m
+	Electricity_e -> "East<->Middel"
+	Electricity_m -> "East<->Middel"
+	"East<->Middel" -> Electricity_m
+	"East<->Middel" -> Electricity_e
+	Gas_storage_n -> Gas_n
+	Biogas_feedin_new_n -> Gas_n
+	Methanisation_n -> Gas_n
+	Hydrogen_feedin_n -> Gas_n
+	Import_Gas_n -> Gas_n
+	Biogas_feedin_existing_n -> Gas_n
+	Gas_n -> Gas_demand_total_n
+	Gas_n -> Material_demand_Gas_n
+	Gas_n -> Gas_storage_n
+	Gas_n -> GuD_n
+	Gas_n -> excess_b_gas_n
+	PtL_n -> Oil_fuel_n
+	Import_Synthetic_fuel_n -> Oil_fuel_n
+	Import_Oil_n -> Oil_fuel_n
+	Oil_fuel_n -> Oil_demand_total_n
+	Oil_fuel_n -> Mobility_demand_total_n
+	Oil_fuel_n -> Material_demand_Oil_n
+	Oil_fuel_n -> excess_b_oil_fuel_n
+	Import_solid_fuel_n -> Biomass_n
+	Biomass_n -> Biogas_n
+	Biomass_n -> Biogas_feedin_existing_n
+	Biomass_n -> Biogas_feedin_new_n
+	Biomass_n -> excess_b_bio_n
+	Import_Wood_n -> BioWood_n
+	BioWood_n -> Biomasse_elec_n
+	BioWood_n -> Biomasse_heat_n
+	BioWood_n -> BioTransformer_n
+	Biomasse_heat_n -> "District heating_n"
+	"Electric boiler_n" -> "District heating_n"
+	"Heat storage_n" -> "District heating_n"
+	Heatpump_water_n -> "District heating_n"
+	Biogas_n -> "District heating_n"
+	ST_n -> "District heating_n"
+	Heatpump_air_n -> "District heating_n"
+	GuD_n -> "District heating_n"
+	"District heating_n" -> Heat_demand_total_n
+	"District heating_n" -> "Heat storage_n"
+	"District heating_n" -> excess_b_distheat_n
+	Electrolysis_n -> Hydrogen_n
+	H2_storage_n -> Hydrogen_n
+	Hydrogen_n -> Export_Hydrogen_n
+	Hydrogen_n -> Hydrogen_demand_total_n
+	Hydrogen_n -> H2_storage_n
+	Hydrogen_n -> Fuelcell_n
+	Hydrogen_n -> Methanisation_n
+	Hydrogen_n -> Hydrogen_feedin_n
+	Hydrogen_n -> PtL_n
+	Hydrogen_n -> excess_b_H2_n
+	Import_hard_coal_n -> Solidfuel_n
+	BioTransformer_n -> Solidfuel_n
+	Import_brown_coal_n -> Solidfuel_n
+	Solidfuel_n -> Biomass_demand_total_n
+	Electricity_n -> Export_Electricity_n
+	Hydrogen_n -> Export_Hydrogen_n
+	Electricity_n -> Electricity_demand_total_n
+	Solidfuel_n -> Biomass_demand_total_n
+	Gas_n -> Gas_demand_total_n
+	Gas_n -> Material_demand_Gas_n
+	Oil_fuel_n -> Oil_demand_total_n
+	Oil_fuel_n -> Mobility_demand_total_n
+	Oil_fuel_n -> Material_demand_Oil_n
+	"District heating_n" -> Heat_demand_total_n
+	Hydrogen_n -> Hydrogen_demand_total_n
+	Wind_n -> Electricity_n
+	PV_rooftop_n -> Electricity_n
+	PV_open_n -> Electricity_n
+	"Hydro power plant_n" -> Electricity_n
+	ST_n -> "District heating_n"
+	Import_solid_fuel_n -> Biomass_n
+	Import_Wood_n -> BioWood_n
+	Import_brown_coal_n -> Solidfuel_n
+	Import_hard_coal_n -> Solidfuel_n
+	Import_Gas_n -> Gas_n
+	Import_Oil_n -> Oil_fuel_n
+	Import_Synthetic_fuel_n -> Oil_fuel_n
+	Electricity_n -> Battery_n
+	Battery_n -> Electricity_n
+	"District heating_n" -> "Heat storage_n"
+	"Heat storage_n" -> "District heating_n"
+	Electricity_n -> Pumped_hydro_storage_n
+	Pumped_hydro_storage_n -> Electricity_n
+	Gas_n -> Gas_storage_n
+	Gas_storage_n -> Gas_n
+	Hydrogen_n -> H2_storage_n
+	H2_storage_n -> Hydrogen_n
+	Electricity_n -> Electrolysis_n
+	Electrolysis_n -> Hydrogen_n
+	Electricity_n -> "Electric boiler_n"
+	"Electric boiler_n" -> "District heating_n"
+	Gas_n -> GuD_n
+	GuD_n -> Electricity_n
+	GuD_n -> "District heating_n"
+	Hydrogen_n -> Fuelcell_n
+	Fuelcell_n -> Electricity_n
+	Hydrogen_n -> Methanisation_n
+	Methanisation_n -> Gas_n
+	Biomass_n -> Biogas_n
+	Biogas_n -> Electricity_n
+	Biogas_n -> "District heating_n"
+	BioWood_n -> Biomasse_elec_n
+	Biomasse_elec_n -> Electricity_n
+	BioWood_n -> Biomasse_heat_n
+	Biomasse_heat_n -> "District heating_n"
+	Biomass_n -> Biogas_feedin_existing_n
+	Biogas_feedin_existing_n -> Gas_n
+	Biomass_n -> Biogas_feedin_new_n
+	Biogas_feedin_new_n -> Gas_n
+	Hydrogen_n -> Hydrogen_feedin_n
+	Hydrogen_feedin_n -> Gas_n
+	Electricity_n -> Heatpump_water_n
+	Heatpump_water_n -> "District heating_n"
+	Electricity_n -> Heatpump_air_n
+	Heatpump_air_n -> "District heating_n"
+	Hydrogen_n -> PtL_n
+	PtL_n -> Oil_fuel_n
+	BioWood_n -> BioTransformer_n
+	BioTransformer_n -> Solidfuel_n
+	Electricity_n -> excess_b_el_n
+	Gas_n -> excess_b_gas_n
+	Oil_fuel_n -> excess_b_oil_fuel_n
+	Biomass_n -> excess_b_bio_n
+	"District heating_n" -> excess_b_distheat_n
+	Hydrogen_n -> excess_b_H2_n
+	Biogas_feedin_existing_e -> Gas_e
+	Methanisation_e -> Gas_e
+	Hydrogen_feedin_e -> Gas_e
+	Gas_storage_e -> Gas_e
+	Import_Gas_e -> Gas_e
+	Biogas_feedin_new_e -> Gas_e
+	Gas_e -> Gas_demand_total_e
+	Gas_e -> Material_demand_Gas_e
+	Gas_e -> Gas_storage_e
+	Gas_e -> GuD_e
+	Gas_e -> excess_b_gas_e
+	Import_Synthetic_fuel_e -> Oil_fuel_e
+	Import_Oil_e -> Oil_fuel_e
+	PtL_e -> Oil_fuel_e
+	Oil_fuel_e -> Oil_demand_total_e
+	Oil_fuel_e -> Mobility_demand_total_e
+	Oil_fuel_e -> Material_demand_Oil_e
+	Oil_fuel_e -> excess_b_oil_fuel_e
+	Import_solid_fuel_e -> Biomass_e
+	Biomass_e -> Biogas_e
+	Biomass_e -> Biogas_feedin_existing_e
+	Biomass_e -> Biogas_feedin_new_e
+	Biomass_e -> excess_b_bio_e
+	Import_Wood_e -> BioWood_e
+	BioWood_e -> Biomasse_elec_e
+	BioWood_e -> Biomasse_heat_e
+	BioWood_e -> BioTransformer_e
+	Biogas_e -> "District heating_e"
+	Heatpump_air_e -> "District heating_e"
+	GuD_e -> "District heating_e"
+	"Electric boiler_e" -> "District heating_e"
+	Biomasse_heat_e -> "District heating_e"
+	Heatpump_water_e -> "District heating_e"
+	ST_e -> "District heating_e"
+	"Heat storage_e" -> "District heating_e"
+	"District heating_e" -> Heat_demand_total_e
+	"District heating_e" -> "Heat storage_e"
+	"District heating_e" -> excess_b_distheat_e
+	Electrolysis_e -> Hydrogen_e
+	H2_storage_e -> Hydrogen_e
+	Hydrogen_e -> Export_Hydrogen_e
+	Hydrogen_e -> Hydrogen_demand_total_e
+	Hydrogen_e -> H2_storage_e
+	Hydrogen_e -> Fuelcell_e
+	Hydrogen_e -> Methanisation_e
+	Hydrogen_e -> Hydrogen_feedin_e
+	Hydrogen_e -> PtL_e
+	Hydrogen_e -> excess_b_H2_e
+	Import_brown_coal_e -> Solidfuel_e
+	BioTransformer_e -> Solidfuel_e
+	Import_hard_coal_e -> Solidfuel_e
+	Solidfuel_e -> Biomass_demand_total_e
+	Electricity_e -> Export_Electricity_e
+	Hydrogen_e -> Export_Hydrogen_e
+	Electricity_e -> Electricity_demand_total_e
+	Solidfuel_e -> Biomass_demand_total_e
+	Gas_e -> Gas_demand_total_e
+	Gas_e -> Material_demand_Gas_e
+	Oil_fuel_e -> Oil_demand_total_e
+	Oil_fuel_e -> Mobility_demand_total_e
+	Oil_fuel_e -> Material_demand_Oil_e
+	"District heating_e" -> Heat_demand_total_e
+	Hydrogen_e -> Hydrogen_demand_total_e
+	Wind_e -> Electricity_e
+	PV_rooftop_e -> Electricity_e
+	PV_open_e -> Electricity_e
+	"Hydro power plant_e" -> Electricity_e
+	ST_e -> "District heating_e"
+	Import_solid_fuel_e -> Biomass_e
+	Import_Wood_e -> BioWood_e
+	Import_brown_coal_e -> Solidfuel_e
+	Import_hard_coal_e -> Solidfuel_e
+	Import_Gas_e -> Gas_e
+	Import_Oil_e -> Oil_fuel_e
+	Import_Synthetic_fuel_e -> Oil_fuel_e
+	Electricity_e -> Battery_e
+	Battery_e -> Electricity_e
+	"District heating_e" -> "Heat storage_e"
+	"Heat storage_e" -> "District heating_e"
+	Electricity_e -> Pumped_hydro_storage_e
+	Pumped_hydro_storage_e -> Electricity_e
+	Gas_e -> Gas_storage_e
+	Gas_storage_e -> Gas_e
+	Hydrogen_e -> H2_storage_e
+	H2_storage_e -> Hydrogen_e
+	Electricity_e -> Electrolysis_e
+	Electrolysis_e -> Hydrogen_e
+	Electricity_e -> "Electric boiler_e"
+	"Electric boiler_e" -> "District heating_e"
+	Gas_e -> GuD_e
+	GuD_e -> Electricity_e
+	GuD_e -> "District heating_e"
+	Hydrogen_e -> Fuelcell_e
+	Fuelcell_e -> Electricity_e
+	Hydrogen_e -> Methanisation_e
+	Methanisation_e -> Gas_e
+	Biomass_e -> Biogas_e
+	Biogas_e -> Electricity_e
+	Biogas_e -> "District heating_e"
+	BioWood_e -> Biomasse_elec_e
+	Biomasse_elec_e -> Electricity_e
+	BioWood_e -> Biomasse_heat_e
+	Biomasse_heat_e -> "District heating_e"
+	Biomass_e -> Biogas_feedin_existing_e
+	Biogas_feedin_existing_e -> Gas_e
+	Biomass_e -> Biogas_feedin_new_e
+	Biogas_feedin_new_e -> Gas_e
+	Hydrogen_e -> Hydrogen_feedin_e
+	Hydrogen_feedin_e -> Gas_e
+	Electricity_e -> Heatpump_water_e
+	Heatpump_water_e -> "District heating_e"
+	Electricity_e -> Heatpump_air_e
+	Heatpump_air_e -> "District heating_e"
+	Hydrogen_e -> PtL_e
+	PtL_e -> Oil_fuel_e
+	BioWood_e -> BioTransformer_e
+	BioTransformer_e -> Solidfuel_e
+	Electricity_e -> excess_b_el_e
+	Gas_e -> excess_b_gas_e
+	Oil_fuel_e -> excess_b_oil_fuel_e
+	Biomass_e -> excess_b_bio_e
+	"District heating_e" -> excess_b_distheat_e
+	Hydrogen_e -> excess_b_H2_e
+	Hydrogen_feedin_m -> Gas_m
+	Biogas_feedin_new_m -> Gas_m
+	Gas_storage_m -> Gas_m
+	Methanisation_m -> Gas_m
+	Biogas_feedin_existing_m -> Gas_m
+	Import_Gas_m -> Gas_m
+	Gas_m -> Gas_demand_total_m
+	Gas_m -> Material_demand_Gas_m
+	Gas_m -> Gas_storage_m
+	Gas_m -> GuD_m
+	Gas_m -> excess_b_gas_m
+	PtL_m -> Oil_fuel_m
+	Import_Oil_m -> Oil_fuel_m
+	Import_Synthetic_fuel_m -> Oil_fuel_m
+	Oil_fuel_m -> Oil_demand_total_m
+	Oil_fuel_m -> Mobility_demand_total_m
+	Oil_fuel_m -> Material_demand_Oil_m
+	Oil_fuel_m -> excess_b_oil_fuel_m
+	Import_solid_fuel_m -> Biomass_m
+	Biomass_m -> Biogas_m
+	Biomass_m -> Biogas_feedin_existing_m
+	Biomass_m -> Biogas_feedin_new_m
+	Biomass_m -> excess_b_bio_m
+	Import_Wood_m -> BioWood_m
+	BioWood_m -> Biomasse_elec_m
+	BioWood_m -> Biomasse_heat_m
+	BioWood_m -> BioTransformer_m
+	"Electric boiler_m" -> "District heating_m"
+	Biomasse_heat_m -> "District heating_m"
+	Heatpump_air_m -> "District heating_m"
+	Heatpump_water_m -> "District heating_m"
+	ST_m -> "District heating_m"
+	"Heat storage_m" -> "District heating_m"
+	Biogas_m -> "District heating_m"
+	GuD_m -> "District heating_m"
+	"District heating_m" -> Heat_demand_total_m
+	"District heating_m" -> "Heat storage_m"
+	"District heating_m" -> excess_b_distheat_m
+	Electrolysis_m -> Hydrogen_m
+	H2_storage_m -> Hydrogen_m
+	Hydrogen_m -> Export_Hydrogen_m
+	Hydrogen_m -> Hydrogen_demand_total_m
+	Hydrogen_m -> H2_storage_m
+	Hydrogen_m -> Fuelcell_m
+	Hydrogen_m -> Methanisation_m
+	Hydrogen_m -> Hydrogen_feedin_m
+	Hydrogen_m -> PtL_m
+	Hydrogen_m -> excess_b_H2_m
+	Import_hard_coal_m -> Solidfuel_m
+	BioTransformer_m -> Solidfuel_m
+	Import_brown_coal_m -> Solidfuel_m
+	Solidfuel_m -> Biomass_demand_total_m
+	Electricity_m -> Export_Electricity_m
+	Hydrogen_m -> Export_Hydrogen_m
+	Electricity_m -> Electricity_demand_total_m
+	Solidfuel_m -> Biomass_demand_total_m
+	Gas_m -> Gas_demand_total_m
+	Gas_m -> Material_demand_Gas_m
+	Oil_fuel_m -> Oil_demand_total_m
+	Oil_fuel_m -> Mobility_demand_total_m
+	Oil_fuel_m -> Material_demand_Oil_m
+	"District heating_m" -> Heat_demand_total_m
+	Hydrogen_m -> Hydrogen_demand_total_m
+	Wind_m -> Electricity_m
+	PV_rooftop_m -> Electricity_m
+	PV_open_m -> Electricity_m
+	"Hydro power plant_m" -> Electricity_m
+	ST_m -> "District heating_m"
+	Import_solid_fuel_m -> Biomass_m
+	Import_Wood_m -> BioWood_m
+	Import_brown_coal_m -> Solidfuel_m
+	Import_hard_coal_m -> Solidfuel_m
+	Import_Gas_m -> Gas_m
+	Import_Oil_m -> Oil_fuel_m
+	Import_Synthetic_fuel_m -> Oil_fuel_m
+	Electricity_m -> Battery_m
+	Battery_m -> Electricity_m
+	"District heating_m" -> "Heat storage_m"
+	"Heat storage_m" -> "District heating_m"
+	Electricity_m -> Pumped_hydro_storage_m
+	Pumped_hydro_storage_m -> Electricity_m
+	Gas_m -> Gas_storage_m
+	Gas_storage_m -> Gas_m
+	Hydrogen_m -> H2_storage_m
+	H2_storage_m -> Hydrogen_m
+	Electricity_m -> Electrolysis_m
+	Electrolysis_m -> Hydrogen_m
+	Electricity_m -> "Electric boiler_m"
+	"Electric boiler_m" -> "District heating_m"
+	Gas_m -> GuD_m
+	GuD_m -> Electricity_m
+	GuD_m -> "District heating_m"
+	Hydrogen_m -> Fuelcell_m
+	Fuelcell_m -> Electricity_m
+	Hydrogen_m -> Methanisation_m
+	Methanisation_m -> Gas_m
+	Biomass_m -> Biogas_m
+	Biogas_m -> Electricity_m
+	Biogas_m -> "District heating_m"
+	BioWood_m -> Biomasse_elec_m
+	Biomasse_elec_m -> Electricity_m
+	BioWood_m -> Biomasse_heat_m
+	Biomasse_heat_m -> "District heating_m"
+	Biomass_m -> Biogas_feedin_existing_m
+	Biogas_feedin_existing_m -> Gas_m
+	Biomass_m -> Biogas_feedin_new_m
+	Biogas_feedin_new_m -> Gas_m
+	Hydrogen_m -> Hydrogen_feedin_m
+	Hydrogen_feedin_m -> Gas_m
+	Electricity_m -> Heatpump_water_m
+	Heatpump_water_m -> "District heating_m"
+	Electricity_m -> Heatpump_air_m
+	Heatpump_air_m -> "District heating_m"
+	Hydrogen_m -> PtL_m
+	PtL_m -> Oil_fuel_m
+	BioWood_m -> BioTransformer_m
+	BioTransformer_m -> Solidfuel_m
+	Electricity_m -> excess_b_el_m
+	Gas_m -> excess_b_gas_m
+	Oil_fuel_m -> excess_b_oil_fuel_m
+	Biomass_m -> excess_b_bio_m
+	"District heating_m" -> excess_b_distheat_m
+	Hydrogen_m -> excess_b_H2_m
+	Gas_storage_s -> Gas_s
+	Biogas_feedin_new_s -> Gas_s
+	Import_Gas_s -> Gas_s
+	Methanisation_s -> Gas_s
+	Biogas_feedin_existing_s -> Gas_s
+	Hydrogen_feedin_s -> Gas_s
+	Gas_s -> Gas_demand_total_s
+	Gas_s -> Material_demand_Gas_s
+	Gas_s -> Gas_storage_s
+	Gas_s -> GuD_s
+	Gas_s -> excess_b_gas_s
+	Import_Oil_s -> Oil_fuel_s
+	PtL_s -> Oil_fuel_s
+	Import_Synthetic_fuel_s -> Oil_fuel_s
+	Oil_fuel_s -> Oil_demand_total_s
+	Oil_fuel_s -> Mobility_demand_total_s
+	Oil_fuel_s -> Material_demand_Oil_s
+	Oil_fuel_s -> excess_b_oil_fuel_s
+	Import_solid_fuel_s -> Biomass_s
+	Biomass_s -> Biogas_s
+	Biomass_s -> Biogas_feedin_existing_s
+	Biomass_s -> Biogas_feedin_new_s
+	Biomass_s -> excess_b_bio_s
+	Import_Wood_s -> BioWood_s
+	BioWood_s -> Biomasse_elec_s
+	BioWood_s -> Biomasse_heat_s
+	BioWood_s -> BioTransformer_s
+	"Electric boiler_s" -> "District heating_s"
+	Heatpump_air_s -> "District heating_s"
+	Biogas_s -> "District heating_s"
+	"Heat storage_s" -> "District heating_s"
+	GuD_s -> "District heating_s"
+	Biomasse_heat_s -> "District heating_s"
+	ST_s -> "District heating_s"
+	Heatpump_water_s -> "District heating_s"
+	"District heating_s" -> Heat_demand_total_s
+	"District heating_s" -> "Heat storage_s"
+	"District heating_s" -> excess_b_distheat_s
+	Electrolysis_s -> Hydrogen_s
+	H2_storage_s -> Hydrogen_s
+	Hydrogen_s -> Export_Hydrogen_s
+	Hydrogen_s -> Hydrogen_demand_total_s
+	Hydrogen_s -> H2_storage_s
+	Hydrogen_s -> Fuelcell_s
+	Hydrogen_s -> Methanisation_s
+	Hydrogen_s -> Hydrogen_feedin_s
+	Hydrogen_s -> PtL_s
+	Hydrogen_s -> excess_b_H2_s
+	Import_brown_coal_s -> Solidfuel_s
+	BioTransformer_s -> Solidfuel_s
+	Import_hard_coal_s -> Solidfuel_s
+	Solidfuel_s -> Biomass_demand_total_s
+	Electricity_s -> Export_Electricity_s
+	Hydrogen_s -> Export_Hydrogen_s
+	Electricity_s -> Electricity_demand_total_s
+	Solidfuel_s -> Biomass_demand_total_s
+	Gas_s -> Gas_demand_total_s
+	Gas_s -> Material_demand_Gas_s
+	Oil_fuel_s -> Oil_demand_total_s
+	Oil_fuel_s -> Mobility_demand_total_s
+	Oil_fuel_s -> Material_demand_Oil_s
+	"District heating_s" -> Heat_demand_total_s
+	Hydrogen_s -> Hydrogen_demand_total_s
+	Wind_s -> Electricity_s
+	PV_rooftop_s -> Electricity_s
+	PV_open_s -> Electricity_s
+	"Hydro power plant_s" -> Electricity_s
+	ST_s -> "District heating_s"
+	Import_solid_fuel_s -> Biomass_s
+	Import_Wood_s -> BioWood_s
+	Import_brown_coal_s -> Solidfuel_s
+	Import_hard_coal_s -> Solidfuel_s
+	Import_Gas_s -> Gas_s
+	Import_Oil_s -> Oil_fuel_s
+	Import_Synthetic_fuel_s -> Oil_fuel_s
+	Electricity_s -> Battery_s
+	Battery_s -> Electricity_s
+	"District heating_s" -> "Heat storage_s"
+	"Heat storage_s" -> "District heating_s"
+	Electricity_s -> Pumped_hydro_storage_s
+	Pumped_hydro_storage_s -> Electricity_s
+	Gas_s -> Gas_storage_s
+	Gas_storage_s -> Gas_s
+	Hydrogen_s -> H2_storage_s
+	H2_storage_s -> Hydrogen_s
+	Electricity_s -> Electrolysis_s
+	Electrolysis_s -> Hydrogen_s
+	Electricity_s -> "Electric boiler_s"
+	"Electric boiler_s" -> "District heating_s"
+	Gas_s -> GuD_s
+	GuD_s -> Electricity_s
+	GuD_s -> "District heating_s"
+	Hydrogen_s -> Fuelcell_s
+	Fuelcell_s -> Electricity_s
+	Hydrogen_s -> Methanisation_s
+	Methanisation_s -> Gas_s
+	Biomass_s -> Biogas_s
+	Biogas_s -> Electricity_s
+	Biogas_s -> "District heating_s"
+	BioWood_s -> Biomasse_elec_s
+	Biomasse_elec_s -> Electricity_s
+	BioWood_s -> Biomasse_heat_s
+	Biomasse_heat_s -> "District heating_s"
+	Biomass_s -> Biogas_feedin_existing_s
+	Biogas_feedin_existing_s -> Gas_s
+	Biomass_s -> Biogas_feedin_new_s
+	Biogas_feedin_new_s -> Gas_s
+	Hydrogen_s -> Hydrogen_feedin_s
+	Hydrogen_feedin_s -> Gas_s
+	Electricity_s -> Heatpump_water_s
+	Heatpump_water_s -> "District heating_s"
+	Electricity_s -> Heatpump_air_s
+	Heatpump_air_s -> "District heating_s"
+	Hydrogen_s -> PtL_s
+	PtL_s -> Oil_fuel_s
+	BioWood_s -> BioTransformer_s
+	BioTransformer_s -> Solidfuel_s
+	Electricity_s -> excess_b_el_s
+	Gas_s -> excess_b_gas_s
+	Oil_fuel_s -> excess_b_oil_fuel_s
+	Biomass_s -> excess_b_bio_s
+	"District heating_s" -> excess_b_distheat_s
+	Hydrogen_s -> excess_b_H2_s
+}

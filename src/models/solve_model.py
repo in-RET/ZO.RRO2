@@ -27,7 +27,8 @@ def solveModels(
     for permutation in permutations:
         DUMP_PATH = os.path.abspath(os.path.join(os.getcwd(), "dumps", permutation))
         FIGURE_PATH = os.path.abspath(os.path.join(os.getcwd(), "figures", permutation))
-
+        YEAR, model_ID = permutation.split("_")
+        YEAR = int(YEAR)
         os.makedirs(DUMP_PATH, exist_ok=True)
         os.makedirs(FIGURE_PATH, exist_ok=True)
 
@@ -67,6 +68,7 @@ def solveModels(
             dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + ".dump"
         )
         
-        export_csv_region(energysystem.results["main"], [y for y in years], permutation, model_name)
+        
+        export_csv_region(energysystem.results["main"], YEAR, permutation, model_name)
         
         return sim_data,result

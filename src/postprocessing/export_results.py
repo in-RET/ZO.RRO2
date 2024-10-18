@@ -152,5 +152,5 @@ def export_csv_region(results, YEAR, permutation, model_name):
             
             
     Region_csv['summe'] = Region_csv['north']+Region_csv['middle'] +Region_csv['east'] +Region_csv['swest']     
-    Region_csv.to_csv(CSV_PATH + '/'+ model_name + ".csv", decimal = ',')
+    Region_csv.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH + '/'+ model_name +"_"+ permutation + ".csv", sep = ';')
     return Region_csv

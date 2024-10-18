@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
 
-    solveModels(
+    sim_data, result = solveModels(
         variations=["BS0001"],
         years=[2030],# 2040, 2050],
         model_name="BS_regionalization",
