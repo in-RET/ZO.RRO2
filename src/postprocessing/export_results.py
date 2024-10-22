@@ -20,6 +20,9 @@ import pandas as pd
 import os
 workdir= os.getcwd()
 from src.preprocessing.files import read_input_files
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import matplotlib.patches as mpatches
 
 def export_csv_region(results, YEAR, permutation, model_name):
     CSV_PATH = os.path.abspath(os.path.join(os.getcwd(), "results", permutation))
@@ -154,3 +157,93 @@ def export_csv_region(results, YEAR, permutation, model_name):
     Region_csv['summe'] = Region_csv['north']+Region_csv['middle'] +Region_csv['east'] +Region_csv['swest']     
     Region_csv.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH + '/'+ model_name +"_"+ permutation + ".csv", sep = ';')
     return Region_csv
+
+def grid_energy_map(results, permutation, model_name):
+    
+    b_el_n = solph.views.node(results, 'Electricity_n')
+    b_el_s = solph.views.node(results, 'Electricity_s')
+    b_el_e = solph.views.node(results, 'Electricity_e')
+    b_el_m = solph.views.node(results, 'Electricity_m')
+
+    # Energiemengen in GWh
+    em_hs_n = b_el_n['sequences'][('HS<->North', 'Electricity_n'), 'flow'].sum()/1000   #in GWh
+    em_n_hs = b_el_n['sequences'][('Electricity_n', 'HS<->North'), 'flow'].sum()/1000
+    em_hs_m = b_el_m['sequences'][('HS<->Middle', 'Electricity_m'), 'flow'].sum()/1000
+    em_m_hs = b_el_m['sequences'][('Electricity_m', 'HS<->Middle'), 'flow'].sum()/1000
+    em_hs_e = b_el_e['sequences'][('HS<->East', 'Electricity_e'), 'flow'].sum()/1000
+    em_e_hs = b_el_e['sequences'][('Electricity_e', 'HS<->East'), 'flow'].sum()/1000
+    em_hs_s = b_el_s['sequences'][('HS<->Swest', 'Electricity_s'), 'flow'].sum()/1000
+    em_s_hs = b_el_s['sequences'][('Electricity_s', 'HS<->Swest'), 'flow'].sum()/1000
+    em_m_n = b_el_m['sequences'][('Electricity_m', 'North<->Middel'), 'flow'].sum()/1000
+    em_n_m = b_el_n['sequences'][('Electricity_n', 'North<->Middel'), 'flow'].sum()/1000
+    em_m_e = b_el_m['sequences'][('Electricity_m', 'East<->Middel'), 'flow'].sum()/1000
+    em_e_m = b_el_e['sequences'][('Electricity_e', 'East<->Middel'), 'flow'].sum()/1000
+    em_m_s = b_el_m['sequences'][('Electricity_m', 'Middel<->Swest'), 'flow'].sum()/1000
+    em_s_m = b_el_s['sequences'][('Electricity_s', 'Middel<->Swest'), 'flow'].sum()/1000
+    fig, ax = plt.subplots(figsize=(19.1, 10.5))
+    img_path = os.path.abspath(os.path.join(os.getcwd(), 
+                         'figures','Thuringia_karte_mit_Landkreisen_35.png'))
+    img=mpimg.imread(img_path)
+    imgplot=plt.imshow(img)
+    imgplot.axes.get_xaxis().set_visible(False)
+    imgplot.axes.get_yaxis().set_visible(False)
+    
+    # Coordinates for red arrows
+    x_1 = [120,130,400,410,250,260,690,700]
+    y_1 = [440,500,340,400,100,160,440,500]
+    z_1 = [60,-60,60,-60,60,-60,60,-60]
+
+    for x,y,z in zip(x_1, y_1,z_1):
+        plt.arrow(x ,y,0,z,
+                      head_width= 22,
+                      width = 8,
+                      length_includes_head=True,
+                      shape= 'right',
+                      color= 'red',
+                      ec='red') 
+    #Coordinates for green arrows
+    x_2 = [280,255,350,385,510,555]
+    y_2 = [460,510,230,275,420,465]
+    z_2 = [50,-50,50,-50,50,-50]
+    w_2 = [-35,35,30,-30,40,-40]
+
+    for x,y,w,z in zip(x_2,y_2,w_2,z_2):
+        plt.arrow(x,y,w,z,
+                  head_width= 22,
+                  width = 8,
+                  length_includes_head=True,
+                  shape= 'right',
+                  color= 'green',
+                  ec='green')
+
+    #Netzbezug: North    
+    plt.text(200, 140, str(round(em_hs_n)), fontsize = 12)
+    plt.text(275,120, str(round(em_n_hs)), fontsize = 12)
+    #Netzbezug: Middle
+    plt.text(340,385, str(round(em_hs_m)), fontsize = 12)
+    plt.text(425,360, str(round(em_m_hs)), fontsize = 12)
+    #Netzbezug: East  
+    plt.text(630,485, str(round(em_hs_e)), fontsize = 12)
+    plt.text(720,465, str(round(em_e_hs)), fontsize = 12)
+    #Netzbezug: Swest  
+    plt.text(70,485, str(round(em_hs_s)), fontsize = 12)
+    plt.text(140,465, str(round(em_s_hs)), fontsize = 12)
+    #Netzaustausch: Middle <-> Swest
+    plt.text(200,500, str(round(em_m_s)), fontsize = 12)
+    plt.text(300,475, str(round(em_s_m)), fontsize = 12)
+    #Netzaustausch: Middle <-> North
+    plt.text(370,230, str(round(em_m_n)), fontsize = 12)
+    plt.text(320,280, str(round(em_n_m)), fontsize = 12)
+    #Netzaustausch: Middle <-> East
+    plt.text(500,475, str(round(em_m_e)), fontsize = 12)
+    plt.text(550,425, str(round(em_e_m)), fontsize = 12)
+    plt.text(790,70, '*The values are in GWh', fontsize = 10)
+    red_patch = mpatches.Patch(color='red', label='Transformer Hös<->HS')
+    green_patch = mpatches.Patch(color='green', label='Connection between regions')
+    plt.legend(handles=[red_patch, green_patch])
+    #plt.locator_params(nbins=20)
+    #plt.grid()
+    plt.show()
+       
+    plt.savefig(os.path.join(os.getcwd(), 'figures',permutation,  model_name+'_grid.png'), dpi=500)
+    

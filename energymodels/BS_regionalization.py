@@ -138,7 +138,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
 
     """Link between HS & different regions""" 
     energysystem.add(solph.components.Link(
-        label='North<->Middel',
+        label='North<->Middle',
         inputs= {b_el_north: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle']),
                  b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle'])},
         outputs= {b_el_middle: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
@@ -148,7 +148,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         ))
 
     energysystem.add(solph.components.Link(
-        label='Middel<->Swest',
+        label='Middle<->Swest',
         inputs= {b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_middle_swest']),
                  b_el_swest: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_middle_swest'])},
         outputs= {b_el_swest: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
@@ -158,7 +158,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         ))
 
     energysystem.add(solph.components.Link(
-         label='East<->Middel',
+         label='East<->Middle',
          inputs= {b_el_east: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_east_middle']),
                   b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_east_middle'])},
          outputs= {b_el_middle: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),

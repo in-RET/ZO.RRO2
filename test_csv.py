@@ -10,7 +10,10 @@ from oemof import network, solph
 import pandas as pd
 import os
 workdir = os.getcwd()
-from src.postprocessing.export_results import export_csv_region
+import matplotlib.pyplot as plt
+import numpy as np
+from src.postprocessing.export_results import export_csv_region, grid_energy_map
+
 
 # name = os.path.basename(__file__)
 # name = name.replace(".py", "")
@@ -24,11 +27,15 @@ energysystem.restore(my_path, os.path.join(workdir,
                      'dumps', '2030_BS0001', 'BS_regionalization_2030_BS0001.dump'))
 
 # model_name '_' years '_' variations '.dump'
-
+img_path = os.path.abspath(os.path.join(os.getcwd(), 
+                     'figures','Thuringia_karte_mit_Landkreisen_dull.png'))
+img=mpimg.imread(img_path)
+plt.show()
 results = energysystem.results["main"]
 year = [2030,2040,2050]
 
 export = export_csv_region(results, 2030 , '2030_BS0001', 'BS_regionalization_2030_BS0001')
+grid_energy_map(results,'2030_BS0001', 'BS_regionalization_2030_BS0001')
 
 region = ['n','s', 'e', 'm']
 Region_csv = pd.DataFrame()
@@ -48,6 +55,7 @@ for r in region:
     Gas_storage = solph.views.node(results, 'Gas_storage_'+ r)
     H2_storage = solph.views.node(results, 'H2_storage_'+ r)
     
+#%%
 
 
 print("Ende")
