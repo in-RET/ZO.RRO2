@@ -319,7 +319,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_north: solph.Flow(fix=north.Wind_feed_in_profile['Wind_feed_in'],
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_north'][model_ID])
+                                                                    minimum = scalars['Parameter_onshore_wind_power_plant']['potential_north_min'][model_ID],
+                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_north_max'][model_ID])
         )}))
     #------------------------------------------------------------------------------
     # Photovoltaic Rooftop systems
@@ -329,7 +330,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_north: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_north'],
                                         custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_north'][model_ID])
+                                                                    minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_north_min'][model_ID],
+                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_north_max'][model_ID])
         )}))
     #------------------------------------------------------------------------------
     # Photovoltaic Openfield systems
@@ -339,7 +341,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_north: solph.Flow(fix=sequences['feed_in_profile']['PV_openfield_north'],
                                         custom_attributes={'emission_factor': scalars['Parameter_field_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['field_photovoltaic_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_north'][model_ID])
+                                                                    minimum=scalars['Parameter_field_photovoltaic_power_plant']['potential_north_min'][model_ID],
+                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_north_max'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -350,8 +353,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_north: solph.Flow(fix=sequences['feed_in_profile']['Hydro_power'],
                                         custom_attributes={'emission_factor': scalars['Parameter_run_river_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['run_river_power_plant']['epc'], 
-                                                                    minimum=scalars['Parameter_run_river_power_plant']['potential_north'][model_ID], 
-                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_north'][model_ID])
+                                                                    minimum= scalars['Parameter_run_river_power_plant']['potential_north_min'][model_ID], 
+                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_north_min'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -362,7 +365,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_dist_heat_n: solph.Flow(fix=sequences['feed_in_profile']['Solarthermal'], 
                                           custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
                                           investment=solph.Investment(ep_costs=epc_costs['solar_thermal_power_plant']['epc'], 
-                                                                      maximum=scalars['Parameter_solar_thermal_power_plant']['potential_north'][model_ID])
+                                                                      maximum=scalars['Parameter_solar_thermal_power_plant']['potential_north_max'][model_ID]/4)
         )}))
     
     """ Imports """
@@ -396,7 +399,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                     fix=sequences['Base_demand_profile']['base_load'], 
                                     #nominal_value = 1,
                                     investment = solph.Investment(ep_costs=0),
-                                    summed_max=scalars['System_configurations']['System']['Menge_Braunkohle']*len(import_price['import_brown_coal_price']),
+                                    summed_max=(scalars['System_configurations']['System']['Menge_Braunkohle']/4 )*len(import_price['import_brown_coal_price']),
                                     custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Braunkohle']},
         )}))
     
@@ -409,7 +412,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                     fix=sequences['Base_demand_profile']['base_load'], 
                                     #nominal_value = 1,
                                     investment = solph.Investment(ep_costs=0),
-                                    summed_max=scalars['System_configurations']['System']['Menge_Steinkohle']*len(import_price['import_brown_coal_price']),
+                                    summed_max=(scalars['System_configurations']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
                                     custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Steinkohle']},
                                     
         )}))
@@ -461,7 +464,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity']['epc'], 
-                                        maximum=scalars['Parameter_storage_electricity']['potential_north'][model_ID],
+                                        maximum=scalars['Parameter_storage_electricity']['potential_north'][model_ID]/4,
                                         )
         ))
     
@@ -472,12 +475,12 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label='Heat storage_n',
         inputs={b_dist_heat_n: solph.Flow(
                                   custom_attributes={'keywordWSP': 1},
-                                  nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+                                  nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID])/4,
                                   #nonconvex=solph.NonConvex()
                                     )},
         outputs={b_dist_heat_n: solph.Flow(
                                     custom_attributes={'keywordWSP': 1},
-                                    nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+                                    nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID])/4,
                                     #nonconvex=solph.NonConvex()
                                     )},
         loss_rate=float(scalars['Parameter_storage_heat']['loss_rate'][model_ID]/24),
@@ -507,8 +510,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity_pumped_hydro_storage_power_technology']['epc'],
-                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_min'][model_ID],
-                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_max'][model_ID])
+                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_north_min'][model_ID],
+                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_max'][model_ID]/4)
         ))
     
     #------------------------------------------------------------------------------
@@ -526,7 +529,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_gas']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_gas']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_gas']['epc'], 
-                                      maximum = scalars['Parameter_storage_gas']['potential_north'][model_ID])  
+                                      maximum = scalars['Parameter_storage_gas']['potential_north'][model_ID]/4)  
         ))
     
     #------------------------------------------------------------------------------
@@ -544,7 +547,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_hydrogen']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_hydrogen']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_hydrogen']['epc'], 
-                                      maximum = scalars['Parameter_storage_hydrogen']['potential_north'][model_ID])  
+                                      maximum = scalars['Parameter_storage_hydrogen']['potential_north'][model_ID]/4)  
         ))
     
     """
@@ -557,7 +560,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Electrolysis_n",
         inputs={b_el_north: solph.Flow()},
         outputs={b_H2_n: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['electrolysis']['epc'], 
-                                                                 maximum=scalars['Parameter_electrolysis']['potential'][model_ID]))},
+                                                                 maximum=scalars['Parameter_electrolysis']['potential'][model_ID]/4))},
         conversion_factors={b_H2_n: scalars['Parameter_electrolysis']['efficiency_'+str(YEAR)][model_ID]},
         ))
     
@@ -578,7 +581,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label='GuD_n',
         inputs={b_gas_n: solph.Flow(custom_attributes={'time_factor' :1})},
         outputs={b_el_north: solph.Flow(investment=solph.Investment(ep_costs=epc_costs['combined_heat_and_power_generating_unit']['epc'],
-                                                              maximum =scalars['Parameter_combined_heat_and_power_generating_unit']['potential'][model_ID])),
+                                                              maximum =scalars['Parameter_combined_heat_and_power_generating_unit']['potential'][model_ID]/4)),
                  b_dist_heat_n: solph.Flow()},
         conversion_factors={b_el_north: scalars['Parameter_combined_heat_and_power_generating_unit']['efficiency_el_'+str(YEAR)][model_ID], 
                             b_dist_heat_n: scalars['Parameter_combined_heat_and_power_generating_unit']['efficiency_th_'+str(YEAR)][model_ID]}
@@ -591,7 +594,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Fuelcell_n",
         inputs={b_H2_n: solph.Flow()},
         outputs={b_el_north: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['fuel_cells']['epc'], 
-                                                                maximum=scalars['Parameter_fuel_cells']['potential'][model_ID]))},
+                                                                maximum=scalars['Parameter_fuel_cells']['potential'][model_ID]/4))},
         conversion_factors={b_el_north: scalars['Parameter_fuel_cells']['efficiency_' +str(YEAR)][model_ID]}
         ))
     
@@ -602,7 +605,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Methanisation_n",
         inputs={b_H2_n: solph.Flow()},
         outputs={b_gas_n: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['methanation']['epc'], 
-                                                                 maximum=scalars['Parameter_methanation']['potential'][model_ID]))},
+                                                                 maximum=scalars['Parameter_methanation']['potential'][model_ID]/4))},
         conversion_factors={b_gas_n: scalars['Parameter_methanation']['efficiency_'+str(YEAR)][model_ID]}  
         ))
     
@@ -697,7 +700,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     maximale_Wasserstoffeinspeisung_Lastgang_n = [None] * len(demand['gas']['north'])
     maximale_Wasserstoffeinspeisung_n=0
     for a in range(0, len(demand['gas']['north'])):
-        maximale_Wasserstoffeinspeisung_Lastgang_n[a]=(demand['gas']['north'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
+        maximale_Wasserstoffeinspeisung_Lastgang_n[a]=(demand['gas']['north'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]/4))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
         if maximale_Wasserstoffeinspeisung_Lastgang_n[a] > maximale_Wasserstoffeinspeisung_n:
             maximale_Wasserstoffeinspeisung_n = maximale_Wasserstoffeinspeisung_Lastgang_n[a]
     
@@ -716,7 +719,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Heatpump_water_n",
         inputs={b_el_north: solph.Flow()},
         outputs={b_dist_heat_n: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_ground_Flusswärme']['epc'], 
-                                                                  maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]/4))},
         conversion_factors={b_dist_heat_n: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
@@ -727,7 +730,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Heatpump_air_n",
         inputs={b_el_north: solph.Flow()},
         outputs={b_dist_heat_n: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
-                                                                 maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]))},
+                                                                 maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]/4))},
         conversion_factors={b_dist_heat_n: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
@@ -738,7 +741,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="PtL_n",
         inputs={b_H2_n: solph.Flow()},
         outputs={b_oil_fuel_n: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['power_to_liquid_system']['epc'], 
-                                                                             maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]))},
+                                                                             maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]/4))},
         conversion_factors={b_oil_fuel_n: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]}
         ))
     
@@ -798,7 +801,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         )}))
     
     ##############################################################       East region         #################################################################
-    """ Defining energy system for North region"""
+    """ Defining energy system for East region"""
     
     #------------------------------------------------------------------------------
     # Gas Bus
@@ -841,7 +844,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Sink(
         label='Export_Electricity_e', 
         inputs={b_el_east: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_east'],
-                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Electricity_brain_brain_'+str(YEAR)]]
+                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]]
         )}))
 
     #------------------------------------------------------------------------------
@@ -949,7 +952,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_east: solph.Flow(fix=east.Wind_feed_in_profile['Wind_feed_in'],
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_east'][model_ID])
+                                                                    minimum=scalars['Parameter_onshore_wind_power_plant']['potential_east_min'][model_ID],
+                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_east_max'][model_ID])
         )}))
     #------------------------------------------------------------------------------
     # Photovoltaic Rooftop systems
@@ -959,7 +963,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_east: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_east'],
                                         custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_east'][model_ID])
+                                                                    minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_east_min'][model_ID],
+                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_east_max'][model_ID])
         )}))
     #------------------------------------------------------------------------------
     # Photovoltaic Openfield systems
@@ -969,7 +974,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_east: solph.Flow(fix=sequences['feed_in_profile']['PV_openfield_east'],
                                         custom_attributes={'emission_factor': scalars['Parameter_field_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['field_photovoltaic_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_east'][model_ID])
+                                                                    minimum=scalars['Parameter_field_photovoltaic_power_plant']['potential_east_min'][model_ID],
+                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_east_max'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -980,8 +986,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_east: solph.Flow(fix=sequences['feed_in_profile']['Hydro_power'],
                                         custom_attributes={'emission_factor': scalars['Parameter_run_river_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['run_river_power_plant']['epc'], 
-                                                                    minimum=scalars['Parameter_run_river_power_plant']['potential_east'][model_ID], 
-                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_east'][model_ID])
+                                                                    minimum=scalars['Parameter_run_river_power_plant']['potential_east_min'][model_ID], 
+                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_east_min'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -992,7 +998,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_dist_heat_e: solph.Flow(fix=sequences['feed_in_profile']['Solarthermal'], 
                                           custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
                                           investment=solph.Investment(ep_costs=epc_costs['solar_thermal_power_plant']['epc'], 
-                                                                      maximum=scalars['Parameter_solar_thermal_power_plant']['potential_east'][model_ID])
+                                                                      maximum=scalars['Parameter_solar_thermal_power_plant']['potential_east_max'][model_ID]/4)
         )}))
     
     """ Imports """
@@ -1026,7 +1032,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                     fix=sequences['Base_demand_profile']['base_load'], 
                                     #nominal_value = 1,
                                     investment = solph.Investment(ep_costs=0),
-                                    summed_max=scalars['System_configurations']['System']['Menge_Braunkohle']*len(import_price['import_brown_coal_price']),
+                                    summed_max=(scalars['System_configurations']['System']['Menge_Braunkohle']/4)*len(import_price['import_brown_coal_price']),
                                     custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Braunkohle']},
         )}))
     
@@ -1039,7 +1045,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                     fix=sequences['Base_demand_profile']['base_load'], 
                                     #nominal_value = 1,
                                     investment = solph.Investment(ep_costs=0),
-                                    summed_max=scalars['System_configurations']['System']['Menge_Steinkohle']*len(import_price['import_brown_coal_price']),
+                                    summed_max=(scalars['System_configurations']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
                                     custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Steinkohle']},
                                     
         )}))
@@ -1091,7 +1097,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity']['epc'], 
-                                        maximum=scalars['Parameter_storage_electricity']['potential_east'][model_ID],
+                                        maximum=scalars['Parameter_storage_electricity']['potential_east'][model_ID]/4,
                                         )
         ))
     
@@ -1102,12 +1108,12 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label='Heat storage_e',
         inputs={b_dist_heat_e: solph.Flow(
                                   custom_attributes={'keywordWSP': 1},
-                                  nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+                                  nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID])/4,
                                   #nonconvex=solph.NonConvex()
                                     )},
         outputs={b_dist_heat_e: solph.Flow(
                                     custom_attributes={'keywordWSP': 1},
-                                    nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+                                    nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID])/4,
                                     #nonconvex=solph.NonConvex()
                                     )},
         loss_rate=float(scalars['Parameter_storage_heat']['loss_rate'][model_ID]/24),
@@ -1137,8 +1143,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity_pumped_hydro_storage_power_technology']['epc'],
-                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_min'][model_ID],
-                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_max'][model_ID])
+                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_east_min'][model_ID],
+                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_max'][model_ID]/4)
         ))
     
     #------------------------------------------------------------------------------
@@ -1156,7 +1162,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_gas']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_gas']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_gas']['epc'], 
-                                      maximum = scalars['Parameter_storage_gas']['potential_east'][model_ID])     
+                                      maximum = scalars['Parameter_storage_gas']['potential_east'][model_ID]/4)     
         ))
     
     #------------------------------------------------------------------------------
@@ -1174,7 +1180,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_hydrogen']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_hydrogen']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_hydrogen']['epc'], 
-                                      maximum = scalars['Parameter_storage_hydrogen']['potential_east'][model_ID])  
+                                      maximum = scalars['Parameter_storage_hydrogen']['potential_east'][model_ID]/4)  
           
         ))
     
@@ -1188,7 +1194,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Electrolysis_e",
         inputs={b_el_east: solph.Flow()},
         outputs={b_H2_e: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['electrolysis']['epc'], 
-                                                                  maximum=scalars['Parameter_electrolysis']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_electrolysis']['potential'][model_ID]/4))},
         conversion_factors={b_H2_e: scalars['Parameter_electrolysis']['efficiency_'+str(YEAR)][model_ID]},
         ))
     
@@ -1209,7 +1215,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label='GuD_e',
         inputs={b_gas_e: solph.Flow(custom_attributes={'time_factor' :1})},
         outputs={b_el_east: solph.Flow(investment=solph.Investment(ep_costs=epc_costs['combined_heat_and_power_generating_unit']['epc'],
-                                                              maximum =scalars['Parameter_combined_heat_and_power_generating_unit']['potential'][model_ID])),
+                                                              maximum =scalars['Parameter_combined_heat_and_power_generating_unit']['potential'][model_ID]/4)),
                   b_dist_heat_e: solph.Flow()},
         conversion_factors={b_el_east: scalars['Parameter_combined_heat_and_power_generating_unit']['efficiency_el_'+str(YEAR)][model_ID], 
                             b_dist_heat_e: scalars['Parameter_combined_heat_and_power_generating_unit']['efficiency_th_'+str(YEAR)][model_ID]}
@@ -1222,7 +1228,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Fuelcell_e",
         inputs={b_H2_e: solph.Flow()},
         outputs={b_el_east: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['fuel_cells']['epc'], 
-                                                                maximum=scalars['Parameter_fuel_cells']['potential'][model_ID]))},
+                                                                maximum=scalars['Parameter_fuel_cells']['potential'][model_ID]/4))},
         conversion_factors={b_el_east: scalars['Parameter_fuel_cells']['efficiency_' +str(YEAR)][model_ID]}
         ))
     
@@ -1233,7 +1239,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Methanisation_e",
         inputs={b_H2_e: solph.Flow()},
         outputs={b_gas_e: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['methanation']['epc'], 
-                                                                  maximum=scalars['Parameter_methanation']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_methanation']['potential'][model_ID]/4))},
         conversion_factors={b_gas_e: scalars['Parameter_methanation']['efficiency_'+str(YEAR)][model_ID]}    
         ))
     
@@ -1328,7 +1334,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     maximale_Wasserstoffeinspeisung_Lastgang_e = [None] * len(demand['gas']['east'])
     maximale_Wasserstoffeinspeisung_e=0
     for a in range(0, len(demand['gas']['east'])):
-        maximale_Wasserstoffeinspeisung_Lastgang_e[a]=(demand['gas']['east'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
+        maximale_Wasserstoffeinspeisung_Lastgang_e[a]=(demand['gas']['east'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]/4))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
         if maximale_Wasserstoffeinspeisung_Lastgang_e[a] > maximale_Wasserstoffeinspeisung_e:
             maximale_Wasserstoffeinspeisung_e = maximale_Wasserstoffeinspeisung_Lastgang_e[a]
     
@@ -1347,7 +1353,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Heatpump_water_e",
         inputs={b_el_east: solph.Flow()},
         outputs={b_dist_heat_e: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_ground_Flusswärme']['epc'], 
-                                                                  maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]/4))},
         conversion_factors={b_dist_heat_e: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
@@ -1358,7 +1364,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Heatpump_air_e",
         inputs={b_el_east: solph.Flow()},
         outputs={b_dist_heat_e: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
-                                                                  maximum=scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]/4))},
         conversion_factors={b_dist_heat_e: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
@@ -1369,7 +1375,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="PtL_e",
         inputs={b_H2_e: solph.Flow()},
         outputs={b_oil_fuel_e: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['power_to_liquid_system']['epc'], 
-                                                                              maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]))},
+                                                                              maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]/4))},
         conversion_factors={b_oil_fuel_e: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]}
         ))
     
@@ -1580,7 +1586,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_middle: solph.Flow(fix=middle.Wind_feed_in_profile['Wind_feed_in'],
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_middle'][model_ID])
+                                                                    minimum=scalars['Parameter_onshore_wind_power_plant']['potential_middle_min'][model_ID],
+                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_middle_max'][model_ID])
         )}))
     #------------------------------------------------------------------------------
     # Photovoltaic Rooftop systems
@@ -1590,7 +1597,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_middle: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_middle'],
                                         custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_middle'][model_ID])
+                                                                    minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_middle_min'][model_ID],
+                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_middle_max'][model_ID])
         )}))
     #------------------------------------------------------------------------------
     # Photovoltaic Openfield systems
@@ -1600,7 +1608,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_middle: solph.Flow(fix=sequences['feed_in_profile']['PV_openfield_middle'],
                                         custom_attributes={'emission_factor': scalars['Parameter_field_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['field_photovoltaic_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_middle'][model_ID])
+                                                                    minimum=scalars['Parameter_field_photovoltaic_power_plant']['potential_middle_min'][model_ID],
+                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_middle_max'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -1611,8 +1620,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_middle: solph.Flow(fix=sequences['feed_in_profile']['Hydro_power'],
                                         custom_attributes={'emission_factor': scalars['Parameter_run_river_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['run_river_power_plant']['epc'], 
-                                                                    minimum=scalars['Parameter_run_river_power_plant']['potential_middle'][model_ID], 
-                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_middle'][model_ID])
+                                                                    minimum=scalars['Parameter_run_river_power_plant']['potential_middle_min'][model_ID], 
+                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_middle_min'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -1623,7 +1632,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_dist_heat_m: solph.Flow(fix=sequences['feed_in_profile']['Solarthermal'], 
                                           custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
                                           investment=solph.Investment(ep_costs=epc_costs['solar_thermal_power_plant']['epc'], 
-                                                                      maximum=scalars['Parameter_solar_thermal_power_plant']['potential_middle'][model_ID])
+                                                                      maximum=scalars['Parameter_solar_thermal_power_plant']['potential_middle_max'][model_ID]/4)
         )}))
     
     """ Imports """
@@ -1657,7 +1666,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                     fix=sequences['Base_demand_profile']['base_load'], 
                                     #nominal_value = 1,
                                     investment = solph.Investment(ep_costs=0),
-                                    summed_max=scalars['System_configurations']['System']['Menge_Braunkohle']*len(import_price['import_brown_coal_price']),
+                                    summed_max=(scalars['System_configurations']['System']['Menge_Braunkohle']/4)*len(import_price['import_brown_coal_price']),
                                     custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Braunkohle']},
         )}))
     
@@ -1670,7 +1679,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                     fix=sequences['Base_demand_profile']['base_load'], 
                                     #nominal_value = 1,
                                     investment = solph.Investment(ep_costs=0),
-                                    summed_max=scalars['System_configurations']['System']['Menge_Steinkohle']*len(import_price['import_brown_coal_price']),
+                                    summed_max=(scalars['System_configurations']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
                                     custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Steinkohle']},
                                     
         )}))
@@ -1722,7 +1731,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity']['epc'], 
-                                        maximum=scalars['Parameter_storage_electricity']['potential_middle'][model_ID],
+                                        maximum=scalars['Parameter_storage_electricity']['potential_middle'][model_ID]/4,
                                         )
         ))
     
@@ -1733,12 +1742,12 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label='Heat storage_m',
         inputs={b_dist_heat_m: solph.Flow(
                                   custom_attributes={'keywordWSP': 1},
-                                  nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+                                  nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID])/4,
                                   #nonconvex=solph.NonConvex()
                                     )},
         outputs={b_dist_heat_m: solph.Flow(
                                     custom_attributes={'keywordWSP': 1},
-                                    nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+                                    nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID])/4,
                                     #nonconvex=solph.NonConvex()
                                     )},
         loss_rate=float(scalars['Parameter_storage_heat']['loss_rate'][model_ID]/24),
@@ -1768,8 +1777,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity_pumped_hydro_storage_power_technology']['epc'],
-                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_min'][model_ID],
-                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_max'][model_ID])
+                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_middle_min'][model_ID],
+                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_max'][model_ID]/4)
         ))
     
     #------------------------------------------------------------------------------
@@ -1787,7 +1796,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_gas']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_gas']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_gas']['epc'], 
-                                      maximum = scalars['Parameter_storage_gas']['potential_middle'][model_ID])      
+                                      maximum = scalars['Parameter_storage_gas']['potential_middle'][model_ID]/4)      
         ))
     
     #------------------------------------------------------------------------------
@@ -1805,7 +1814,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_hydrogen']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_hydrogen']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_hydrogen']['epc'], 
-                                      maximum = scalars['Parameter_storage_hydrogen']['potential_middle'][model_ID])  
+                                      maximum = scalars['Parameter_storage_hydrogen']['potential_middle'][model_ID]/4)  
         ))
     
     """
@@ -1818,7 +1827,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Electrolysis_m",
         inputs={b_el_middle: solph.Flow()},
         outputs={b_H2_m: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['electrolysis']['epc'], 
-                                                                  maximum=scalars['Parameter_electrolysis']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_electrolysis']['potential'][model_ID]/4))},
         conversion_factors={b_H2_m: scalars['Parameter_electrolysis']['efficiency_'+str(YEAR)][model_ID]},
         ))
     
@@ -1839,7 +1848,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label='GuD_m',
         inputs={b_gas_m: solph.Flow(custom_attributes={'time_factor' :1})},
         outputs={b_el_middle: solph.Flow(investment=solph.Investment(ep_costs=epc_costs['combined_heat_and_power_generating_unit']['epc'],
-                                                              maximum =scalars['Parameter_combined_heat_and_power_generating_unit']['potential'][model_ID])),
+                                                              maximum =scalars['Parameter_combined_heat_and_power_generating_unit']['potential'][model_ID]/4)),
                   b_dist_heat_m: solph.Flow()},
         conversion_factors={b_el_middle: scalars['Parameter_combined_heat_and_power_generating_unit']['efficiency_el_'+str(YEAR)][model_ID], 
                             b_dist_heat_m: scalars['Parameter_combined_heat_and_power_generating_unit']['efficiency_th_'+str(YEAR)][model_ID]}
@@ -1852,7 +1861,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Fuelcell_m",
         inputs={b_H2_m: solph.Flow()},
         outputs={b_el_middle: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['fuel_cells']['epc'], 
-                                                                maximum=scalars['Parameter_fuel_cells']['potential'][model_ID]))},
+                                                                maximum=scalars['Parameter_fuel_cells']['potential'][model_ID]/4))},
         conversion_factors={b_el_middle: scalars['Parameter_fuel_cells']['efficiency_' +str(YEAR)][model_ID]}
         ))
     
@@ -1863,7 +1872,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Methanisation_m",
         inputs={b_H2_m: solph.Flow()},
         outputs={b_gas_m: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['methanation']['epc'], 
-                                                                  maximum=scalars['Parameter_methanation']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_methanation']['potential'][model_ID]/4))},
         conversion_factors={b_gas_m: scalars['Parameter_methanation']['efficiency_'+str(YEAR)][model_ID]}    
         ))
     
@@ -1958,7 +1967,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     maximale_Wasserstoffeinspeisung_Lastgang_m = [None] * len(demand['gas']['middle'])
     maximale_Wasserstoffeinspeisung_m=0
     for a in range(0, len(demand['gas']['middle'])):
-        maximale_Wasserstoffeinspeisung_Lastgang_m[a]=(demand['gas']['middle'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
+        maximale_Wasserstoffeinspeisung_Lastgang_m[a]=(demand['gas']['middle'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]/4))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
         if maximale_Wasserstoffeinspeisung_Lastgang_m[a] > maximale_Wasserstoffeinspeisung_m:
             maximale_Wasserstoffeinspeisung_m = maximale_Wasserstoffeinspeisung_Lastgang_m[a]
     
@@ -1977,7 +1986,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Heatpump_water_m",
         inputs={b_el_middle: solph.Flow()},
         outputs={b_dist_heat_m: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_ground_Flusswärme']['epc'], 
-                                                                  maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]/4))},
         conversion_factors={b_dist_heat_m: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
@@ -1988,7 +1997,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Heatpump_air_m",
         inputs={b_el_middle: solph.Flow()},
         outputs={b_dist_heat_m: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
-                                                                  maximum=scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]/4))},
         conversion_factors={b_dist_heat_m: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
@@ -1999,7 +2008,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="PtL_m",
         inputs={b_H2_m: solph.Flow()},
         outputs={b_oil_fuel_m: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['power_to_liquid_system']['epc'], 
-                                                                              maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]))},
+                                                                              maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]/4))},
         conversion_factors={b_oil_fuel_m: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]}
         ))
     
@@ -2210,8 +2219,9 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label='Wind_s', 
         outputs={b_el_swest: solph.Flow(fix=swest.Wind_feed_in_profile['Wind_feed_in'],
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
-                                        investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_swest'][model_ID])
+                                        investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'],
+                                                                    minimum=scalars['Parameter_onshore_wind_power_plant']['potential_swest_min'][model_ID],
+                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_swest_max'][model_ID])
         )}))
     #------------------------------------------------------------------------------
     # Photovoltaic Rooftop systems
@@ -2221,7 +2231,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_swest: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_swest'],
                                         custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_swest'][model_ID])
+                                                                    minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_swest_min'][model_ID],
+                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_swest_max'][model_ID])
         )}))
     #------------------------------------------------------------------------------
     # Photovoltaic Openfield systems
@@ -2231,7 +2242,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_swest: solph.Flow(fix=sequences['feed_in_profile']['PV_openfield_swest'],
                                         custom_attributes={'emission_factor': scalars['Parameter_field_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['field_photovoltaic_power_plant']['epc'], 
-                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_swest'][model_ID])
+                                                                    minimum=scalars['Parameter_field_photovoltaic_power_plant']['potential_swest_min'][model_ID],
+                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_swest_max'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -2242,8 +2254,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el_swest: solph.Flow(fix=sequences['feed_in_profile']['Hydro_power'],
                                         custom_attributes={'emission_factor': scalars['Parameter_run_river_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['run_river_power_plant']['epc'], 
-                                                                    minimum=scalars['Parameter_run_river_power_plant']['potential_swest'][model_ID], 
-                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_swest'][model_ID])
+                                                                    minimum=scalars['Parameter_run_river_power_plant']['potential_swest_min'][model_ID], 
+                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_swest_min'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -2254,7 +2266,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_dist_heat_s: solph.Flow(fix=sequences['feed_in_profile']['Solarthermal'], 
                                           custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
                                           investment=solph.Investment(ep_costs=epc_costs['solar_thermal_power_plant']['epc'], 
-                                                                      maximum=scalars['Parameter_solar_thermal_power_plant']['potential_swest'][model_ID])
+                                                                      maximum=scalars['Parameter_solar_thermal_power_plant']['potential_swest_max'][model_ID]/4)
         )}))
     
     """ Imports """
@@ -2288,7 +2300,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                     fix=sequences['Base_demand_profile']['base_load'], 
                                     #nominal_value = 1,
                                     investment = solph.Investment(ep_costs=0),
-                                    summed_max=scalars['System_configurations']['System']['Menge_Braunkohle']*len(import_price['import_brown_coal_price']),
+                                    summed_max=(scalars['System_configurations']['System']['Menge_Braunkohle']/4)*len(import_price['import_brown_coal_price']),
                                     custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Braunkohle']},
         )}))
     
@@ -2301,7 +2313,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                     fix=sequences['Base_demand_profile']['base_load'], 
                                     #nominal_value = 1,
                                     investment = solph.Investment(ep_costs=0),
-                                    summed_max=scalars['System_configurations']['System']['Menge_Steinkohle']*len(import_price['import_brown_coal_price']),
+                                    summed_max=(scalars['System_configurations']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
                                     custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Steinkohle']},
                                     
         )}))
@@ -2353,7 +2365,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity']['epc'], 
-                                        maximum=scalars['Parameter_storage_electricity']['potential_swest'][model_ID],
+                                        maximum=scalars['Parameter_storage_electricity']['potential_swest'][model_ID]/4,
                                         )
         ))
     
@@ -2364,12 +2376,12 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label='Heat storage_s',
         inputs={b_dist_heat_s: solph.Flow(
                                   custom_attributes={'keywordWSP': 1},
-                                  nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+                                  nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID])/4,
                                   #nonconvex=solph.NonConvex()
                                     )},
         outputs={b_dist_heat_s: solph.Flow(
                                     custom_attributes={'keywordWSP': 1},
-                                    nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+                                    nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID])/4,
                                     #nonconvex=solph.NonConvex()
                                     )},
         loss_rate=float(scalars['Parameter_storage_heat']['loss_rate'][model_ID]/24),
@@ -2399,8 +2411,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity_pumped_hydro_storage_power_technology']['epc'],
-                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_min'][model_ID],
-                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_max'][model_ID])
+                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_swest_min'][model_ID],
+                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_max'][model_ID]/4)
         ))
     
     #------------------------------------------------------------------------------
@@ -2418,7 +2430,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_gas']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_gas']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_gas']['epc'], 
-                                      maximum = scalars['Parameter_storage_gas']['potential_swest'][model_ID])     
+                                      maximum = scalars['Parameter_storage_gas']['potential_swest'][model_ID]/4)     
         ))
     
     #------------------------------------------------------------------------------
@@ -2436,7 +2448,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_hydrogen']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_hydrogen']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_hydrogen']['epc'], 
-                                      maximum = scalars['Parameter_storage_hydrogen']['potential_swest'][model_ID])  
+                                      maximum = scalars['Parameter_storage_hydrogen']['potential_swest'][model_ID]/4)  
         ))
     
     """
@@ -2448,7 +2460,8 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Electrolysis_s",
         inputs={b_el_swest: solph.Flow()},
-        outputs={b_H2_s: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['electrolysis']['epc']))},
+        outputs={b_H2_s: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['electrolysis']['epc'],
+                                                                  maximum=scalars['Parameter_electrolysis']['potential'][model_ID]/4))},
         conversion_factors={b_dist_heat_s: scalars['Parameter_electrolysis']['efficiency_' +str(YEAR)][model_ID]} 
         ))
     
@@ -2469,7 +2482,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label='GuD_s',
         inputs={b_gas_s: solph.Flow(custom_attributes={'time_factor' :1})},
         outputs={b_el_swest: solph.Flow(investment=solph.Investment(ep_costs=epc_costs['combined_heat_and_power_generating_unit']['epc'],
-                                                              maximum =scalars['Parameter_combined_heat_and_power_generating_unit']['potential'][model_ID])),
+                                                              maximum =scalars['Parameter_combined_heat_and_power_generating_unit']['potential'][model_ID]/4)),
                   b_dist_heat_s: solph.Flow()},
         conversion_factors={b_el_swest: scalars['Parameter_combined_heat_and_power_generating_unit']['efficiency_el_'+str(YEAR)][model_ID], 
                             b_dist_heat_s: scalars['Parameter_combined_heat_and_power_generating_unit']['efficiency_th_'+str(YEAR)][model_ID]}
@@ -2482,7 +2495,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Fuelcell_s",
         inputs={b_H2_s: solph.Flow()},
         outputs={b_el_swest: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['fuel_cells']['epc'], 
-                                                                maximum=scalars['Parameter_fuel_cells']['potential'][model_ID]))},
+                                                                maximum=scalars['Parameter_fuel_cells']['potential'][model_ID]/4))},
         conversion_factors={b_el_swest: scalars['Parameter_fuel_cells']['efficiency_' +str(YEAR)][model_ID]}
         ))
     
@@ -2493,7 +2506,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Methanisation_s",
         inputs={b_H2_s: solph.Flow()},
         outputs={b_gas_s: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['methanation']['epc'], 
-                                                                  maximum=scalars['Parameter_methanation']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_methanation']['potential'][model_ID]/4))},
         conversion_factors={b_gas_s: scalars['Parameter_methanation']['efficiency_'+str(YEAR)][model_ID]}    
         ))
     
@@ -2588,7 +2601,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     maximale_Wasserstoffeinspeisung_Lastgang_s = [None] * len(demand['gas']['swest'])
     maximale_Wasserstoffeinspeisung_s=0
     for a in range(0, len(demand['gas']['swest'])):
-        maximale_Wasserstoffeinspeisung_Lastgang_s[a]=(demand['gas']['swest'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
+        maximale_Wasserstoffeinspeisung_Lastgang_s[a]=(demand['gas']['swest'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]/4))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
         if maximale_Wasserstoffeinspeisung_Lastgang_s[a] > maximale_Wasserstoffeinspeisung_s:
             maximale_Wasserstoffeinspeisung_s = maximale_Wasserstoffeinspeisung_Lastgang_s[a]
     
@@ -2607,7 +2620,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Heatpump_water_s",
         inputs={b_el_swest: solph.Flow()},
         outputs={b_dist_heat_s: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_ground_Flusswärme']['epc'], 
-                                                                  maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]/4))},
         conversion_factors={b_dist_heat_s: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
@@ -2618,7 +2631,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="Heatpump_air_s",
         inputs={b_el_swest: solph.Flow()},
         outputs={b_dist_heat_s: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
-                                                                  maximum=scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]))},
+                                                                  maximum=scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]/4))},
         conversion_factors={b_dist_heat_s: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
@@ -2629,7 +2642,7 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
         label="PtL_s",
         inputs={b_H2_s: solph.Flow()},
         outputs={b_oil_fuel_s: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['power_to_liquid_system']['epc'], 
-                                                                            maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]))},
+                                                                            maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]/4))},
         conversion_factors={b_oil_fuel_s: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]}
         ))
    

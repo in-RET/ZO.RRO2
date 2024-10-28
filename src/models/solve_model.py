@@ -7,7 +7,8 @@ from oemof import solph
 from energymodels.BS_regionalization import BS_regionalization
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
-from src.postprocessing.export_results import export_csv_region
+from src.postprocessing.export_results import export_csv_region, grid_energy_map
+from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, BiogasNeuanlagen_limit,Biomasse_limit, Bilanziell_erneuerbar
 
 
 def solveModels(
@@ -18,6 +19,7 @@ def solveModels(
     gap: float = 0.005,
     solver_output: bool = True,
     print_graph: bool = False,
+    Anteilig_erneuerbar:bool = True,
 ):
 
     # Hier steht ein Code kommentar
@@ -32,7 +34,8 @@ def solveModels(
         os.makedirs(DUMP_PATH, exist_ok=True)
         os.makedirs(FIGURE_PATH, exist_ok=True)
 
-        logging.info(f"Löse %s", permutation)
+        logging.info(f"Solve %s", permutation)
+        logging.info("Building the energy system")
         energysystem,sim_data = BS_regionalization(permutation)
 
         if print_graph:
@@ -45,6 +48,17 @@ def solveModels(
             )
 
         model = solph.Model(energysystem)
+        
+        logging.info("Applying model constraints")
+        if Anteilig_erneuerbar:
+            Bilanziell_erneuerbar(model, sim_data)
+        
+        CO2_limit(model, limit = sim_data['Parameter']['System_configurations']['System']['CO2_Grenze_'+str(YEAR)])
+        BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_bio_power_unit_Biogaseinspeisung_Bestand']['potential'][model_ID])
+        BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['Parameter_bio_power_unit_Biogaseinspeisung_Neu']['potential'][model_ID])
+        Biomasse_limit(model, limit = sim_data['Parameter']['Parameter_bio_power_unit_Biomass']['potential'][model_ID])
+        
+        logging.info("Solve the model")
         model.solve(
             solver=solver,
             cmdline_options={"MIPGap": gap},
@@ -70,5 +84,6 @@ def solveModels(
         
         
         export_csv_region(energysystem.results["main"], YEAR, permutation, model_name)
+        grid_energy_map(energysystem.results["main"],permutation, model_name)
         
         return sim_data,result

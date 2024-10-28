@@ -149,3 +149,17 @@ def Biomasse_limit(om, flows=None, limit=None):
                            keyword='Biomasse_factor',
                            flows=flows,
                            limit=limit)
+    
+#------------------------------------------------------------------------------
+# Bilanziell erneuerbar
+#------------------------------------------------------------------------------
+
+def Bilanziell_erneuerbar(om, sim_data):
+    Sum_load = 0
+    region = ['north', 'middle', 'east', 'swest']
+    for r in region:
+        Sum_load += (sim_data['Loadprofiles']['electricity'][r].sum() + sim_data['Loadprofiles']['gas'][r].sum() + sim_data['Loadprofiles']['oil'][r].sum()+
+                     sim_data['Loadprofiles']['fuel'][r].sum()+sim_data['Loadprofiles']['dist_heating'][r].sum()+sim_data['Loadprofiles']['H2'][r].sum())
+    
+    constraints.emission_limit(om, limit = -Sum_load*0.55)
+    GuD_time(om, limit = 0, Starttime = 1777, Endtime= 7656)

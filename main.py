@@ -16,6 +16,7 @@ if __name__ == "__main__":
         gap=0.0,
         solver_output=False,
         print_graph=False,
+        Anteilig_erneuerbar = True
     )
 
     # %TODO: Auswertung der Dump-Daten (csv-daten erstellen, automatische grafiken etc.)

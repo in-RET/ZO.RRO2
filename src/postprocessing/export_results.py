@@ -185,8 +185,8 @@ def grid_energy_map(results, permutation, model_name):
                          'figures','Thuringia_karte_mit_Landkreisen_35.png'))
     img=mpimg.imread(img_path)
     imgplot=plt.imshow(img)
-    imgplot.axes.get_xaxis().set_visible(False)
-    imgplot.axes.get_yaxis().set_visible(False)
+    #imgplot.axes.get_xaxis().set_visible(False)
+    #imgplot.axes.get_yaxis().set_visible(False)
     
     # Coordinates for red arrows
     x_1 = [120,130,400,410,250,260,690,700]

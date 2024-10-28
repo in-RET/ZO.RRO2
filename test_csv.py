@@ -11,6 +11,7 @@ import pandas as pd
 import os
 workdir = os.getcwd()
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import numpy as np
 from src.postprocessing.export_results import export_csv_region, grid_energy_map
 
