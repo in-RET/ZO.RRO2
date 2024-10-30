@@ -659,9 +659,16 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                             investment = solph.Investment(ep_costs=0)
                                             )},
         outputs={b_el_north: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
-                                  investment=solph.Investment(ep_costs=epc_costs['biomass_heating_plant']['epc']),
-                                  custom_attributes={'emission_factor': scalars['Parameter_biomass_heating_plant']['EE_factor'][model_ID]})},
-        conversion_factors={b_el_north: scalars['Parameter_biomass_heating_plant']['efficiency_el_' +str(YEAR)][model_ID]}
+                                  investment=solph.Investment(ep_costs=epc_costs['biomass_combined_heat_and_power_plant']['epc']),
+                                  custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]}),
+                 
+                 b_dist_heat_n: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]},
+                                           fix=sequences['Base_demand_profile']['base_load'],
+                                           #nominal_value= 1
+                                           investment = solph.Investment(ep_costs=0)
+                                           )},
+        conversion_factors={b_el_north: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_el_' +str(YEAR)][model_ID],
+                            b_dist_heat_n: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_th_' +str(YEAR)][model_ID]}
         ))        
     
     #------------------------------------------------------------------------------
@@ -1293,9 +1300,16 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                             investment = solph.Investment(ep_costs=0)
                                             )},
         outputs={b_el_east: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
-                                  investment=solph.Investment(ep_costs=epc_costs['biomass_heating_plant']['epc']),
-                                  custom_attributes={'emission_factor': scalars['Parameter_biomass_heating_plant']['EE_factor'][model_ID]})},
-        conversion_factors={b_el_east: scalars['Parameter_biomass_heating_plant']['efficiency_el_' +str(YEAR)][model_ID]}
+                                  investment=solph.Investment(ep_costs=epc_costs['biomass_combined_heat_and_power_plant']['epc']),
+                                  custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]}),
+                 
+                 b_dist_heat_e: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]},
+                                           fix=sequences['Base_demand_profile']['base_load'],
+                                           #nominal_value= 1
+                                           investment = solph.Investment(ep_costs=0)
+                                           )},
+        conversion_factors={b_el_east: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_el_' +str(YEAR)][model_ID],
+                            b_dist_heat_e: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_th_' +str(YEAR)][model_ID]}
         ))        
     
     #------------------------------------------------------------------------------
@@ -1926,9 +1940,16 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                             investment = solph.Investment(ep_costs=0)
                                             )},
         outputs={b_el_middle: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
-                                  investment=solph.Investment(ep_costs=epc_costs['biomass_heating_plant']['epc']),
-                                  custom_attributes={'emission_factor': scalars['Parameter_biomass_heating_plant']['EE_factor'][model_ID]})},
-        conversion_factors={b_el_middle: scalars['Parameter_biomass_heating_plant']['efficiency_el_' +str(YEAR)][model_ID]}
+                                  investment=solph.Investment(ep_costs=epc_costs['biomass_combined_heat_and_power_plant']['epc']),
+                                  custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]}),
+                 
+                 b_dist_heat_m: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]},
+                                           fix=sequences['Base_demand_profile']['base_load'],
+                                           #nominal_value= 1
+                                           investment = solph.Investment(ep_costs=0)
+                                           )},
+        conversion_factors={b_el_middle: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_el_' +str(YEAR)][model_ID],
+                            b_dist_heat_m: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_th_' +str(YEAR)][model_ID]}
         ))        
     
     #------------------------------------------------------------------------------
@@ -2560,9 +2581,16 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
                                             investment = solph.Investment(ep_costs=0)
                                             )},
         outputs={b_el_swest: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
-                                  investment=solph.Investment(ep_costs=epc_costs['biomass_heating_plant']['epc']),
-                                  custom_attributes={'emission_factor': scalars['Parameter_biomass_heating_plant']['EE_factor'][model_ID]})},
-        conversion_factors={b_el_swest: scalars['Parameter_biomass_heating_plant']['efficiency_el_' +str(YEAR)][model_ID]}
+                                  investment=solph.Investment(ep_costs=epc_costs['biomass_combined_heat_and_power_plant']['epc']),
+                                  custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]}),
+                 
+                 b_dist_heat_s: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]},
+                                           fix=sequences['Base_demand_profile']['base_load'],
+                                           #nominal_value= 1
+                                           investment = solph.Investment(ep_costs=0)
+                                           )},
+        conversion_factors={b_el_swest: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_el_' +str(YEAR)][model_ID],
+                            b_dist_heat_s: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_th_' +str(YEAR)][model_ID]}
         ))        
     
     #------------------------------------------------------------------------------
