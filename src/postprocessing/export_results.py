@@ -174,19 +174,19 @@ def grid_energy_map(results, permutation, model_name):
     em_e_hs = b_el_e['sequences'][('Electricity_e', 'HS<->East'), 'flow'].sum()/1000
     em_hs_s = b_el_s['sequences'][('HS<->Swest', 'Electricity_s'), 'flow'].sum()/1000
     em_s_hs = b_el_s['sequences'][('Electricity_s', 'HS<->Swest'), 'flow'].sum()/1000
-    em_m_n = b_el_m['sequences'][('Electricity_m', 'North<->Middel'), 'flow'].sum()/1000
-    em_n_m = b_el_n['sequences'][('Electricity_n', 'North<->Middel'), 'flow'].sum()/1000
-    em_m_e = b_el_m['sequences'][('Electricity_m', 'East<->Middel'), 'flow'].sum()/1000
-    em_e_m = b_el_e['sequences'][('Electricity_e', 'East<->Middel'), 'flow'].sum()/1000
-    em_m_s = b_el_m['sequences'][('Electricity_m', 'Middel<->Swest'), 'flow'].sum()/1000
-    em_s_m = b_el_s['sequences'][('Electricity_s', 'Middel<->Swest'), 'flow'].sum()/1000
+    em_m_n = b_el_m['sequences'][('Electricity_m', 'North<->Middle'), 'flow'].sum()/1000
+    em_n_m = b_el_n['sequences'][('Electricity_n', 'North<->Middle'), 'flow'].sum()/1000
+    em_m_e = b_el_m['sequences'][('Electricity_m', 'East<->Middle'), 'flow'].sum()/1000
+    em_e_m = b_el_e['sequences'][('Electricity_e', 'East<->Middle'), 'flow'].sum()/1000
+    em_m_s = b_el_m['sequences'][('Electricity_m', 'Middle<->Swest'), 'flow'].sum()/1000
+    em_s_m = b_el_s['sequences'][('Electricity_s', 'Middle<->Swest'), 'flow'].sum()/1000
     fig, ax = plt.subplots(figsize=(19.1, 10.5))
     img_path = os.path.abspath(os.path.join(os.getcwd(), 
-                         'figures','Thuringia_karte_mit_Landkreisen_35.png'))
+                         'figures','Thuringia_karte_mit_Landkreisen_dull.png'))
     img=mpimg.imread(img_path)
     imgplot=plt.imshow(img)
-    #imgplot.axes.get_xaxis().set_visible(False)
-    #imgplot.axes.get_yaxis().set_visible(False)
+    imgplot.axes.get_xaxis().set_visible(False)
+    imgplot.axes.get_yaxis().set_visible(False)
     
     # Coordinates for red arrows
     x_1 = [120,130,400,410,250,260,690,700]

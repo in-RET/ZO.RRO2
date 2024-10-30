@@ -54,9 +54,9 @@ def solveModels(
             Bilanziell_erneuerbar(model, sim_data)
         
         CO2_limit(model, limit = sim_data['Parameter']['System_configurations']['System']['CO2_Grenze_'+str(YEAR)])
-        BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_bio_power_unit_Biogaseinspeisung_Bestand']['potential'][model_ID])
-        BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['Parameter_bio_power_unit_Biogaseinspeisung_Neu']['potential'][model_ID])
-        Biomasse_limit(model, limit = sim_data['Parameter']['Parameter_bio_power_unit_Biomass']['potential'][model_ID])
+        BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_biogas_upgrading_plant']['potential'][model_ID])
+        BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['Parameter_biomethane_injection_plant']['potential'][model_ID])
+        Biomasse_limit(model, limit = sim_data['Parameter']['Parameter_biomass_heating_plant']['potential'][model_ID])
         
         logging.info("Solve the model")
         model.solve(

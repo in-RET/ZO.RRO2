@@ -278,6 +278,8 @@ def CO2_price_addition(scalars,sequences,YEAR):
     else:
         data_dict['import_gas_price'] = sequences['Energy_price']['Gas_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Erdgas']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
         data_dict['import_oil_price'] = sequences['Energy_price']['Oil_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Oel']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
+        data_dict['import_hard_coal_price'] = sequences['Energy_price']['Hard_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Steinkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])+1000000000
+        data_dict['import_brown_coal_price'] = sequences['Energy_price']['Brown_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Braunkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])+1000000000
     
     
     return (data_dict)
