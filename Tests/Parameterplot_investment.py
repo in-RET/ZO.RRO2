@@ -22,37 +22,43 @@ plt.rcParams['lines.linewidth'] = 1
 
 #%% Einlesen der Parameterdateien 
 
-# Pfad zur Ordner "Parameter" (auf derselben Ebene wie die Python-Datei)
-input_folder = './Parameter'
+## Verzeichnis festlegen (gleiche Ebene wie das Skript)
+input_path = './Parameter'
 
-# Alle CSV-Dateien im "Parameter" Ordner finden
-parameter_csv_files = glob.glob(os.path.join(input_folder, 'Parameter_*.csv'))
+# Alle Parameter-Dateien mit dem Muster "Parameter_*.csv" auslesen
+parameter_csv_files = glob.glob(os.path.join(input_path, 'Parameter_*.csv'))
 
-# Dictionary zur Speicherung der DataFrames
-parameter = {}
+# Dictionary zum Speichern der DataFrames und Liste für die Labels
+parameter_dataframes = {}
 labels = []
 
-# Alle Dateien durchlaufen und DataFrames erstellen
-for file_path in parameter_csv_files:
-    # Extrahieren des Dateinamens (ohne Erweiterung) und des spezifischen Teils hinter "Parameter_"
-    file_name = os.path.basename(file_path)
-    parameter_name = file_name.split('Parameter_')[1].split('.')[0]
+for filepath in parameter_csv_files:
+    # Dateiname ohne Pfad und Dateiendung
+    filename = os.path.basename(filepath)
+    parameter_name = filename.split('Parameter_')[-1].split('.')[0]
     
-    # Die ersten 7 Zeilen als neue Spaltennamen lesen
-    column_names = pd.read_csv(file_path, nrows=7, usecols=[0], encoding='unicode_escape', sep=';', decimal=',').iloc[:, 0].tolist()
+    # Einlesen der Datei und Extrahieren der ersten 7 Zeilen für die Spaltennamen
+    df = pd.read_csv(filepath, nrows=7, encoding='unicode_escape', sep=';', decimal=',')
     
-    # Laden der eigentlichen Daten, wobei wir die erste Spalte als Index und die nächsten Spalten verwenden
-    df = pd.read_csv(file_path, skiprows=7, usecols=range(1, 8), encoding='unicode_escape', sep=';', decimal=',', index_col=0)
-    df.columns = column_names
+    # Spaltennamen setzen, indem die erste Zeile des DataFrames als Spaltenüberschrift genommen wird (außer erste Spalte)
+    new_column_names = df.iloc[0, 1:].tolist()
+    df = pd.read_csv(filepath, skiprows=7, usecols=range(1, 8), encoding='unicode_escape', sep=';', decimal=',', index_col=0)
+    df.columns = new_column_names
     
-    # DataFrame im Dictionary speichern und den Namen der DataFrames für Labels speichern
-    parameter[parameter_name] = df
-    labels.append(f"'{parameter_name}'")
+    # DataFrame und Label in Dictionary und Liste speichern
+    parameter_dataframes[parameter_name] = df
+    labels.append(parameter_name)
 
-# Alle DataFrames und Labels ausgeben (für die Übersicht)
-data_frames = list(parameter.values())
+# Beispiel: Zugriff auf spezifische DataFrames
+# Wind = parameter_dataframes.get('onshore_wind_power_plant')
+# PV_Dach = parameter_dataframes.get('rooftop_photovoltaic_power_plant')
+# PV_FF = parameter_dataframes.get('field_photovoltaic_power_plant')
 
-print("DataFrames:", data_frames)
+# Alle DataFrames in einer Liste speichern, falls sie zusammengefasst werden sollen
+data_frames = list(parameter_dataframes.values())
+
+# Labels entsprechend der Dateinamenliste
+print("DataFrames:", parameter_dataframes)
 print("Labels:", labels)
 
 # Farben der Technologien
