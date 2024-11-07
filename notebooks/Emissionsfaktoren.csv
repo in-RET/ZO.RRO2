@@ -1,0 +1,27 @@
+Energieträger;CO2-Emissionsfaktor bezogen auf den Stromverbrauch;Einheit;;;;;;;;;;
+Erdgas;392;g/kWh;..\..\2022_Energiesystem Thüringen Phase 2TR\06_Literatur\Unweltbundesamt_Entwicklung der spezifischen Treibhausgas Emissionen des deutschen Strommix in den Jahren 1990 -2023.pdf;;;;;;;;;
+Braunkohle;1120;g/kWh;;;;;;;;;;
+Steinkohle;860;g/kWh;;;;;;;;;;
+Öl;665;g/kWh;;;;;;;;;;
+;;;;;;;;;;;;
+Für die Zusammensetzung der deutschen Stromproduktion wird auf Basis der Energy-Brainpool-Studie von folgenden (gerundeten) Werten ausgegangen:;;;;;;;;;;..\..\2022_Energiesystem Thüringen Phase 2TR\06_Literatur\Brainpool\2023-07-07_EnergyBrainpool_BrainReport_Deutschland_Koehler Renewable Energy GmbH.xlsx;;
+;;;;;;;;;;;;
+;2025;;2030;;2035;;2040;;2045;;2050;
+;Menge in TWh;Anteil in %;Menge in TWh;Anteil in %;Menge in TWh;Anteil in %;Menge in TWh;Anteil in %;Menge in TWh;Anteil in %;Menge in TWh;Anteil in %
+Gesamt Bruttostromnachfrage;;;;;;;;;;;;
+Windkraft onshore;136,9;22%;228,5;30%;287,2;32%;271,1;33%;291,3;29%;277,8;27%
+Windkraft offshore;52,7;9%;121,9;16%;160,8;18%;202,5;25%;229,2;23%;229,3;22%
+Solar Netze;60,3;10%;98,3;13%;128,1;14%;24,9;3%;152,1;15%;185,4;18%
+Solar Prosuming;27,8;5%;84;11%;133,8;15%;159,6;19%;161,5;16%;164,9;16%
+Steinkohle;45;7%;7,5;1%;0;0%;0;0%;0;0%;0;0%
+Braunkohle;101,2;16%;6,1;1%;0;0%;0;0%;0;0%;0;0%
+Gas;112,1;18%;140,7;19%;125,9;14%;112,5;14%;116,3;12%;123,6;12%
+Öl;3,9;1%;1,6;0%;1,2;0%;0,7;0%;0,6;0%;0,5;0%
+sonstige Fossile;11,6;2%;1,1;0%;0,7;0%;0,3;0%;0,3;0%;0,2;0%
+Sonstige EE ;42,9;7%;38,9;5%;29,1;3%;24,9;3%;26,3;3%;29,1;3%
+Laufwasser;17,5;3%;17,5;2%;17,5;2%;17,6;2%;17,5;2%;17,5;2%
+Reservoir;1,6;0%;2;0%;2;0%;2;0%;2,1;0%;2,1;0%
+Pumpspeicher;2,6;0%;2,9;0%;3,1;0%;3;0%;3;0%;3;0%
+Summe;616,1;100%;751;100%;889,4;100%;819,1;100%;1000,2;100%;1033,4;100%
+;;;;;;;;;;;;
+Emissionsfaktor;334,8396364;;93,51784288;;56,9106139;;54,65144671;;46,17886423;;47,33568802;
