@@ -59,4 +59,11 @@ for r in region:
 #%%
 
 
+df = pd.DataFrame()
+df['2025'] = [76.74, 76.60,76.46,76.32,76.19,76.05,75.91,75.78,75.64,75.51,75.38,76.54,76.54,0]
+df = df/1000
+index = pd.date_range(start='2024-12-31' , end= '2026-01-31', freq= 'M')
+df = df.set_index(index)
+df = df.resample('H').ffill()
+df = df['2025-01-01 00:00:00' : '2025-12-31 23:00:00']
 print("Ende")
