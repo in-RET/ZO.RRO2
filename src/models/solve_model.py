@@ -7,7 +7,7 @@ from oemof import solph
 from energymodels.BS_regionalization import BS_regionalization
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
-from src.postprocessing.export_results import export_csv_region, grid_energy_map
+from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
 from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, BiogasNeuanlagen_limit,Biomasse_limit, Bilanziell_erneuerbar
 
 
@@ -82,8 +82,11 @@ def solveModels(
             dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + ".dump"
         )
         
+        if model_name == 'BS_regionalization':
+            export_csv_region(energysystem.results["main"], YEAR, permutation, model_name)
+            grid_energy_map(energysystem.results["main"],permutation, model_name)
+        else:
+            export_csv(energysystem.results["main"], YEAR, permutation, model_name)
         
-        export_csv_region(energysystem.results["main"], YEAR, permutation, model_name)
-        grid_energy_map(energysystem.results["main"],permutation, model_name)
         
         return sim_data,result

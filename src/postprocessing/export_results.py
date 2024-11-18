@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import matplotlib.patches as mpatches
 
-def export_csv_region(results, YEAR, permutation, model_name):
+def export_csvegion(results, YEAR, permutation, model_name):
     CSV_PATH = os.path.abspath(os.path.join(os.getcwd(), "results", permutation))
     os.makedirs(CSV_PATH, exist_ok=True)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
@@ -70,7 +70,7 @@ def export_csv_region(results, YEAR, permutation, model_name):
             
         Summe_Emissionen = Emissionen_Gasimport+Emissionen_Oelimport+Emissionen_Stromimport+Emissionen_Steinkohleimport+Emissionen_Braunkohleimport
         Ergebnisse = pd.Series([NaN,
-                        b_el['scalars'][('PV_rooftop_'+r,'Electricity_'+r),'invest'],
+                        b_el['scalars'][('PVooftop_'+r,'Electricity_'+r),'invest'],
                         b_el['scalars'][('PV_open_'+r,'Electricity_'+r),'invest'],
                         b_el['scalars'][('Wind_'+ r,'Electricity_'+r),'invest'],
                         b_el['scalars'][('Hydro power plant_'+r,'Electricity_'+r),'invest'],
@@ -157,6 +157,128 @@ def export_csv_region(results, YEAR, permutation, model_name):
     Region_csv['summe'] = Region_csv['north']+Region_csv['middle'] +Region_csv['east'] +Region_csv['swest']     
     Region_csv.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH + '/'+ model_name +"_"+ permutation + ".csv", sep = ';')
     return Region_csv
+
+def export_csv(results, YEAR, permutation, model_name):
+    CSV_PATH = os.path.abspath(os.path.join(os.getcwd(), "results", permutation))
+    os.makedirs(CSV_PATH, exist_ok=True)
+    scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
+    csv = pd.DataFrame()
+
+    b_el = solph.views.node(results, 'Electricity')
+    b_gas = solph.views.node(results, 'Gas')
+    b_oil = solph.views.node(results, 'Oil_fuel')
+    b_bio = solph.views.node(results, 'Biomass')
+    b_bioWood = solph.views.node(results, 'BioWood')
+    b_solidf = solph.views.node(results, 'Solidfuel')
+    b_dist_heat = solph.views.node(results, 'District heating')
+    b_H2 = solph.views.node(results, 'Hydrogen')
+    #Syntbus = solph.views.node(results, 'Synthetische_Kraftstoffe')
+    Battery = solph.views.node(results, 'Battery')
+    Heat_storage = solph.views.node(results, 'Heat storage')
+    Pumped_hydro_storage = solph.views.node(results, 'Pumped_hydro_storage')
+    Gas_storage = solph.views.node(results, 'Gas_storage')
+    H2_storage = solph.views.node(results, 'H2_storage')
+    
+    Emissionen_Gasimport=(b_gas['sequences'][('Import_Gas', 'Gas'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Erdgas']/1000)
+    Emissionen_Oelimport=(b_oil['sequences'][('Import_Oil', 'Oil_fuel'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Oel']/1000)
+    Emissionen_Steinkohleimport=(b_solidf['sequences'][('Import_hard_coal', 'Solidfuel'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Steinkohle']/1000)
+    Emissionen_Braunkohleimport=(b_solidf['sequences'][('Import_brown_coal', 'Solidfuel'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Braunkohle']/1000)
+    Emissionen_Stromimport=(Strombus['sequences'][('Import_Electricity', 'Electricity'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]/1000)
+    #------------------------------------------------------------------------------
+    # Allgemeine Simulationsergebnisse zum Abgleich
+    #------------------------------------------------------------------------------
+    NaN=str('------------------------------------------------------------------') 
+            
+    Summe_Emissionen = Emissionen_Gasimport+Emissionen_Oelimport+Emissionen_Stromimport+Emissionen_Steinkohleimport+Emissionen_Braunkohleimport
+    import_el = b_el['sequences'][('Import_Electricity','Electricity'),'flow'].sum()
+    Ergebnisse = pd.Series([NaN,
+                    (b_el['scalars'][('PV_rooftop_north','Electricity'),'invest']+
+                    b_el['scalars'][('PV_rooftop_middle','Electricity'),'invest']+
+                    b_el['scalars'][('PV_rooftop_east','Electricity'),'invest']+
+                    b_el['scalars'][('PV_rooftop_swest','Electricity'),'invest']),
+                    (b_el['scalars'][('PV_open_north','Electricity'),'invest']+
+                     b_el['scalars'][('PV_open_middle','Electricity'),'invest']+
+                     b_el['scalars'][('PV_open_east','Electricity'),'invest']+
+                     b_el['scalars'][('PV_open_swest','Electricity'),'invest']),
+                    (b_el['scalars'][('Wind_north','Electricity'),'invest']+
+                     b_el['scalars'][('Wind_middle','Electricity'),'invest']+
+                     b_el['scalars'][('Wind_east','Electricity'),'invest']+
+                     b_el['scalars'][('Wind_east','Electricity'),'invest']),
+                    b_el['scalars'][('Hydro power plant','Electricity'),'invest'],
+                    b_el['scalars'][('Biogas','Electricity'),'invest'],
+                    b_el['scalars'][('Biomasse_elec','Electricity'),'invest'],
+                    b_el['scalars'][('Fuelcell','Electricity'),'invest'],
+                    b_el['scalars'][('GuD','Electricity'),'invest'],
+                    b_dist_heat['scalars'][('ST','District heating'),'invest'] ,
+                    b_dist_heat['scalars'][('Biomasse_heat','District heating'),'invest'],
+                    b_dist_heat['scalars'][('Heatpump_water','District heating'),'invest'] ,
+                    b_dist_heat['scalars'][('Heatpump_air','District heating'),'invest'],
+                    b_dist_heat['scalars'][('Electric boiler','District heating'),'invest'],
+                    b_H2['scalars'][('Electrolysis','Hydrogen'),'invest'],
+                    b_gas['scalars'][('Hydrogen_feedin','Gas'),'invest'],
+                    b_gas['scalars'][('Biogas_feedin_existing','Gas'),'invest'],
+                    b_gas['scalars'][('Biogas_feedin_new','Gas'),'invest'],
+                    b_gas['scalars'][('Methanisation','Gas'),'invest'],
+                    b_oil['scalars'][('PtL','Oil_fuel'),'invest'],
+                    NaN,
+                    Battery['scalars'][('Battery','None'),'invest'] ,
+                    Heat_storage['scalars'][('Heat storage','None'),'invest'],
+                    Pumped_hydro_storage['scalars'][('Pumped_hydro_storage','None'),'invest'] ,
+                    Gas_storage['scalars'][('Gas_storage','None'),'invest'],
+                    H2_storage['scalars'][('H2_storage','None'),'invest'],
+                    NaN,
+                    Emissionen_Gasimport,
+                    Emissionen_Oelimport,
+                    Emissionen_Stromimport,
+                    Emissionen_Steinkohleimport,
+                    Emissionen_Braunkohleimport,
+                    Summe_Emissionen,
+                    NaN,
+                    import_el,
+                    b_el['sequences'][('Electricity','Export_Electricity'),'flow'].sum()
+                    ],
+            index = ['Leistungen',
+                   'PV_Dach',
+                   'PV_Feld',
+                   'Wind',
+                   'Wasser',
+                   'Biogas_el',
+                   'Biomasse_Strom',
+                   'Brennstoffzelle',
+                   'GuD',
+                   'Solarthermie',
+                   'Biomasse_Waerme',
+                   'WP_Fluss',
+                   'WP_Abwaerme',
+                   'Heizstab',
+                   'Elektrolyse',
+                   'Wasserstoffeinspeisung',
+                   'B2G_Best.',
+                   'B2G_Neu',
+                   'Methanisierung',
+                   'PtL',
+                   'Speicherkapazitäten',
+                   'Natriumspeicher',
+                   'Waermespeicher',
+                   'Pumpspeicher',
+                   'Erdgasspeicher',
+                   'Wasserstoffspeicher',
+                   'Emissionen',
+                   'Gasemissionen',
+                   'Oelemissionen',
+                   'Stromemissionen',
+                   'Steinkohleemissionen',
+                   'Braunkohleemissionen',
+                   'Summe aller Emissionen',
+                   'Energiemengen',
+                   'Stromimport',
+                   'Stromexport'
+                   ])
+    
+    csv['Leistung'] = Ergebnisse
+     
+    csv.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH + '/'+ model_name +"_"+ permutation + ".csv", sep = ';')
+    return csv
 
 def grid_energy_map(results, permutation, model_name):
     

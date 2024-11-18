@@ -1,0 +1,805 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Nov 15 13:27:56 2024
+
+@author: rbala
+"""
+
+import os
+workdir= os.getcwd()
+import pandas as pd
+from oemof import network, solph
+from oemof.tools import economics
+
+from src.preprocessing.create_input_dataframe import createDataFrames
+from src.preprocessing.files import read_input_files
+from src.preprocessing.conversion import investment_parameter, load_profile_scaling, CO2_price_addition
+from src.preprocessing.location import Location
+
+def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
+    YEAR, model_ID = PERMUATION.split("_")
+    YEAR = int(YEAR)
+    
+    sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
+    scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
+    demand = load_profile_scaling(scalars,sequences,YEAR)
+    epc_costs = investment_parameter(scalars, YEAR, model_ID)
+    import_price = CO2_price_addition(scalars,sequences, YEAR)
+    
+    Weather_dir = os.path.abspath(os.path.join(workdir, 'data','weatherdata'))
+    middle = Location(os.path.join(Weather_dir,'Erfurt_Binderslebn-hour.csv'), os.path.join(Weather_dir,'Erfurt_Binderslebn-min.dat'))
+    north = Location(os.path.join(Weather_dir,'Nordhausen-hour.csv'), os.path.join(Weather_dir,'Nordhausen-min.dat'))
+    swest= Location(os.path.join(Weather_dir,'Hildburghausen-hour.csv'), os.path.join(Weather_dir,'Hildburghausen-min.dat'))
+    east = Location(os.path.join(Weather_dir,'Gera-Leumnitz-hour.csv'), os.path.join(Weather_dir,'Gera-Leumnitz-min.dat'))
+  
+    Planing_region = [middle, north, swest, east]
+    """ Simulate Wind feed-in profile for the desired location """
+    for L in Planing_region:
+        L.Wind_feed_in_profile(YEAR)
+        #L.PV_feed_in_profile(YEAR)
+    
+    # ------------------------------------------------------------------------------
+    # Modellbildung
+    # ------------------------------------------------------------------------------
+    date_time_index = pd.date_range("1/1/"+ str(YEAR), periods=8760, freq="h")
+    energysystem = solph.EnergySystem(
+        timeindex=date_time_index, infer_last_interval=False
+    )
+    
+    """
+    Defining connecting lines/buses for balancing energy quantities
+    """
+    #------------------------------------------------------------------------------
+    # Electricity Bus                                                                                      # Class Bus sind jetzt in module buses verschoben (solph.buses.Bus)
+    #------------------------------------------------------------------------------
+    b_el = solph.buses.Bus(label="Electricity")
+
+    #------------------------------------------------------------------------------
+    # Gas Bus
+    #------------------------------------------------------------------------------
+    b_gas = solph.buses.Bus(label="Gas")
+
+    #------------------------------------------------------------------------------
+    # Oil/fuel Bus
+    #------------------------------------------------------------------------------
+    b_oil_fuel = solph.buses.Bus(label="Oil_fuel")
+
+    #------------------------------------------------------------------------------
+    # Biomasse Bus
+    #------------------------------------------------------------------------------
+    b_bio = solph.buses.Bus(label="Biomass")
+
+    #------------------------------------------------------------------------------
+    # Solid Biomass Bus
+    #------------------------------------------------------------------------------
+    b_bioWood = solph.buses.Bus(label="BioWood")
+
+    #------------------------------------------------------------------------------
+    # District heating Bus
+    #------------------------------------------------------------------------------
+    b_dist_heat = solph.buses.Bus(label="District heating")
+
+    #------------------------------------------------------------------------------
+    # Hydrogen Bus
+    #------------------------------------------------------------------------------
+    b_H2 = solph.buses.Bus(label="Hydrogen")
+
+    #------------------------------------------------------------------------------
+    # Solidfuel Bus
+    #------------------------------------------------------------------------------
+    b_solidf = solph.buses.Bus(label="Solidfuel")
+
+    # Hinzufügen der Busse zum Energiesystem-Modell 
+    energysystem.add(b_el, b_gas, b_oil_fuel, b_bio, b_bioWood, b_dist_heat, b_H2, b_solidf)
+
+
+    """
+    Export block
+    """
+    #------------------------------------------------------------------------------  
+    # Electricity export                                                                           #  Class Sink sind jetzt in module components verschoben (solph.components.Sink)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Export_Electricity', 
+        inputs={b_el: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_north'],
+                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]],
+        )}))
+
+    #------------------------------------------------------------------------------
+    # Hydrogen export
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Export_Hydrogen', 
+        inputs={b_H2: solph.Flow(nominal_value = scalars['Hydrogen_grid']['hydrogen']['max_power'],
+                                 variable_costs = [i*(-1) for i in sequences['Energy_price']['Hydrogen_' + str(YEAR)]]
+                                  
+        )}))
+    
+    """
+    Defining final energy demand as Sinks
+    """
+    #------------------------------------------------------------------------------
+    # Electricity demand
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Electricity_demand_total', 
+        inputs={b_el: solph.Flow(fix=demand['electricity']['north'], 
+                                 nominal_value=1,
+        )}))
+    #------------------------------------------------------------------------------
+    # Biomass demand
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Biomass_demand_total', 
+        inputs={b_solidf: solph.Flow(fix=demand['biomass']['north'], 
+                                   nominal_value=1,
+        )}))
+    
+    #------------------------------------------------------------------------------
+    # Gas demand
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Gas_demand_total', 
+        inputs={b_gas: solph.Flow(fix=demand['gas']['north'], 
+                                  nominal_value=1,
+        )}))
+    
+    #------------------------------------------------------------------------------
+    # Material demand: Gas
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Material_demand_Gas', 
+        inputs={b_gas: solph.Flow(fix=demand['material_usage_gas']['north'], 
+                                  nominal_value=1,
+        )}))
+
+    #------------------------------------------------------------------------------
+    # Oil demand
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Oil_demand_total', 
+        inputs={b_oil_fuel: solph.Flow(fix=demand['oil']['north'], 
+                                              nominal_value=1,
+        )}))
+
+    #------------------------------------------------------------------------------
+    # Mobility demand
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Mobility_demand_total', 
+        inputs={b_oil_fuel: solph.Flow(fix=demand['fuel']['north'], 
+                                              nominal_value=1,
+        )}))
+
+    #------------------------------------------------------------------------------
+    # Material demand: Oil
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Material_demand_Oil', 
+        inputs={b_oil_fuel: solph.Flow(fix=demand['material_usage_oil']['north'], 
+                                              nominal_value=1,
+        )}))
+
+    #------------------------------------------------------------------------------
+    # Heat demand
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Heat_demand_total', 
+        inputs={b_dist_heat: solph.Flow(fix=demand['dist_heating']['north'], 
+                                   nominal_value=1,
+        )}))
+
+    #------------------------------------------------------------------------------
+    # Hydrogen demand
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Hydrogen_demand_total', 
+        inputs={b_H2: solph.Flow(fix=demand['H2']['north'], 
+                                  nominal_value=1,
+        )}))
+
+
+    """
+    Renewable Energy sources
+    """
+    #------------------------------------------------------------------------------
+    # Wind power plants
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Wind_north', 
+        outputs={b_el: solph.Flow(fix=north.Wind_feed_in_profile['Wind_feed_in']
+                                        custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
+                                                                    #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_north_min'][model_ID],
+                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_north_max'][model_ID])
+        )}))
+    
+    energysystem.add(solph.components.Source(
+        label='Wind_east', 
+        outputs={b_el: solph.Flow(fix=east.Wind_feed_in_profile['Wind_feed_in']
+                                        custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
+                                                                    #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_east_min'][model_ID],
+                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_east_max'][model_ID])
+        )}))
+    
+    energysystem.add(solph.components.Source(
+        label='Wind_middle', 
+        outputs={b_el: solph.Flow(fix=middle.Wind_feed_in_profile['Wind_feed_in']
+                                        custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
+                                                                    #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_middle_min'][model_ID],
+                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_middle_max'][model_ID])
+        )}))
+    
+    energysystem.add(solph.components.Source(
+        label='Wind_swest', 
+        outputs={b_el: solph.Flow(fix=swest.Wind_feed_in_profile['Wind_feed_in']
+                                        custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
+                                                                    #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_swest_min'][model_ID],
+                                                                    maximum=scalars['Parameter_onshore_wind_power_plant']['potential_swest_max'][model_ID])
+        )}))
+    #------------------------------------------------------------------------------
+    # Photovoltaic Rooftop systems
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='PV_rooftop_north', 
+        outputs={b_el_: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_north'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
+                                                                    #minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_north_min'][model_ID],
+                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_north_max'][model_ID])
+        )}))
+    
+    energysystem.add(solph.components.Source(
+        label='PV_rooftop_east', 
+        outputs={b_el_: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_east'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
+                                                                    #minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_east_min'][model_ID],
+                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_east_max'][model_ID])
+        )}))
+    
+    energysystem.add(solph.components.Source(
+        label='PV_rooftop_middle', 
+        outputs={b_el_: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_middle'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
+                                                                    #minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_middle_min'][model_ID],
+                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_middle_max'][model_ID])
+        )}))
+    
+    energysystem.add(solph.components.Source(
+        label='PV_rooftop_swest', 
+        outputs={b_el_: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_swest'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
+                                                                    #minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_swest_min'][model_ID],
+                                                                    maximum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_swest_max'][model_ID])
+        )}))
+    #------------------------------------------------------------------------------
+    # Photovoltaic Openfield systems
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='PV_open_north', 
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['PV_openfield_north'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_field_photovoltaic_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['field_photovoltaic_power_plant']['epc'], 
+                                                                    #minimum=scalars['Parameter_field_photovoltaic_power_plant']['potential_north_min'][model_ID],
+                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_north_max'][model_ID])
+        )}))
+    
+    energysystem.add(solph.components.Source(
+        label='PV_open_east', 
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['PV_openfield_east'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_field_photovoltaic_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['field_photovoltaic_power_plant']['epc'], 
+                                                                    #minimum=scalars['Parameter_field_photovoltaic_power_plant']['potential_east_min'][model_ID],
+                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_east_max'][model_ID])
+        )}))
+    
+    energysystem.add(solph.components.Source(
+        label='PV_open_middle', 
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['PV_openfield_middle'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_field_photovoltaic_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['field_photovoltaic_power_plant']['epc'], 
+                                                                    #minimum=scalars['Parameter_field_photovoltaic_power_plant']['potential_middle_min'][model_ID],
+                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_middle_max'][model_ID])
+        )}))
+    
+    energysystem.add(solph.components.Source(
+        label='PV_open_swest', 
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['PV_openfield_swest'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_field_photovoltaic_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['field_photovoltaic_power_plant']['epc'], 
+                                                                    #minimum=scalars['Parameter_field_photovoltaic_power_plant']['potential_swest_min'][model_ID],
+                                                                    maximum=scalars['Parameter_field_photovoltaic_power_plant']['potential_swest_max'][model_ID])
+        )}))
+    
+    #------------------------------------------------------------------------------
+    # Hydroenergy
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Hydro power plant', 
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Hydro_power'],
+                                        custom_attributes={'emission_factor': scalars['Parameter_run_river_power_plant']['EE_factor'][model_ID]},
+                                        investment=solph.Investment(ep_costs=epc_costs['run_river_power_plant']['epc'], 
+                                                                    minimum= scalars['Parameter_run_river_power_plant']['potential_north_min'][model_ID], 
+                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_north_min'][model_ID])
+        )}))
+    
+    #------------------------------------------------------------------------------
+    # Solar thermal
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='ST', 
+        outputs={b_dist_heat: solph.Flow(fix=sequences['feed_in_profile']['Solarthermal'], 
+                                          custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
+                                          investment=solph.Investment(ep_costs=epc_costs['solar_thermal_power_plant']['epc'], 
+                                                                      maximum=scalars['Parameter_solar_thermal_power_plant']['potential_north_max'][model_ID])
+        )}))
+    
+    """ Imports """
+    #------------------------------------------------------------------------------
+    # Electricity grid interconnection
+    #------------------------------------------------------------------------------
+    
+    energysystem.add(solph.components.Source(
+        label='Import_electricity',
+        outputs={b_el: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
+                                  variable_costs = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]],
+                                  custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]},
+                                  
+            )}))
+    
+    #------------------------------------------------------------------------------
+    # Import Solid fuel
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Import_solid_fuel',
+        outputs={b_bio: solph.Flow(variable_costs = sequences['Energy_price']['Biomass_'+ str(YEAR)],
+                                         custom_attributes={'BiogasNeuanlagen_factor': 1},
+                                   
+        )}))
+    
+    #------------------------------------------------------------------------------
+    # solid Biomass
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Import_Wood',
+        outputs={b_bioWood: solph.Flow(variable_costs =sequences['Energy_price']['Biomass_'+ str(YEAR)],
+                                             custom_attributes={'Biomasse_factor': 1},
+                                       
+        )}))
+    
+    #------------------------------------------------------------------------------
+    # Import Brown-coal
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Import_brown_coal',
+        outputs={b_solidf: solph.Flow(variable_costs = import_price['import_brown_coal_price'],
+                                    fix=sequences['Base_demand_profile']['base_load'], 
+                                    #nominal_value = 1,
+                                    investment = solph.Investment(ep_costs=0),
+                                    summed_max=(scalars['System_configurations']['System']['Menge_Braunkohle'] )*len(import_price['import_brown_coal_price']),
+                                    custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Braunkohle']},
+        )}))
+    
+    #------------------------------------------------------------------------------
+    # Import hard coal
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Import_hard_coal',
+        outputs={b_solidf: solph.Flow(variable_costs = import_price['import_hard_coal_price'],
+                                    fix=sequences['Base_demand_profile']['base_load'], 
+                                    #nominal_value = 1,
+                                    investment = solph.Investment(ep_costs=0),
+                                    summed_max=(scalars['System_configurations']['System']['Menge_Steinkohle'])*len(import_price['import_brown_coal_price']),
+                                    custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Steinkohle']},
+                                    
+        )}))
+    
+    #------------------------------------------------------------------------------
+    # Import Gas
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Import_Gas',
+        outputs={b_gas: solph.Flow(variable_costs = import_price['import_gas_price'],
+                                         custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Erdgas']},
+                                   
+        )}))
+    
+    #------------------------------------------------------------------------------
+    # Import Oil
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Import_Oil',
+        outputs={b_oil_fuel: solph.Flow(variable_costs = import_price['import_oil_price'],
+                                                     custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Oel']}
+                                               
+            )}))
+    
+    #------------------------------------------------------------------------------
+    # Import Synthetic fuel
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Import_Synthetic_fuel',
+        outputs={b_oil_fuel: solph.Flow(variable_costs = sequences['Energy_price']['Synthetic_fuel_'+ str(YEAR)],
+            )}))
+    
+    """
+    Energy storage
+    """
+    
+    #------------------------------------------------------------------------------
+    # Electricity storage
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.GenericStorage(
+        label='Battery',
+        inputs={b_el: solph.Flow()},
+        outputs={b_el: solph.Flow()},
+        loss_rate=0,
+        inflow_conversion_factor=scalars['Parameter_storage_electricity']['efficiency_in_'+str(YEAR)][model_ID],
+        outflow_conversion_factor=scalars['Parameter_storage_electricity']['efficiency_out_'+str(YEAR)][model_ID],
+        initial_storage_level=scalars['Parameter_storage_electricity']['initial_storage_level'][model_ID],
+        balanced=bool(scalars['Parameter_storage_electricity']['balanced'][model_ID]),
+        invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID]),
+        invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID]),
+        investment = solph.Investment(ep_costs=epc_costs['storage_electricity']['epc'], 
+                                        maximum=scalars['Parameter_storage_electricity']['potential_north'][model_ID],
+                                        )
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Heat storage
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.GenericStorage(
+        label='Heat storage',
+        inputs={b_dist_heat: solph.Flow(
+                                  custom_attributes={'keywordWSP': 1},
+                                  nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+                                  #nonconvex=solph.NonConvex()
+                                    )},
+        outputs={b_dist_heat_n: solph.Flow(
+                                    custom_attributes={'keywordWSP': 1},
+                                    nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+                                    #nonconvex=solph.NonConvex()
+                                    )},
+        loss_rate=float(scalars['Parameter_storage_heat']['loss_rate'][model_ID]/24),
+        inflow_conversion_factor=scalars['Parameter_storage_heat']['efficiency_in_'+str(YEAR)][model_ID],
+        outflow_conversion_factor=scalars['Parameter_storage_heat']['efficiency_out_'+str(YEAR)][model_ID],
+        initial_storage_level=scalars['Parameter_storage_heat']['initial_storage_level'][model_ID],
+        balanced=bool(scalars['Parameter_storage_heat']['balanced'][model_ID]),
+        invest_relation_input_capacity = 1/(scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+        invest_relation_output_capacity = 1/(scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
+        nominal_storage_capacity = solph.Investment(ep_costs=epc_costs['storage_heat']['epc'], 
+                                     )
+        ))
+    
+    
+    #------------------------------------------------------------------------------
+    # Pumped hydro storage
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.GenericStorage(
+        label="Pumped_hydro_storage",
+        inputs={b_el: solph.Flow()},
+        outputs={b_el: solph.Flow()},
+        loss_rate=0,
+        balanced=bool(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['balanced'][model_ID]),
+        inflow_conversion_factor = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['efficiency_in_'+str(YEAR)][model_ID],
+        outflow_conversion_factor = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['efficiency_out_'+str(YEAR)][model_ID],
+        initial_storage_level=scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['initial_storage_level'][model_ID],
+        invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
+        invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
+        investment = solph.Investment(ep_costs=epc_costs['storage_electricity_pumped_hydro_storage_power_technology']['epc'],
+                                      #minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_north_min'][model_ID],
+                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_max'][model_ID])
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Gas storage
+    #------------------------------------------------------------------------------ 
+    energysystem.add(solph.components.GenericStorage(
+        label="Gas_storage",
+        inputs={b_gas: solph.Flow()},
+        outputs={b_gas: solph.Flow()},
+        loss_rate=0,
+        balanced=bool(scalars['Parameter_storage_gas']['balanced'][model_ID]),
+        inflow_conversion_factor = scalars['Parameter_storage_gas']['efficiency_in_'+str(YEAR)][model_ID],
+        outflow_conversion_factor = scalars['Parameter_storage_gas']['efficiency_out_'+str(YEAR)][model_ID],
+        initial_storage_level=scalars['Parameter_storage_gas']['initial_storage_level'][model_ID],
+        invest_relation_input_capacity = 1/(scalars['Parameter_storage_gas']['inverse_c_rate'][model_ID]),
+        invest_relation_output_capacity = 1/(scalars['Parameter_storage_gas']['inverse_c_rate'][model_ID]),
+        investment = solph.Investment(ep_costs=epc_costs['storage_gas']['epc'], 
+                                      maximum = scalars['Parameter_storage_gas']['potential_north'][model_ID])  
+        ))
+    
+    #------------------------------------------------------------------------------
+    # H2 Storage
+    #------------------------------------------------------------------------------    
+    energysystem.add(solph.components.GenericStorage(
+        label="H2_storage",
+        inputs={b_H2: solph.Flow()},
+        outputs={b_H2: solph.Flow()},
+        loss_rate=0,
+        balanced=bool(scalars['Parameter_storage_hydrogen']['balanced'][model_ID]),
+        inflow_conversion_factor = scalars['Parameter_storage_hydrogen']['efficiency_in_'+str(YEAR)][model_ID],
+        outflow_conversion_factor = scalars['Parameter_storage_hydrogen']['efficiency_out_'+str(YEAR)][model_ID],
+        initial_storage_level=scalars['Parameter_storage_hydrogen']['initial_storage_level'][model_ID],
+        invest_relation_input_capacity = 1/(scalars['Parameter_storage_hydrogen']['inverse_c_rate'][model_ID]),
+        invest_relation_output_capacity = 1/(scalars['Parameter_storage_hydrogen']['inverse_c_rate'][model_ID]),
+        investment = solph.Investment(ep_costs=epc_costs['storage_hydrogen']['epc'], 
+                                      maximum = scalars['Parameter_storage_hydrogen']['potential_north'][model_ID])  
+        ))
+    
+    """
+    Transformers
+    """
+    #------------------------------------------------------------------------------
+    # Elektrolysis
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Electrolysis",
+        inputs={b_el: solph.Flow()},
+        outputs={b_H2: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['electrolysis']['epc'], 
+                                                                 maximum=scalars['Parameter_electrolysis']['potential'][model_ID]))},
+        conversion_factors={b_H2_n: scalars['Parameter_electrolysis']['efficiency_'+str(YEAR)][model_ID]},
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Electric boiler
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Electric boiler",
+        inputs={b_el: solph.Flow()},
+        outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['electrical_heater']['epc']))},
+        conversion_factors={b_dist_heat: scalars['Parameter_electrical_heater']['efficiency_' +str(YEAR)][model_ID]}    
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Gas and Steam turbine
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label='GuD',
+        inputs={b_gas: solph.Flow(custom_attributes={'time_factor' :1})},
+        outputs={b_el: solph.Flow(investment=solph.Investment(ep_costs=epc_costs['combined_heat_and_power_generating_unit']['epc'],
+                                                              maximum =scalars['Parameter_combined_heat_and_power_generating_unit']['potential'][model_ID])),
+                 b_dist_heat: solph.Flow()},
+        conversion_factors={b_el: scalars['Parameter_combined_heat_and_power_generating_unit']['efficiency_el_'+str(YEAR)][model_ID], 
+                            b_dist_heat: scalars['Parameter_combined_heat_and_power_generating_unit']['efficiency_th_'+str(YEAR)][model_ID]}
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Fuel cells
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Fuelcell",
+        inputs={b_H2: solph.Flow()},
+        outputs={b_el: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['fuel_cells']['epc'], 
+                                                                maximum=scalars['Parameter_fuel_cells']['potential'][model_ID]))},
+        conversion_factors={b_el: scalars['Parameter_fuel_cells']['efficiency_' +str(YEAR)][model_ID]}
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Methanisation
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Methanisation",
+        inputs={b_H2: solph.Flow()},
+        outputs={b_gas: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['methanation']['epc'], 
+                                                                 maximum=scalars['Parameter_methanation']['potential'][model_ID]))},
+        conversion_factors={b_gas: scalars['Parameter_methanation']['efficiency_'+str(YEAR)][model_ID]}  
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Biogas
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label='Biogas',
+        inputs={b_bio: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
+                                        #nominal_value=1,
+                                        investment = solph.Investment(ep_costs=0),
+                                        custom_attributes={'BiogasBestand_factor': scalars['Parameter_biogas_combined_heat_and_power_plant']['existing_factor'][model_ID]})},
+                                  
+        outputs={b_el: solph.Flow(investment=solph.Investment(ep_costs=epc_costs['biogas_combined_heat_and_power_plant']['epc']), 
+                                        custom_attributes={'emission_factor': scalars['Parameter_biogas_combined_heat_and_power_plant']['EE_factor'][model_ID]},
+                                        fix=sequences['Base_demand_profile']['base_load']),
+                 b_dist_heat: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biogas_combined_heat_and_power_plant']['EE_factor'][model_ID]},
+                                          fix=sequences['Base_demand_profile']['base_load'],
+                                          #nominal_value= 1
+                                          investment = solph.Investment(ep_costs=0)
+                                          )},
+        conversion_factors={b_el: scalars['Parameter_biogas_combined_heat_and_power_plant']['efficiency_el_'+str(YEAR)][model_ID], 
+                            b_dist_heat: scalars['Parameter_biogas_combined_heat_and_power_plant']['efficiency_th_'+str(YEAR)][model_ID]}
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Biomasse (for electricty production)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label='Biomasse_elec',
+        inputs={b_bioWood: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+                                            #nominal_value = 1
+                                            investment = solph.Investment(ep_costs=0)
+                                            )},
+        outputs={b_el: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+                                  investment=solph.Investment(ep_costs=epc_costs['biomass_combined_heat_and_power_plant']['epc']),
+                                  custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]}),
+                 
+                 # b_dist_heat: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]},
+                 #                           fix=sequences['Base_demand_profile']['base_load'],
+                 #                           #nominal_value= 1
+                 #                           investment = solph.Investment(ep_costs=0)
+                                           # )
+                 },
+        conversion_factors={b_el: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_el_' +str(YEAR)][model_ID],
+                            # b_dist_heat: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_th_' +str(YEAR)][model_ID]
+                            }
+        ))        
+    
+    #------------------------------------------------------------------------------
+    # Biomasse (for heat production)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label='Biomasse_heat',
+        inputs={b_bioWood: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+                                           #nominal_value = 1
+                                           investment = solph.Investment(ep_costs=0)
+                                            )},
+        outputs={b_dist_heat: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+                                    investment=solph.Investment(ep_costs=epc_costs['biomass_heating_plant']['epc']),
+                                    custom_attributes={'emission_factor': scalars['Parameter_biomass_heating_plant']['EE_factor'][model_ID]})},
+        conversion_factors={b_dist_heat: scalars['Parameter_biomass_heating_plant']['efficiency_th_' +str(YEAR)][model_ID]}
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Biogaseinspeisung mit bereits bestehenden Biogasanlagen
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Biogas_feedin_existing",
+        inputs={b_bio: solph.Flow(custom_attributes={'BiogasBestand_factor': scalars['Parameter_biogas_upgrading_plant']['existing_factor'][model_ID]},
+                                        fix=sequences['Base_demand_profile']['base_load'],
+                                        investment = solph.Investment(ep_costs=0)
+                                        #nominal_value = 1
+                                        )},
+        outputs={b_gas: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+                                   investment = solph.Investment(ep_costs=epc_costs['biogas_upgrading_plant']['epc']),
+                                   )},
+        conversion_factors={b_gas: scalars['Parameter_biogas_upgrading_plant']['efficiency_'+str(YEAR)][model_ID]},
+        custom_attributes={'emission_factor': scalars['Parameter_biogas_upgrading_plant']['EE_factor'][model_ID]}
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Biogaseinspeisung ohne bereits bestehende Biogasanlagen
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Biogas_feedin_new",
+        inputs={b_bio: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+                                        investment = solph.Investment(ep_costs=0)
+                                        )},
+        outputs={b_gas: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+                                   investment = solph.Investment(ep_costs=epc_costs['biomethane_injection_plant']['epc']),
+                                   )},
+        conversion_factors={b_gas: scalars['Parameter_biomethane_injection_plant']['efficiency_'+str(YEAR)][model_ID]},
+        custom_attributes={'emission_factor': scalars['Parameter_biomethane_injection_plant']['EE_factor'][model_ID]}
+                                    
+        ))
+    
+    # -----------------------------------------------------------------------------
+    # Hydroden feed-in
+    # -----------------------------------------------------------------------------
+    maximale_Wasserstoffeinspeisung_Lastgang = [None] * len(demand['gas']['north'])
+    maximale_Wasserstoffeinspeisung=0
+    for a in range(0, len(demand['gas']['north'])):
+        maximale_Wasserstoffeinspeisung_Lastgang[a]=(demand['gas']['north'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
+        if maximale_Wasserstoffeinspeisung_Lastgang[a] > maximale_Wasserstoffeinspeisung:
+            maximale_Wasserstoffeinspeisung = maximale_Wasserstoffeinspeisung_Lastgang[a]
+    
+    energysystem.add(solph.components.Converter(
+        label='Hydrogen_feedin',
+        inputs={b_H2: solph.Flow()},
+        outputs={b_gas: solph.Flow(fix=maximale_Wasserstoffeinspeisung_Lastgang,
+                                   investment=solph.Investment(ep_costs=epc_costs['hydrogen_feed_in']['epc'], 
+                                                               maximum=max(maximale_Wasserstoffeinspeisung_Lastgang)))}
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Heatpump_river
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Heatpump_water",
+        inputs={b_el: solph.Flow()},
+        outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_ground_Flusswärme']['epc'], 
+                                                                  maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]))},
+        conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},    
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Heatpump: Recovery heat
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Heatpump_air",
+        inputs={b_el: solph.Flow()},
+        outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
+                                                                 maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]))},
+        conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Power-to-Liquid
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="PtL",
+        inputs={b_H2: solph.Flow()},
+        outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['power_to_liquid_system']['epc'], 
+                                                                             maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]))},
+        conversion_factors={b_oil_fuel: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]}
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Solid biomass in the same bus as coal
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="BioTransformer",
+        inputs={b_bioWood: solph.Flow()},
+        outputs={b_solidf: solph.Flow()},
+        ))
+    
+    """
+    Excess energy capture sinks 
+    """
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Strom
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_b_el', 
+        inputs={b_el: solph.Flow(variable_costs = 10000000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Gas
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_b_gas', 
+        inputs={b_gas: solph.Flow(variable_costs = 10000000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Oel/Kraftstoffe
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_b_oil_fuel', 
+        inputs={b_oil_fuel: solph.Flow(variable_costs = 10000000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Biomasse
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_b_bio', 
+        inputs={b_bio: solph.Flow(variable_costs = 10000000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Waerme
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_b_distheat', 
+        inputs={b_dist_heat: solph.Flow(variable_costs = 10000000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Wasserstoff
+    #-----------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_b_H2', 
+        inputs={b_H2: solph.Flow(variable_costs = 10000000
+        )}))
+    
+    # Prepare a dataset for exporting, to have access after the simulation 
+    sim_data = {'Timeseries': sequences,
+                'Parameter': scalars,
+                'Loadprofiles':demand,
+                'epc_costs':investment_parameter,
+                'North': north,
+                'East': east,
+                'Swest': swest,
+                'Middle': middle}
+    
+    return energysystem, sim_data
