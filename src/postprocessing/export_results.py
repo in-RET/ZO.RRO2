@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import matplotlib.patches as mpatches
 
-def export_csvegion(results, YEAR, permutation, model_name):
+def export_csv_region(results, YEAR, permutation, model_name, scenario_num):
     CSV_PATH = os.path.abspath(os.path.join(os.getcwd(), "results", permutation))
     os.makedirs(CSV_PATH, exist_ok=True)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
@@ -155,10 +155,10 @@ def export_csvegion(results, YEAR, permutation, model_name):
             
             
     Region_csv['summe'] = Region_csv['north']+Region_csv['middle'] +Region_csv['east'] +Region_csv['swest']     
-    Region_csv.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH + '/'+ model_name +"_"+ permutation + ".csv", sep = ';')
+    Region_csv.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH + '/'+ model_name +"_"+ permutation + "_" + scenario_num + ".csv", sep = ';')
     return Region_csv
 
-def export_csv(results, YEAR, permutation, model_name):
+def export_csv(results, YEAR, permutation, model_name, scenario_num):
     CSV_PATH = os.path.abspath(os.path.join(os.getcwd(), "results", permutation))
     os.makedirs(CSV_PATH, exist_ok=True)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
@@ -183,7 +183,7 @@ def export_csv(results, YEAR, permutation, model_name):
     Emissionen_Oelimport=(b_oil['sequences'][('Import_Oil', 'Oil_fuel'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Oel']/1000)
     Emissionen_Steinkohleimport=(b_solidf['sequences'][('Import_hard_coal', 'Solidfuel'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Steinkohle']/1000)
     Emissionen_Braunkohleimport=(b_solidf['sequences'][('Import_brown_coal', 'Solidfuel'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Braunkohle']/1000)
-    Emissionen_Stromimport=(Strombus['sequences'][('Import_Electricity', 'Electricity'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]/1000)
+    Emissionen_Stromimport=(b_el['sequences'][('Import_Electricity', 'Electricity'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]/1000)
     #------------------------------------------------------------------------------
     # Allgemeine Simulationsergebnisse zum Abgleich
     #------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ def export_csv(results, YEAR, permutation, model_name):
                     (b_el['scalars'][('Wind_north','Electricity'),'invest']+
                      b_el['scalars'][('Wind_middle','Electricity'),'invest']+
                      b_el['scalars'][('Wind_east','Electricity'),'invest']+
-                     b_el['scalars'][('Wind_east','Electricity'),'invest']),
+                     b_el['scalars'][('Wind_swest','Electricity'),'invest']),
                     b_el['scalars'][('Hydro power plant','Electricity'),'invest'],
                     b_el['scalars'][('Biogas','Electricity'),'invest'],
                     b_el['scalars'][('Biomasse_elec','Electricity'),'invest'],
@@ -277,10 +277,10 @@ def export_csv(results, YEAR, permutation, model_name):
     
     csv['Leistung'] = Ergebnisse
      
-    csv.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH + '/'+ model_name +"_"+ permutation + ".csv", sep = ';')
+    csv.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH + '/'+ model_name +"_"+ permutation +"_" + scenario_num + ".csv", sep = ';')
     return csv
 
-def grid_energy_map(results, permutation, model_name):
+def grid_energy_map(results, permutation, model_name, scenario_num):
     
     b_el_n = solph.views.node(results, 'Electricity_n')
     b_el_s = solph.views.node(results, 'Electricity_s')
@@ -367,5 +367,5 @@ def grid_energy_map(results, permutation, model_name):
     #plt.grid()
     plt.show()
        
-    plt.savefig(os.path.join(os.getcwd(), 'figures',permutation,  model_name+'_grid.png'), dpi=500)
+    plt.savefig(os.path.join(os.getcwd(), 'figures',permutation,  model_name + "_" + scenario_num +'_grid.png'), dpi=500)
     

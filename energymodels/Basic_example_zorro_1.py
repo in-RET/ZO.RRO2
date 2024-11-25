@@ -13,7 +13,8 @@ from oemof.tools import economics
 
 from src.preprocessing.create_input_dataframe import createDataFrames
 from src.preprocessing.files import read_input_files
-from src.preprocessing.conversion import investment_parameter, load_profile_scaling, CO2_price_addition
+from src.preprocessing.conversion import investment_parameter, CO2_price_addition
+from src.preprocessing.zorro_1_load_profile import zorro_1_loadprofile_scaling as load_profile_scaling
 from src.preprocessing.location import Location
 
 def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
@@ -22,7 +23,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
-    demand = load_profile_scaling(scalars,sequences,YEAR)
+    demand = load_profile_scaling(YEAR)
     epc_costs = investment_parameter(scalars, YEAR, model_ID)
     import_price = CO2_price_addition(scalars,sequences, YEAR)
     
@@ -101,8 +102,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Export_Electricity', 
-        inputs={b_el: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_north'],
-                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]],
+        inputs={b_el: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
+                                  variable_costs = [i *(-1) for i in sequences['Energy_price']['Electricity_'+str(YEAR)]],
         )}))
 
     #------------------------------------------------------------------------------
@@ -123,7 +124,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Electricity_demand_total', 
-        inputs={b_el: solph.Flow(fix=demand['electricity']['north'], 
+        inputs={b_el: solph.Flow(fix=demand['electricity'], 
                                  nominal_value=1,
         )}))
     #------------------------------------------------------------------------------
@@ -131,7 +132,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Biomass_demand_total', 
-        inputs={b_solidf: solph.Flow(fix=demand['biomass']['north'], 
+        inputs={b_solidf: solph.Flow(fix=demand['biomass'], 
                                    nominal_value=1,
         )}))
     
@@ -140,7 +141,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Gas_demand_total', 
-        inputs={b_gas: solph.Flow(fix=demand['gas']['north'], 
+        inputs={b_gas: solph.Flow(fix=demand['gas'], 
                                   nominal_value=1,
         )}))
     
@@ -149,7 +150,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Material_demand_Gas', 
-        inputs={b_gas: solph.Flow(fix=demand['material_usage_gas']['north'], 
+        inputs={b_gas: solph.Flow(fix=demand['material_usage_gas'], 
                                   nominal_value=1,
         )}))
 
@@ -158,7 +159,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Oil_demand_total', 
-        inputs={b_oil_fuel: solph.Flow(fix=demand['oil']['north'], 
+        inputs={b_oil_fuel: solph.Flow(fix=demand['oil'], 
                                               nominal_value=1,
         )}))
 
@@ -167,7 +168,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Mobility_demand_total', 
-        inputs={b_oil_fuel: solph.Flow(fix=demand['fuel']['north'], 
+        inputs={b_oil_fuel: solph.Flow(fix=demand['fuel'], 
                                               nominal_value=1,
         )}))
 
@@ -176,7 +177,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Material_demand_Oil', 
-        inputs={b_oil_fuel: solph.Flow(fix=demand['material_usage_oil']['north'], 
+        inputs={b_oil_fuel: solph.Flow(fix=demand['material_usage_oil'], 
                                               nominal_value=1,
         )}))
 
@@ -185,7 +186,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Heat_demand_total', 
-        inputs={b_dist_heat: solph.Flow(fix=demand['dist_heating']['north'], 
+        inputs={b_dist_heat: solph.Flow(fix=demand['dist_heating'], 
                                    nominal_value=1,
         )}))
 
@@ -194,7 +195,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Hydrogen_demand_total', 
-        inputs={b_H2: solph.Flow(fix=demand['H2']['north'], 
+        inputs={b_H2: solph.Flow(fix=demand['H2'], 
                                   nominal_value=1,
         )}))
 
@@ -207,7 +208,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Wind_north', 
-        outputs={b_el: solph.Flow(fix=north.Wind_feed_in_profile['Wind_feed_in']
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Wind_north'],
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                     #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_north_min'][model_ID],
@@ -216,7 +217,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='Wind_east', 
-        outputs={b_el: solph.Flow(fix=east.Wind_feed_in_profile['Wind_feed_in']
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Wind_east'],
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                     #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_east_min'][model_ID],
@@ -225,7 +226,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='Wind_middle', 
-        outputs={b_el: solph.Flow(fix=middle.Wind_feed_in_profile['Wind_feed_in']
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Wind_middle'],
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                     #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_middle_min'][model_ID],
@@ -234,7 +235,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='Wind_swest', 
-        outputs={b_el: solph.Flow(fix=swest.Wind_feed_in_profile['Wind_feed_in']
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Wind_swest'],
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                     #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_swest_min'][model_ID],
@@ -245,7 +246,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='PV_rooftop_north', 
-        outputs={b_el_: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_north'],
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_north'],
                                         custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
                                                                     #minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_north_min'][model_ID],
@@ -254,7 +255,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='PV_rooftop_east', 
-        outputs={b_el_: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_east'],
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_east'],
                                         custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
                                                                     #minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_east_min'][model_ID],
@@ -263,7 +264,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='PV_rooftop_middle', 
-        outputs={b_el_: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_middle'],
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_middle'],
                                         custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
                                                                     #minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_middle_min'][model_ID],
@@ -272,7 +273,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='PV_rooftop_swest', 
-        outputs={b_el_: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_swest'],
+        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['PV_rooftop_swest'],
                                         custom_attributes={'emission_factor': scalars['Parameter_rooftop_photovoltaic_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['rooftop_photovoltaic_power_plant']['epc'], 
                                                                     #minimum=scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_swest_min'][model_ID],
@@ -325,8 +326,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Hydro_power'],
                                         custom_attributes={'emission_factor': scalars['Parameter_run_river_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['run_river_power_plant']['epc'], 
-                                                                    minimum= scalars['Parameter_run_river_power_plant']['potential_north_min'][model_ID], 
-                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_north_min'][model_ID])
+                                                                    minimum= scalars['Parameter_run_river_power_plant']['potential_north_max'][model_ID], 
+                                                                    maximum = scalars['Parameter_run_river_power_plant']['potential_north_max'][model_ID])
         )}))
     
     #------------------------------------------------------------------------------
@@ -346,9 +347,9 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     
     energysystem.add(solph.components.Source(
-        label='Import_electricity',
+        label='Import_Electricity',
         outputs={b_el: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
-                                  variable_costs = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]],
+                                  variable_costs = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Electricity_'+str(YEAR)]],
                                   custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]},
                                   
             )}))
@@ -461,7 +462,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                   nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
                                   #nonconvex=solph.NonConvex()
                                     )},
-        outputs={b_dist_heat_n: solph.Flow(
+        outputs={b_dist_heat: solph.Flow(
                                     custom_attributes={'keywordWSP': 1},
                                     nominal_value=float(scalars['Parameter_storage_heat']['potential'][model_ID]/scalars['Parameter_storage_heat']['inverse_c_rate'][model_ID]),
                                     #nonconvex=solph.NonConvex()
@@ -493,7 +494,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity_pumped_hydro_storage_power_technology']['epc'],
-                                      #minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_north_min'][model_ID],
+                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_min'][model_ID],
                                       maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_max'][model_ID])
         ))
     
@@ -544,7 +545,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         inputs={b_el: solph.Flow()},
         outputs={b_H2: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['electrolysis']['epc'], 
                                                                  maximum=scalars['Parameter_electrolysis']['potential'][model_ID]))},
-        conversion_factors={b_H2_n: scalars['Parameter_electrolysis']['efficiency_'+str(YEAR)][model_ID]},
+        conversion_factors={b_H2: scalars['Parameter_electrolysis']['efficiency_'+str(YEAR)][model_ID]},
         ))
     
     #------------------------------------------------------------------------------
@@ -689,10 +690,10 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     # -----------------------------------------------------------------------------
     # Hydroden feed-in
     # -----------------------------------------------------------------------------
-    maximale_Wasserstoffeinspeisung_Lastgang = [None] * len(demand['gas']['north'])
+    maximale_Wasserstoffeinspeisung_Lastgang = [None] * len(demand['gas'])
     maximale_Wasserstoffeinspeisung=0
-    for a in range(0, len(demand['gas']['north'])):
-        maximale_Wasserstoffeinspeisung_Lastgang[a]=(demand['gas']['north'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
+    for a in range(0, len(demand['gas'])):
+        maximale_Wasserstoffeinspeisung_Lastgang[a]=(demand['gas'][a]*(scalars['Parameter_hydrogen_feed_in']['potential'][model_ID]))/(scalars['Parameter_hydrogen_feed_in']['efficiency_'+str(YEAR)][model_ID])
         if maximale_Wasserstoffeinspeisung_Lastgang[a] > maximale_Wasserstoffeinspeisung:
             maximale_Wasserstoffeinspeisung = maximale_Wasserstoffeinspeisung_Lastgang[a]
     

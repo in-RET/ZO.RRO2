@@ -72,7 +72,7 @@ def investment_parameter(data,simulation_year, Model_ID):
     return(my_dict)
 
 
-def load_profile_scaling(scalars, sequences, YEAR):
+def load_profile_scaling(scalars, sequences, YEAR,  region = True):
     profile = []                             # Sorting only the timeseies from the list of all files in the sequences folder
     for i in sequences: 
         if i.endswith('profile'):
@@ -83,7 +83,10 @@ def load_profile_scaling(scalars, sequences, YEAR):
         load_profile_nom[name]= sequences[name]/sequences[name].sum() # Normalising the timeseries to scale the profile to respective energy demand.
     
     sector = ['electricity', 'gas', 'dist_heating', 'biomass', 'oil', 'material_usage_gas', 'material_usage_biomasse','material_usage_oil', 'H2', 'fuel']
-    region = ['north', 'middle', 'east', 'swest']
+    if region == True:
+        region = ['north', 'middle', 'east', 'swest']
+    else:
+        region = ['thuringen']
     demand_profile_dict={}
         
     for s in sector:

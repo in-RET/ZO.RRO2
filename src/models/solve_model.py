@@ -5,6 +5,7 @@ import pandas as pd
 from oemof import solph
 
 from energymodels.BS_regionalization import BS_regionalization
+from energymodels.Basic_example_zorro_1 import Basisszenario_1 as BS_1
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
 from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
@@ -13,6 +14,7 @@ from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, Biogas
 
 def solveModels(
     variations: [str],
+    scenario_num :str,
     years: [int],
     model_name: str,
     solver: str = "gurobi",
@@ -36,8 +38,10 @@ def solveModels(
 
         logging.info(f"Solve %s", permutation)
         logging.info("Building the energy system")
-        energysystem,sim_data = BS_regionalization(permutation)
-
+        if model_name =='BS_regionalization':
+            energysystem,sim_data = BS_regionalization(permutation)
+        else:
+            energysystem,sim_data = BS_1(permutation)
         if print_graph:
             draw_energy_system(
                 energy_system=energysystem,
@@ -51,7 +55,7 @@ def solveModels(
         
         logging.info("Applying model constraints")
         if Anteilig_erneuerbar:
-            Bilanziell_erneuerbar(model, sim_data)
+            Bilanziell_erneuerbar(model, sim_data, model_name)
         
         CO2_limit(model, limit = sim_data['Parameter']['System_configurations']['System']['CO2_Grenze_'+str(YEAR)])
         BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_biogas_upgrading_plant']['potential'][model_ID])
@@ -79,14 +83,14 @@ def solveModels(
         energysystem.results["costs"] = df_costs.to_dict()
 
         energysystem.dump(
-            dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + ".dump"
+            dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + "_" + scenario_num + ".dump"
         )
         
         if model_name == 'BS_regionalization':
-            export_csv_region(energysystem.results["main"], YEAR, permutation, model_name)
-            grid_energy_map(energysystem.results["main"],permutation, model_name)
+            export_csv_region(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
+            grid_energy_map(energysystem.results["main"],permutation, model_name, scenario_num)
         else:
-            export_csv(energysystem.results["main"], YEAR, permutation, model_name)
+            export_csv(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
         
         
         return sim_data,result
