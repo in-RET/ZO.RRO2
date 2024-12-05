@@ -1,0 +1,11 @@
+id;name;type;unit;isAbout;description;primary_key;valueReference
+2;investment_costs_2020;float;€/MW;;median investment costs vom Jahr 2020;https://www.hs-nordhausen.de/forschung/in-ret-institut-fuer-regenerative-energietechnik/;
+3;investment_costs_2025;float;€/MW;;;https://www.hs-nordhausen.de/forschung/in-ret-institut-fuer-regenerative-energietechnik/;
+4;investment_costs_2030;float;€/MW;;;https://www.hs-nordhausen.de/forschung/in-ret-institut-fuer-regenerative-energietechnik/;
+5;investment_costs_20235;float;€/MW;;;https://www.hs-nordhausen.de/forschung/in-ret-institut-fuer-regenerative-energietechnik/;
+6;investment_costs_2040;float;€/MW;;;;
+7;investment_costs_2045;float;€/MW;;;;
+8;investment_costs_2050;float;€/MW;;;https://www.hs-nordhausen.de/forschung/in-ret-institut-fuer-regenerative-energietechnik/;
+9;operating_costs_2020;float;% von investment_costs;;;https://www.hs-nordhausen.de/forschung/in-ret-institut-fuer-regenerative-energietechnik/;
+10;operating_costs_2025;float;% von investment_costs;;;https://www.hs-nordhausen.de/forschung/in-ret-institut-fuer-regenerative-energietechnik/;
+11;operating_costs_2030;float;% von investment_costs;;;;
