@@ -10,11 +10,15 @@ from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
 from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
 from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, BiogasNeuanlagen_limit,Biomasse_limit, Bilanziell_erneuerbar
-
+from docs.scenario.create_md_file import create_simulation_doc
+from src.postprocessing.so_gehts_plot import so_gehts_bar_plot
+from src.postprocessing.plots import heat_maps
 
 def solveModels(
     variations: [str],
     scenario_num :str,
+    hypothese: str,
+    sim_remarks: str,
     years: [int],
     model_name: str,
     solver: str = "gurobi",
@@ -22,6 +26,7 @@ def solveModels(
     solver_output: bool = True,
     print_graph: bool = False,
     Anteilig_erneuerbar:bool = True,
+    
 ):
 
     # Hier steht ein Code kommentar
@@ -69,7 +74,7 @@ def solveModels(
             solve_kwargs={"tee": solver_output},
         )
 
-        logging.info("Berechne automatische Kosten")
+        logging.info("Calculating costs")
 
         result = cost_calculation_from_es_and_results(
             energysystem=energysystem,
@@ -86,11 +91,27 @@ def solveModels(
             dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + "_" + scenario_num + ".dump"
         )
         
+        logging.info("Export overview - CSV file")
         if model_name == 'BS_regionalization':
             export_csv_region(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
             grid_energy_map(energysystem.results["main"],permutation, model_name, scenario_num)
         else:
-            export_csv(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
+            csv=export_csv(energysystem.results["main"], YEAR, permutation, model_name, scenario_num, sim_data)
+                
+        logging.info("Plotting different plots")
+        so_gehts_bar_plot(csv, permutation, scenario_num)
+        profile = ['Wind', 'PV_Rooftop','PV_Openfield', 'loadprofile']
         
+        for i in range (len(profile)):
+            profile_type = profile[i]
+            if profile_type =='loadprofile':
+                sector = ['electricity', 'gas', 'oil', 'dist_heating', 'biomass']
+                for j in range(len(sector)):
+                    heat_maps(sim_data,YEAR,permutation , profile_type= profile_type,sector=sector[j])
+            else:
+                sector = None
+                heat_maps(sim_data,YEAR,permutation , profile_type= profile_type,sector=None)
+        logging.info("Creating simulation doc...")    
+        create_simulation_doc(permutation,scenario_num, hypothese, sim_remarks,csv)
         
-        return sim_data,result
+        return sim_data,result,csv

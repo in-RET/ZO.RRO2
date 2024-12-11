@@ -158,7 +158,7 @@ def export_csv_region(results, YEAR, permutation, model_name, scenario_num):
     Region_csv.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH + '/'+ model_name +"_"+ permutation + "_" + scenario_num + ".csv", sep = ';')
     return Region_csv
 
-def export_csv(results, YEAR, permutation, model_name, scenario_num):
+def export_csv(results, YEAR, permutation, model_name, scenario_num, sim_data):
     CSV_PATH = os.path.abspath(os.path.join(os.getcwd(), "results", permutation))
     os.makedirs(CSV_PATH, exist_ok=True)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
@@ -184,6 +184,117 @@ def export_csv(results, YEAR, permutation, model_name, scenario_num):
     Emissionen_Steinkohleimport=(b_solidf['sequences'][('Import_hard_coal', 'Solidfuel'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Steinkohle']/1000)
     Emissionen_Braunkohleimport=(b_solidf['sequences'][('Import_brown_coal', 'Solidfuel'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Braunkohle']/1000)
     Emissionen_Stromimport=(b_el['sequences'][('Import_Electricity', 'Electricity'), 'flow'].sum()*scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]/1000)
+    
+    
+    Investment_cost = (
+                        ((b_el['scalars'][('PV_rooftop_north','Electricity'),'invest']+
+                        b_el['scalars'][('PV_rooftop_middle','Electricity'),'invest']+
+                        b_el['scalars'][('PV_rooftop_east','Electricity'),'invest']+
+                        b_el['scalars'][('PV_rooftop_swest','Electricity'),'invest'])* sim_data['epc_costs']['rooftop_photovoltaic_power_plant']['investk'])+
+                        ((b_el['scalars'][('PV_open_north','Electricity'),'invest']+
+                         b_el['scalars'][('PV_open_middle','Electricity'),'invest']+
+                         b_el['scalars'][('PV_open_east','Electricity'),'invest']+
+                         b_el['scalars'][('PV_open_swest','Electricity'),'invest'])*sim_data['epc_costs']['field_photovoltaic_power_plant']['investk'])+
+                        ((b_el['scalars'][('Wind_north','Electricity'),'invest']+
+                         b_el['scalars'][('Wind_middle','Electricity'),'invest']+
+                         b_el['scalars'][('Wind_east','Electricity'),'invest']+
+                         b_el['scalars'][('Wind_swest','Electricity'),'invest'])*sim_data['epc_costs']['onshore_wind_power_plant']['investk'])+
+                        b_el['scalars'][('Hydro power plant','Electricity'),'invest']*sim_data['epc_costs']['run_river_power_plant']['investk']+
+                        b_el['scalars'][('Biogas','Electricity'),'invest']*sim_data['epc_costs']['biogas_combined_heat_and_power_plant']['investk']+
+                        b_el['scalars'][('Biomasse_elec','Electricity'),'invest']*sim_data['epc_costs']['biomass_combined_heat_and_power_plant']['investk']+
+                        b_el['scalars'][('Fuelcell','Electricity'),'invest']*sim_data['epc_costs']['fuel_cells']['investk']+
+                        b_el['scalars'][('GuD','Electricity'),'invest']*sim_data['epc_costs']['combined_heat_and_power_generating_unit']['investk']+
+                        b_dist_heat['scalars'][('ST','District heating'),'invest'] *sim_data['epc_costs']['solar_thermal_power_plant']['investk']+
+                        b_dist_heat['scalars'][('Biomasse_heat','District heating'),'invest']*sim_data['epc_costs']['biomass_heating_plant']['investk']+
+                        b_dist_heat['scalars'][('Heatpump_water','District heating'),'invest'] *sim_data['epc_costs']['heat_pump_ground_Flusswärme']['investk']+
+                        b_dist_heat['scalars'][('Heatpump_air','District heating'),'invest']*sim_data['epc_costs']['heat_pump_air_Abwärme']['investk']+
+                        b_dist_heat['scalars'][('Electric boiler','District heating'),'invest']*sim_data['epc_costs']['electrical_heater']['investk']+
+                        b_H2['scalars'][('Electrolysis','Hydrogen'),'invest']*sim_data['epc_costs']['electrolysis']['investk']+
+                        b_gas['scalars'][('Hydrogen_feedin','Gas'),'invest']*sim_data['epc_costs']['hydrogen_feed_in']['investk']+
+                        b_gas['scalars'][('Biogas_feedin_existing','Gas'),'invest']*sim_data['epc_costs']['biogas_upgrading_plant']['investk']+
+                        b_gas['scalars'][('Biogas_feedin_new','Gas'),'invest']*sim_data['epc_costs']['biomethane_injection_plant']['investk']+
+                        b_gas['scalars'][('Methanisation','Gas'),'invest']*sim_data['epc_costs']['methanation']['investk']+
+                        b_oil['scalars'][('PtL','Oil_fuel'),'invest']*sim_data['epc_costs']['power_to_liquid_system']['investk']+
+                        Battery['scalars'][('Battery','None'),'invest']*sim_data['epc_costs']['storage_electricity']['investk']+
+                        Heat_storage['scalars'][('Heat storage','None'),'invest']*sim_data['epc_costs']['storage_heat']['investk']+
+                        Pumped_hydro_storage['scalars'][('Pumped_hydro_storage','None'),'invest']*sim_data['epc_costs']['storage_electricity_pumped_hydro_storage_power_technology']['investk']+
+                        Gas_storage['scalars'][('Gas_storage','None'),'invest']*sim_data['epc_costs']['storage_gas']['investk']+
+                        H2_storage['scalars'][('H2_storage','None'),'invest']*sim_data['epc_costs']['storage_hydrogen']['investk']
+                        )
+    
+    Operating_cost = (
+                        ((b_el['scalars'][('PV_rooftop_north','Electricity'),'invest']+
+                        b_el['scalars'][('PV_rooftop_middle','Electricity'),'invest']+
+                        b_el['scalars'][('PV_rooftop_east','Electricity'),'invest']+
+                        b_el['scalars'][('PV_rooftop_swest','Electricity'),'invest'])* sim_data['epc_costs']['rooftop_photovoltaic_power_plant']['betriebsk'])+
+                        ((b_el['scalars'][('PV_open_north','Electricity'),'invest']+
+                         b_el['scalars'][('PV_open_middle','Electricity'),'invest']+
+                         b_el['scalars'][('PV_open_east','Electricity'),'invest']+
+                         b_el['scalars'][('PV_open_swest','Electricity'),'invest'])*sim_data['epc_costs']['field_photovoltaic_power_plant']['betriebsk'])+
+                        ((b_el['scalars'][('Wind_north','Electricity'),'invest']+
+                         b_el['scalars'][('Wind_middle','Electricity'),'invest']+
+                         b_el['scalars'][('Wind_east','Electricity'),'invest']+
+                         b_el['scalars'][('Wind_swest','Electricity'),'invest'])*sim_data['epc_costs']['onshore_wind_power_plant']['betriebsk'])+
+                        b_el['scalars'][('Hydro power plant','Electricity'),'invest']*sim_data['epc_costs']['run_river_power_plant']['betriebsk']+
+                        b_el['scalars'][('Biogas','Electricity'),'invest']*sim_data['epc_costs']['biogas_combined_heat_and_power_plant']['betriebsk']+
+                        b_el['scalars'][('Biomasse_elec','Electricity'),'invest']*sim_data['epc_costs']['biomass_combined_heat_and_power_plant']['betriebsk']+
+                        b_el['scalars'][('Fuelcell','Electricity'),'invest']*sim_data['epc_costs']['fuel_cells']['betriebsk']+
+                        b_el['scalars'][('GuD','Electricity'),'invest']*sim_data['epc_costs']['combined_heat_and_power_generating_unit']['betriebsk']+
+                        b_dist_heat['scalars'][('ST','District heating'),'invest'] *sim_data['epc_costs']['solar_thermal_power_plant']['betriebsk']+
+                        b_dist_heat['scalars'][('Biomasse_heat','District heating'),'invest']*sim_data['epc_costs']['biomass_heating_plant']['betriebsk']+
+                        b_dist_heat['scalars'][('Heatpump_water','District heating'),'invest'] *sim_data['epc_costs']['heat_pump_ground_Flusswärme']['betriebsk']+
+                        b_dist_heat['scalars'][('Heatpump_air','District heating'),'invest']*sim_data['epc_costs']['heat_pump_air_Abwärme']['betriebsk']+
+                        b_dist_heat['scalars'][('Electric boiler','District heating'),'invest']*sim_data['epc_costs']['electrical_heater']['betriebsk']+
+                        b_H2['scalars'][('Electrolysis','Hydrogen'),'invest']*sim_data['epc_costs']['electrolysis']['betriebsk']+
+                        b_gas['scalars'][('Hydrogen_feedin','Gas'),'invest']*sim_data['epc_costs']['hydrogen_feed_in']['betriebsk']+
+                        b_gas['scalars'][('Biogas_feedin_existing','Gas'),'invest']*sim_data['epc_costs']['biogas_upgrading_plant']['betriebsk']+
+                        b_gas['scalars'][('Biogas_feedin_new','Gas'),'invest']*sim_data['epc_costs']['biomethane_injection_plant']['betriebsk']+
+                        b_gas['scalars'][('Methanisation','Gas'),'invest']*sim_data['epc_costs']['methanation']['betriebsk']+
+                        b_oil['scalars'][('PtL','Oil_fuel'),'invest']*sim_data['epc_costs']['power_to_liquid_system']['betriebsk']+
+                        Battery['scalars'][('Battery','None'),'invest']*sim_data['epc_costs']['storage_electricity']['betriebsk']+
+                        Heat_storage['scalars'][('Heat storage','None'),'invest']*sim_data['epc_costs']['storage_heat']['betriebsk']+
+                        Pumped_hydro_storage['scalars'][('Pumped_hydro_storage','None'),'invest']*sim_data['epc_costs']['storage_electricity_pumped_hydro_storage_power_technology']['betriebsk']+
+                        Gas_storage['scalars'][('Gas_storage','None'),'invest']*sim_data['epc_costs']['storage_gas']['betriebsk']+
+                        H2_storage['scalars'][('H2_storage','None'),'invest']*sim_data['epc_costs']['storage_hydrogen']['betriebsk']
+                        )
+    
+    #import costs
+    
+    Import_el_cost = 0
+    Export_el_cost = 0
+    Import_gas_cost = 0 
+    Import_oil_cost = 0  
+    Export_H2_cost = 0  
+    Import_bio_cost = 0 
+    Import_biowood_cost=0
+    Import_hardcoal_cost=0
+    Import_browncoal_cost=0
+    Import_Synt_cost =0
+
+    for i in range(0, len(b_el['sequences'][('Import_Electricity','Electricity'),'flow'])-1):
+        Import_el_cost += (b_el['sequences'][('Import_Electricity','Electricity'),'flow'][i]) * sim_data['Import_prices']['import_electricity_price'][i]
+        Export_el_cost += (b_el['sequences'][('Electricity','Export_Electricity'),'flow'][i]) * sim_data['Timeseries']['Energy_price']['Electricity_'+str(YEAR)][i]
+        
+        Import_gas_cost += (b_gas['sequences'][('Import_Gas','Gas'),'flow'][i]) * sim_data['Import_prices']['import_gas_price'][i]
+        
+        Import_oil_cost += (b_oil['sequences'][('Import_Oil','Oil_fuel'),'flow'][i]) * sim_data['Import_prices']['import_oil_price'][i]
+        
+        Export_H2_cost += (b_H2['sequences'][('Hydrogen','Export_Hydrogen'),'flow'][i]) * sim_data['Timeseries']['Energy_price']['Hydrogen_' + str(YEAR)][i]
+        
+        Import_bio_cost += (b_bio['sequences'][('Import_solid_fuel','Biomass'),'flow'][i]) * sim_data['Import_prices']['import_biomass_price'][i]
+         
+        Import_biowood_cost += (b_bioWood['sequences'][('Import_Wood','BioWood'),'flow'][i]) * sim_data['Import_prices']['import_biomass_price'][i]
+            
+        Import_hardcoal_cost += (b_solidf['sequences'][('Import_hard_coal','Solidfuel'),'flow'][i]) * sim_data['Import_prices']['import_hard_coal_price'][i]
+        Import_browncoal_cost += (b_solidf['sequences'][('Import_brown_coal','Solidfuel'),'flow'][i]) * sim_data['Import_prices']['import_brown_coal_price'][i]
+
+        Import_Synt_cost += (b_oil['sequences'][('Import_Synthetic_fuel','Oil_fuel'),'flow'][i]) * sim_data['Import_prices']['import_synt_fuel_price'][i]
+        
+    Import_cost_total = Import_el_cost + Import_gas_cost + Import_oil_cost + Import_bio_cost + Import_biowood_cost + Import_hardcoal_cost + Import_browncoal_cost + Import_Synt_cost
+    Export_total = Export_el_cost + Export_H2_cost
+    profit = Export_total - Import_cost_total
+    Grid_fee = max(b_el['sequences'][('Import_Electricity','Electricity'),'flow']) * sim_data['Parameter']['Electricity_grid']['electricity']['grid_annualperformance_fee']
+    Costs_total = Investment_cost + Operating_cost - profit +Grid_fee
     #------------------------------------------------------------------------------
     # Allgemeine Simulationsergebnisse zum Abgleich
     #------------------------------------------------------------------------------
@@ -234,8 +345,14 @@ def export_csv(results, YEAR, permutation, model_name, scenario_num):
                     Emissionen_Braunkohleimport,
                     Summe_Emissionen,
                     NaN,
+                    Investment_cost/1000000,
+                    Operating_cost/1000000,
+                    profit*(-1)/1000000,
+                    Grid_fee/1000000,
+                    Costs_total/1000000,
+                    NaN,
                     import_el,
-                    b_el['sequences'][('Electricity','Export_Electricity'),'flow'].sum()
+                    b_el['sequences'][('Electricity','Export_Electricity'),'flow'].sum(),
                     ],
             index = ['Leistungen',
                    'PV_Dach',
@@ -270,6 +387,12 @@ def export_csv(results, YEAR, permutation, model_name, scenario_num):
                    'Steinkohleemissionen',
                    'Braunkohleemissionen',
                    'Summe aller Emissionen',
+                   'Kosten [Mio. €]',
+                   'Annuität',
+                   'OPEX',
+                   'Im-Export',
+                   'Netz',
+                   'Gesamtkosten',
                    'Energiemengen',
                    'Stromimport',
                    'Stromexport'

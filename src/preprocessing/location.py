@@ -92,6 +92,7 @@ class Location(object):
         date_time_index = pd.date_range('1/1/' +str(simulation_year), periods = len(v_Wind), freq = '1min')# need a dummy index to resample the dataframe
         Wind_Ertrag = Wind_Ertrag.set_index(date_time_index)
         Wind_Ertrag = Wind_Ertrag.resample('1H').mean() # The feed in profile is resampled to hourly resolution
+        Wind_Ertrag = (Wind_Ertrag/int(Wind_Ertrag.sum()))*2300
         Wind_Ertrag = Wind_Ertrag.reset_index()
         self.Wind_feed_in_profile = Wind_Ertrag
         

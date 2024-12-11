@@ -1,2 +1,4 @@
-index;Einheit;hydrogen
-max_power;MW;308
+index;Einheit;hydrogen;
+max_power;MW;308;
+grid_operating_fee;€/MWh;19,03;TEN_2025
+grid_annualperformance_fee;€/MW/a;24020;

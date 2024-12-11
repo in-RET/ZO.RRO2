@@ -7,6 +7,7 @@ Created on Mon Nov 18 10:14:17 2024
 
 import pandas as pd
 import os
+from src.preprocessing.files import read_input_files
 workdir= os.getcwd()
 
 def Nutz_zu_Endenergieumrechnung (NE_ges, NE_proz, h_voll, EER):
@@ -23,8 +24,9 @@ def Nutz_zu_Endenergieumrechnung (NE_ges, NE_proz, h_voll, EER):
         
         return P_nom_EE
     
-def zorro_1_loadprofile_scaling(YEAR):
+def zorro_1_loadprofile_scaling(YEAR, new_profile = False): #new_profile: if it has to be simulated with new profile from RAMP and other tools or Standard load profiles
     
+    Zeitreihen_new = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)  # new profiles
     Zeitreihen = os.path.abspath(os.path.join(workdir,'./', 'data/sequences','00_ZORRO_I_old_sequences'))                # pfad für Zeitreihen und Eingangsdaten als variable --> besser nachzufolgen im script.
     Eingangsdaten = os.path.abspath(os.path.join(workdir,'./', 'data/scalars','00_ZORRO_I_old_scalars'))
     number_of_time_steps = 8760
@@ -78,6 +80,10 @@ def zorro_1_loadprofile_scaling(YEAR):
     Lastprofile_Stundenwerte['H0'] = data_H0
     Lastprofile_Stundenwerte['G0'] = data_G0
     Lastprofile_Stundenwerte['G3'] = data_G3
+    
+    
+    Lastprofile_Stundenwerte = Lastprofile_Stundenwerte/Lastprofile_Stundenwerte.sum()*1000
+    Einspeiseprofile_Stundenwerte = Einspeiseprofile_Stundenwerte/Einspeiseprofile_Stundenwerte.sum()*1000
     """
     Ab hier Industrie
     """
@@ -288,51 +294,134 @@ def zorro_1_loadprofile_scaling(YEAR):
                                   + P_nom_GHD_Prozesskaelte_Kompressionskaelte 
                                   + P_nom_GHD_Prozesskaelte_Sorptionskaelte 
                                   + P_nom_Haushalte_Klimakaelte_Kompressionskaelte 
-                                  + P_nom_Haushalte_Klimakaelte_Sorptionskaelte 
-                                  + P_nom_Verkehr_Personenv_PKW_Batterie 
-                                  + P_nom_Verkehr_Personenv_LKW_Elektrisch 
-                                  + P_nom_Verkehr_Personenv_Schiene_Elektrisch 
-                                  + P_nom_Verkehr_Gueterv_PKW_Batterie 
-                                  + P_nom_Verkehr_Gueterv_LKW_Elektrisch 
-                                  + P_nom_Verkehr_Gueterv_Schiene_Elektrisch)
+                                  + P_nom_Haushalte_Klimakaelte_Sorptionskaelte)
+    P_nom_Strom_PKW_gesamt= (P_nom_Verkehr_Personenv_PKW_Batterie + P_nom_Verkehr_Gueterv_PKW_Batterie)
+    P_nom_Strom_LKW_gesamt = (P_nom_Verkehr_Personenv_LKW_Elektrisch + P_nom_Verkehr_Gueterv_LKW_Elektrisch) 
+    P_nom_Strom_Schiene_gesamt = (P_nom_Verkehr_Personenv_Schiene_Elektrisch + P_nom_Verkehr_Gueterv_Schiene_Elektrisch)
     #------------------------------------------------------------------------------
     # Zuordnung der zusammengefassten Leistungen zu den Viertelstundenwerten und Bildung der Gesamtlastprofile
     #------------------------------------------------------------------------------  
     data = pd.DataFrame()
-    for a in range(0, number_of_time_steps):
-    #    Zusammenfassung der Lasten auf die Busse
-        data['electricity'] =(((P_nom_Strom_G3_gesamt * Lastprofile_Stundenwerte['G3'])) 
-                               + ((P_nom_Strom_HA4_gesamt * Lastprofile_Stundenwerte['HA4'])) 
-                               + ((P_nom_Strom_Prozessgas_gesamt * Lastprofile_Stundenwerte['Prozessgas'])) 
-                               + ((P_nom_Strom_G0_gesamt * Lastprofile_Stundenwerte['G0'])) 
-                               + ((P_nom_Strom_H0_gesamt * Lastprofile_Stundenwerte['H0'])) 
-                               + ((P_nom_Strom_T24_gesamt * Lastprofile_Stundenwerte['T24'])) 
-                               + ((P_nom_Strom_Grundlast_gesamt * Einspeiseprofile_Stundenwerte['Grundlast']))
-                                                   )
+    
+    if new_profile:
+        profile = []                             # Sorting only the timeseies from the list of all files in the sequences folder
+        for i in Zeitreihen_new: 
+            if i.endswith('profile'):
+                profile.append(i)
+        
+        load_profile_nom = {}
+        for name in profile:
+            load_profile_nom[name]= Zeitreihen_new[name]/Zeitreihen_new[name].sum()*1000 # Normalising the timeseries to scale the profile to respective energy demand.
+        
+        for a in range(0, number_of_time_steps):
+        #    Zusammenfassung der Lasten auf die Busse
+            data['electricity'] =(((P_nom_Strom_G3_gesamt *load_profile_nom['other_demand_profile']['G3'])) 
+                                   + ((P_nom_Strom_HA4_gesamt *(load_profile_nom['Heat_demand_profile']['HA4_north']
+                                                                  +load_profile_nom['Heat_demand_profile']['HA4_east']+
+                                                                  load_profile_nom['Heat_demand_profile']['HA4_middle']+
+                                                                  load_profile_nom['Heat_demand_profile']['HA4_swest'])/4)) 
+                                   + ((P_nom_Strom_Prozessgas_gesamt * load_profile_nom['other_demand_profile']['Prozessgas'])) 
+                                   + ((P_nom_Strom_G0_gesamt * load_profile_nom['other_demand_profile']['G0'])) 
+                                   + ((P_nom_Strom_H0_gesamt * (load_profile_nom['Electricity_household_demand_profile']['north_'+ str(YEAR)]+
+                                                                load_profile_nom['Electricity_household_demand_profile']['east_'+ str(YEAR)]+
+                                                                load_profile_nom['Electricity_household_demand_profile']['middle_'+ str(YEAR)]+
+                                                                load_profile_nom['Electricity_household_demand_profile']['swest_'+ str(YEAR)])/4)) 
+                                   + ((P_nom_Strom_T24_gesamt * (load_profile_nom['Heat_demand_profile']['Heat+TWW_north']+
+                                                                load_profile_nom['Heat_demand_profile']['Heat+TWW_east']+
+                                                                load_profile_nom['Heat_demand_profile']['Heat+TWW_middle']+
+                                                                load_profile_nom['Heat_demand_profile']['Heat+TWW_swest'])/4)) 
+                                   + ((P_nom_Strom_Grundlast_gesamt *load_profile_nom['Base_demand_profile']['base_load']))
+                                   + ((P_nom_Strom_PKW_gesamt * load_profile_nom['Mobility_demand_profile']['car_'+str(YEAR)]))
+                                   + ((P_nom_Strom_LKW_gesamt * load_profile_nom['Base_demand_profile']['base_load']))
+                                   + ((P_nom_Strom_Schiene_gesamt * load_profile_nom['Mobility_demand_profile']['train_'+str(YEAR)]))
+                                                       )
+    
+            data['gas'] =(((P_nom_Gas_HA4_gesamt * (load_profile_nom['Heat_demand_profile']['HA4_north']+
+                                                    load_profile_nom['Heat_demand_profile']['HA4_east']+
+                                                    load_profile_nom['Heat_demand_profile']['HA4_middle']+
+                                                    load_profile_nom['Heat_demand_profile']['HA4_swest'])/4))  
+                                 + ((P_nom_Gas_Prozessgas_gesamt * load_profile_nom['other_demand_profile']['Prozessgas'])) 
+                                 + ((P_nom_Gas_Grundlast_gesamt * load_profile_nom['Base_demand_profile']['base_load'])) 
+                                 + ((P_nom_Gas_T24_gesamt * (load_profile_nom['Heat_demand_profile']['Heat+TWW_north']+
+                                                              load_profile_nom['Heat_demand_profile']['Heat+TWW_east']+
+                                                              load_profile_nom['Heat_demand_profile']['Heat+TWW_middle']+
+                                                              load_profile_nom['Heat_demand_profile']['Heat+TWW_swest'])/4)))
+    
+            data['biomass'] =(((P_nom_Bio_HA4_gesamt * (load_profile_nom['Heat_demand_profile']['HA4_north']
+                                                        +load_profile_nom['Heat_demand_profile']['HA4_east']+
+                                                        load_profile_nom['Heat_demand_profile']['HA4_middle']+
+                                                        load_profile_nom['Heat_demand_profile']['HA4_swest'])/4)) 
+                                 + ((P_nom_Bio_Prozessgas_gesamt * load_profile_nom['other_demand_profile']['Prozessgas'])) 
+                                 + ((P_nom_Bio_T24_gesamt *  (load_profile_nom['Heat_demand_profile']['Heat+TWW_north']+
+                                                              load_profile_nom['Heat_demand_profile']['Heat+TWW_east']+
+                                                              load_profile_nom['Heat_demand_profile']['Heat+TWW_middle']+
+                                                              load_profile_nom['Heat_demand_profile']['Heat+TWW_swest'])/4)))
+    
+            data['oil'] =(((P_nom_Oel_HA4_gesamt * (load_profile_nom['Heat_demand_profile']['HA4_north']
+                                                   +load_profile_nom['Heat_demand_profile']['HA4_east']+
+                                                   load_profile_nom['Heat_demand_profile']['HA4_middle']+
+                                                   load_profile_nom['Heat_demand_profile']['HA4_swest'])/4)) 
+                                 + ((P_nom_Oel_Prozessgas_gesamt * load_profile_nom['other_demand_profile']['Prozessgas']))  
+                                 + ((P_nom_Oel_T24_gesamt *(load_profile_nom['Heat_demand_profile']['Heat+TWW_north']+
+                                                              load_profile_nom['Heat_demand_profile']['Heat+TWW_east']+
+                                                              load_profile_nom['Heat_demand_profile']['Heat+TWW_middle']+
+                                                              load_profile_nom['Heat_demand_profile']['Heat+TWW_swest'])/4)))
+    
+            data['dist_heating'] =(((P_nom_Fernw_HA4_gesamt * (load_profile_nom['Heat_demand_profile']['HA4_north']
+                                                               +load_profile_nom['Heat_demand_profile']['HA4_east']+
+                                                               load_profile_nom['Heat_demand_profile']['HA4_middle']+
+                                                               load_profile_nom['Heat_demand_profile']['HA4_swest'])/4)) 
+                                   + ((P_nom_Fernw_Prozessgas_gesamt * load_profile_nom['other_demand_profile']['Prozessgas'])) 
+                                   + ((P_nom_Fernw_T24_gesamt *(load_profile_nom['Heat_demand_profile']['Heat+TWW_north']+
+                                                                load_profile_nom['Heat_demand_profile']['Heat+TWW_east']+
+                                                                load_profile_nom['Heat_demand_profile']['Heat+TWW_middle']+
+                                                                load_profile_nom['Heat_demand_profile']['Heat+TWW_swest'])/4)))
+    
+            data['H2'] = ((P_nom_Verkehr_Wasserstoff_gesamt *load_profile_nom['Base_demand_profile']['base_load']))
+    
+            data['fuel'] = ((P_nom_Verkehr_Verbrenner_sonst_gesamt * load_profile_nom['Base_demand_profile']['base_load']))
+    
+            data['material_usage_gas'] = P_nom_Gas_Grundlast_Materialnutzung * load_profile_nom['Base_demand_profile']['base_load']
+            data['material_usage_oil'] = P_nom_Oel_Grundlast_Materialnutzung * load_profile_nom['Base_demand_profile']['base_load']
 
-        data['gas'] =(((P_nom_Gas_HA4_gesamt * Lastprofile_Stundenwerte['HA4'])) 
-                             + ((P_nom_Gas_Prozessgas_gesamt * Lastprofile_Stundenwerte['Prozessgas'])) 
-                             + ((P_nom_Gas_Grundlast_gesamt * Einspeiseprofile_Stundenwerte['Grundlast'])) 
-                             + ((P_nom_Gas_T24_gesamt * Lastprofile_Stundenwerte['T24'])))
-
-        data['biomass'] =(((P_nom_Bio_HA4_gesamt * Lastprofile_Stundenwerte['HA4'])) 
-                             + ((P_nom_Bio_Prozessgas_gesamt * Lastprofile_Stundenwerte['Prozessgas']))  
-                             + ((P_nom_Bio_T24_gesamt * Lastprofile_Stundenwerte['T24'])))
-
-        data['oil'] =(((P_nom_Oel_HA4_gesamt * Lastprofile_Stundenwerte['HA4']))
-                             + ((P_nom_Oel_Prozessgas_gesamt * Lastprofile_Stundenwerte['Prozessgas'])) 
-                             + ((P_nom_Oel_T24_gesamt * Lastprofile_Stundenwerte['T24'])))
-
-        data['dist_heating'] =(((P_nom_Fernw_HA4_gesamt * Lastprofile_Stundenwerte['HA4']))
-                               + ((P_nom_Fernw_Prozessgas_gesamt * Lastprofile_Stundenwerte['Prozessgas'])) 
-                               + ((P_nom_Fernw_T24_gesamt * Lastprofile_Stundenwerte['T24'])))
-
-        data['H2'] = ((P_nom_Verkehr_Wasserstoff_gesamt * Einspeiseprofile_Stundenwerte['Grundlast']))
-
-        data['fuel'] = ((P_nom_Verkehr_Verbrenner_sonst_gesamt * Einspeiseprofile_Stundenwerte['Grundlast']))
-
-        data['material_usage_gas'] = P_nom_Gas_Grundlast_Materialnutzung * Einspeiseprofile_Stundenwerte['Grundlast']
-        data['material_usage_oil'] = P_nom_Oel_Grundlast_Materialnutzung * Einspeiseprofile_Stundenwerte['Grundlast']
+    else:
+        for a in range(0, number_of_time_steps):
+        #    Zusammenfassung der Lasten auf die Busse
+            data['electricity'] =(((P_nom_Strom_G3_gesamt * Lastprofile_Stundenwerte['G3'])) 
+                                   + ((P_nom_Strom_HA4_gesamt * Lastprofile_Stundenwerte['HA4'])) 
+                                   + ((P_nom_Strom_Prozessgas_gesamt * Lastprofile_Stundenwerte['Prozessgas'])) 
+                                   + ((P_nom_Strom_G0_gesamt * Lastprofile_Stundenwerte['G0'])) 
+                                   + ((P_nom_Strom_H0_gesamt * Lastprofile_Stundenwerte['H0'])) 
+                                   + ((P_nom_Strom_T24_gesamt * Lastprofile_Stundenwerte['T24'])) 
+                                   + ((P_nom_Strom_Grundlast_gesamt * Einspeiseprofile_Stundenwerte['Grundlast']))
+                                   + ((P_nom_Strom_PKW_gesamt * Einspeiseprofile_Stundenwerte['Grundlast']))
+                                   + ((P_nom_Strom_LKW_gesamt * Einspeiseprofile_Stundenwerte['Grundlast']))
+                                   + ((P_nom_Strom_Schiene_gesamt * Einspeiseprofile_Stundenwerte['Grundlast']))
+                                                       )
+    
+            data['gas'] =(((P_nom_Gas_HA4_gesamt * Lastprofile_Stundenwerte['HA4'])) 
+                                 + ((P_nom_Gas_Prozessgas_gesamt * Lastprofile_Stundenwerte['Prozessgas'])) 
+                                 + ((P_nom_Gas_Grundlast_gesamt * Einspeiseprofile_Stundenwerte['Grundlast'])) 
+                                 + ((P_nom_Gas_T24_gesamt * Lastprofile_Stundenwerte['T24'])))
+    
+            data['biomass'] =(((P_nom_Bio_HA4_gesamt * Lastprofile_Stundenwerte['HA4'])) 
+                                 + ((P_nom_Bio_Prozessgas_gesamt * Lastprofile_Stundenwerte['Prozessgas']))  
+                                 + ((P_nom_Bio_T24_gesamt * Lastprofile_Stundenwerte['T24'])))
+    
+            data['oil'] =(((P_nom_Oel_HA4_gesamt * Lastprofile_Stundenwerte['HA4']))
+                                 + ((P_nom_Oel_Prozessgas_gesamt * Lastprofile_Stundenwerte['Prozessgas'])) 
+                                 + ((P_nom_Oel_T24_gesamt * Lastprofile_Stundenwerte['T24'])))
+    
+            data['dist_heating'] =(((P_nom_Fernw_HA4_gesamt * Lastprofile_Stundenwerte['HA4']))
+                                   + ((P_nom_Fernw_Prozessgas_gesamt * Lastprofile_Stundenwerte['Prozessgas'])) 
+                                   + ((P_nom_Fernw_T24_gesamt * Lastprofile_Stundenwerte['T24'])))
+    
+            data['H2'] = ((P_nom_Verkehr_Wasserstoff_gesamt * Einspeiseprofile_Stundenwerte['Grundlast']))
+    
+            data['fuel'] = ((P_nom_Verkehr_Verbrenner_sonst_gesamt * Einspeiseprofile_Stundenwerte['Grundlast']))
+    
+            data['material_usage_gas'] = P_nom_Gas_Grundlast_Materialnutzung * Einspeiseprofile_Stundenwerte['Grundlast']
+            data['material_usage_oil'] = P_nom_Oel_Grundlast_Materialnutzung * Einspeiseprofile_Stundenwerte['Grundlast']
         
     return data
     
