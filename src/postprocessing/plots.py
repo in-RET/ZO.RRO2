@@ -13,7 +13,7 @@ import os
 workdir = os.getcwd()
 
 
-def heat_maps(data_dict,YEAR,permutation,profile_type, sector = None):
+def heat_maps(data_dict,YEAR,permutation,scenario_num,profile_type,sector = None):
     """
     data_dict: dict with all the simulation data like load profiles, epc_costs, parameter......
     YEAR: simulation year
@@ -115,7 +115,7 @@ def heat_maps(data_dict,YEAR,permutation,profile_type, sector = None):
         for j, month in enumerate(range(1,13)):
             heat_maps_subplot(data, sector, month, YEAR, axes[j])
             axes[j].set_title(month_title[j], fontsize = 14)
-        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation), sector + '_'+ profile_type + '_Heatmap.png')),dpi=800)
+        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation),scenario_num, sector + '_'+ profile_type + '_Heatmap.png')),dpi=800)
     
     elif profile_type == 'PV_Rooftop':
         sector = ['PV_Rooftop_North', 'PV_Rooftop_Middle', 'PV_Rooftop_East', 'PV_Rooftop_Swest']
@@ -124,7 +124,7 @@ def heat_maps(data_dict,YEAR,permutation,profile_type, sector = None):
                 heat_maps_subplot(data, sector[i], month, YEAR, axes[i,j], cmap= 'cividis')
                 axes[0,j].set_title(month_title[j], fontsize = 14)  
             axes[i,0].set_ylabel(region[i], fontsize = 14) 
-        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation), profile_type + '_Heatmap.png')),dpi=800)
+        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation),scenario_num, profile_type + '_Heatmap.png')),dpi=800)
         return min_value, max_value
             
     elif profile_type == 'PV_Openfield':
@@ -134,7 +134,7 @@ def heat_maps(data_dict,YEAR,permutation,profile_type, sector = None):
                 heat_maps_subplot(data, sector[i], month, YEAR, axes[i,j], cmap='cividis')
                 axes[0,j].set_title(month_title[j], fontsize = 14) 
             axes[i,0].set_ylabel(region[i], fontsize = 14)
-        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation), profile_type + '_Heatmap.png')),dpi=800)
+        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation),scenario_num, profile_type + '_Heatmap.png')),dpi=800)
         return min_value, max_value
     
     elif profile_type == 'Wind':
@@ -144,7 +144,7 @@ def heat_maps(data_dict,YEAR,permutation,profile_type, sector = None):
                 heat_maps_subplot(data, sector[i], month, YEAR, axes[i,j], cmap= 'coolwarm')
                 axes[0,j].set_title(month_title[j], fontsize = 14)
             axes[i,0].set_ylabel(region[i], fontsize = 14)
-        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation), profile_type + '_Heatmap.png')),dpi=800)
+        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation),scenario_num, profile_type + '_Heatmap.png')),dpi=800)
         return min_value, max_value
     
         

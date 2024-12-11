@@ -1,7 +1,7 @@
 ;Leistung
 Leistungen;------------------------------------------------------------------
 PV_Dach;0,0
-PV_Feld;4729,096963106871
+PV_Feld;4729,0969608402465
 Wind;5570,0
 Wasser;31,0
 Biogas_el;120,82130151843818
@@ -12,7 +12,7 @@ Solarthermie;0,0
 Biomasse_Waerme;0,0
 WP_Fluss;0,0
 WP_Abwaerme;55,0
-Heizstab;279,88239534211823
+Heizstab;279,88239533275896
 Elektrolyse;308,0
 Wasserstoffeinspeisung;0,0
 B2G_Best.;0,0
@@ -20,24 +20,24 @@ B2G_Neu;0,0
 Methanisierung;0,0
 PtL;0,0
 Speicherkapazitäten;------------------------------------------------------------------
-Natriumspeicher;2293,867590039179
-Waermespeicher;94341,73872702994
+Natriumspeicher;2293,8675879011894
+Waermespeicher;94341,73872230774
 Pumpspeicher;2304,0
 Erdgasspeicher;0,0
 Wasserstoffspeicher;0,0
 Emissionen;------------------------------------------------------------------
-Gasemissionen;2466950,962640315
-Oelemissionen;3231312,7141740606
-Stromemissionen;732443,8906595162
-Steinkohleemissionen;139337,38178384933
+Gasemissionen;2466950,962639181
+Oelemissionen;3231312,7141736825
+Stromemissionen;732443,8904022862
+Steinkohleemissionen;139337,3817838777
 Braunkohleemissionen;0,0
-Summe aller Emissionen;6570044,949257742
+Summe aller Emissionen;6570044,948999027
 Kosten [Mio. €];------------------------------------------------------------------
-Annuität;1235,2616786617025
-OPEX;254,3508070737475
-Im-Export;750,6692975536944
-Netz;27,066877895442676
-Gesamtkosten;2267,3486611845865
+Annuität;1235,2616784631184
+OPEX;254,35080702636193
+Im-Export;750,6692973931854
+Netz;27,066877885638164
+Gesamtkosten;2267,348660768304
 Energiemengen;------------------------------------------------------------------
-Stromimport;3381238,5313429795
-Stromexport;7749645,407419189
+Stromimport;3381238,5301555083
+Stromexport;7749537,086553184

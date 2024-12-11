@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0001"],
-        scenario_num = "006",
+        scenario_num = "001",
         years=[2030],# 2040, 2050],
         model_name="Basic_example_zorro_1",
         solver="gurobi",
@@ -18,9 +18,9 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "Influence of an addtional Hydrogen import and a new component to produce synthetic fuel from Biomass",
-        sim_remarks = "- New hydrogen import block with variable cost (grid usage cost, production and transportation cost) \n"+
-                        "- Biomass to liquid component to produce syn. fuel"
+        hypothese = "Influence of new oemof.solph version",
+        sim_remarks = "- BS in new oemof.solph version \n"+
+                        "- Transfer into new file and project structure."
     )
 
     # %TODO: Auswertung der Dump-Daten (csv-daten erstellen, automatische grafiken etc.)

@@ -75,164 +75,69 @@ H2_storage = solph.views.node(results, 'H2_storage')
 
 
 #%%
+from mdutils.mdutils import MdUtils
+from mdutils import Html
+import os
 
-import matplotlib.colors as mc
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
+permutation = '2030_BS0001'
+scenario_num = '006'
 
-from matplotlib.cm import ScalarMappable
+hypothese = "Influence of an addtional Hydrogen import and a new component to produce synthetic fuel from Biomass"
+sim_remarks = "- New hydrogen import block with variable cost (grid usage cost, production and transportation cost) \n- Biomass to liquid component to produce syn. fuel"
+                
+md_PATH = os.path.abspath(os.path.join(os.getcwd(), "docs", "scenario"))
+img_PATH = os.path.abspath(os.path.join(os.getcwd(), "figures", str(permutation)))
+YEAR, model_ID = permutation.split("_")
 
-   
-
-def heat_maps(data_dict,YEAR,permutation, profile_type, sector = None):
-    """
-    data_dict: dict with all the simulation data like load profiles, epc_costs, parameter......
-    YEAR: simulation year
-    profile_type: loadprofile, PV_Rooftop, PV_Openfield, Wind
-    region: if profile_type == PV/Wind feed in, region should be specified 
-            regions: north, east, middle, swest
-    sector: for loadprofiles, sector should be specified
-            sector: electricity, oil, gas, dist_heating,biomass, H2,fuel, material_usage_gas, material_usage_oil
-    """
-    
-    date_time_index = pd.date_range("1/1/"+ str(YEAR), periods=8760, freq="h")
-    month_title = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    
-    if profile_type == 'loadprofile':
-        data = data_dict['Loadprofiles']
-        min_value = data[sector].min()
-        max_value = data[sector].max()
-        sector = sector
-        fig,axes = plt.subplots(1,12, figsize = (19.1,10.5), sharey = True)
-        fig.subplots_adjust(left = 0.05, right = 0.98, top = 0.9, hspace = 0.08, wspace = 0.04)
-        fig.subplots_adjust(bottom=0.15)
-        
-        #Create a new axis to contain the color bar. Values are: (x cords for left border,
-        #y cords for bottom border, width, height)
-        cbar_ax = fig.add_axes([0.3, 0.05, 0.4, 0.025])
-        
-        norm = mc.Normalize(min_value, max_value)
-        
-        #create the colorbar and set it horizontal
-        
-        cb=fig.colorbar(ScalarMappable(norm = norm, cmap='magma'),
-                        cax = cbar_ax,
-                        orientation = 'horizontal')
-        
-        cb.ax.xaxis.set_tick_params(size=0)
-        cb.set_label('Power Consumption in MW', size = 12)
-        fig.text( 0.5,0.1, 'Day', ha='center', va= 'center', fontsize =14)
-        fig.text( 0.02,0.5, 'Hour Commencing', ha='center', va= 'center',rotation = 'vertical', fontsize =14)
-        
-        fig.suptitle('Energy Consumption - ' + sector, fontsize = 20, y= 0.97)
-        
-    elif profile_type == 'PV_Rooftop' or profile_type == 'PV_Openfield' or profile_type == 'Wind':
-        data = pd.DataFrame()
-        region = ['North','East', 'Middle', 'Swest']
-        for r in region:
-            data['PV_Rooftop_'+ r] = data_dict[r].PV_feed_in_profile_rooftop
-            data['PV_Openfield_'+ r] =  data_dict[r].PV_feed_in_profile_openfield
-            data['Wind_'+ r] =  data_dict[r].Wind_feed_in_profile['Wind_feed_in'].values
-        min_value = 0
-        max_value = 1    
-        data = data.reset_index(drop=True)
-        fig,axes = plt.subplots(4,12, figsize = (19.1,10.5), sharey = True)
-    #data['date'] = date_time_index
-        fig.subplots_adjust(left = 0.055, right = 0.96, top = 0.895, hspace = 0.12, wspace = 0.07)
-        fig.subplots_adjust(bottom=0.14)
-        cbar_ax = fig.add_axes([0.3, 0.05, 0.4, 0.025])
-        norm = mc.Normalize(min_value, max_value)
-        #create the colorbar and set it horizontal
-        if profile_type == 'PV_Rooftop' or profile_type == 'PV_Openfield':
-            cmap = 'cividis'
-        elif profile_type =='Wind':
-            cmap = 'coolwarm'
-        cb=fig.colorbar(ScalarMappable(norm = norm, cmap=cmap),
-                        cax = cbar_ax,
-                        orientation = 'horizontal')
-        
-        cb.ax.xaxis.set_tick_params(size=0)
-        cb.set_label('Normalized energy production', size = 12)
-        fig.text( 0.5,0.1, 'Day', ha='center', va= 'center', fontsize =14)
-        fig.text( 0.02,0.5, 'Hour Commencing', ha='center', va= 'center',rotation = 'vertical', fontsize =14)
-        
-        plt.suptitle('Feed-in Profile - ' + profile_type, fontsize = 20, y= 0.97)
-    
-    def heat_maps_subplot(data,sector, month, year, ax, cmap='magma'):
-        
-        data['date'] = date_time_index
-              
-        subset = data[(data['date'].dt.year == year) & (data['date'].dt.month == month)]
-        hour = subset['date'].dt.hour
-        day = subset['date'].dt.day
-        profile = subset[sector]
-        profile = profile.values.reshape(24, len(day.unique()), order = 'F')
-        
-        xgrid = np.arange(day.max()+1) + 1
-        ygrid= np.arange(25)
-        
-        ax.pcolormesh(xgrid, ygrid, profile, cmap=cmap, vmin = min_value, vmax = max_value)
-        ax.set_ylim(24,0)            # Invert the vertical axis
-        ax.yaxis.set_ticks([i for i in range(24)])
-        ax.xaxis.set_ticks([10,20,30])
-        ax.yaxis.set_tick_params(length=0)
-        ax.xaxis.set_tick_params(length=0)
-        ax.set_frame_on(False)   # Remove all spines
-        if profile_type == 'PV_Rooftop' or profile_type == 'PV_Openfield' or profile_type == 'Wind':
-            ax.yaxis.set_ticks([0,4,8,12,16,20,23])
-            ax.xaxis.set_ticks([10,20,30])
        
-    if profile_type == 'loadprofile':
-        for j, month in enumerate(range(1,13)):
-            heat_maps_subplot(data, sector, month, YEAR, axes[j])
-            axes[j].set_title(month_title[j], fontsize = 14)
-        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation), sector + '_'+ profile_type + '_Heatmap.png')),dpi=800)
-    
-    elif profile_type == 'PV_Rooftop':
-        sector = ['PV_Rooftop_North', 'PV_Rooftop_Middle', 'PV_Rooftop_East', 'PV_Rooftop_Swest']
-        for i, data in enumerate([data['PV_Rooftop_North'].to_frame(),data['PV_Rooftop_Middle'].to_frame(),data['PV_Rooftop_East'].to_frame(),data['PV_Rooftop_Swest'].to_frame()]):
-            for j, month in enumerate(range(1,13)):
-                heat_maps_subplot(data, sector[i], month, YEAR, axes[i,j], cmap= 'cividis')
-                axes[0,j].set_title(month_title[j], fontsize = 14)  
-            axes[i,0].set_ylabel(region[i], fontsize = 14)
-        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation), profile_type + '_Heatmap.png')),dpi=800)
-        return min_value, max_value
-            
-    elif profile_type == 'PV_Openfield':
-        sector = ['PV_Openfield_North', 'PV_Openfield_Middle', 'PV_Openfield_East', 'PV_Openfield_Swest']
-        for i, data in enumerate([data['PV_Openfield_North'].to_frame(),data['PV_Openfield_Middle'].to_frame(),data['PV_Openfield_East'].to_frame(),data['PV_Openfield_Swest'].to_frame()]):
-            for j, month in enumerate(range(1,13)):
-                heat_maps_subplot(data, sector[i], month, YEAR, axes[i,j], cmap='cividis')
-                axes[0,j].set_title(month_title[j], fontsize = 14) 
-            axes[i,0].set_ylabel(region[i], fontsize = 14)
-        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation), profile_type + '_Heatmap.png')),dpi=800)
-        return min_value, max_value
-    
-    elif profile_type == 'Wind':
-        sector = ['Wind_North', 'Wind_Middle', 'Wind_East', 'Wind_Swest']
-        for i, data in enumerate([data['Wind_North'].to_frame(),data['Wind_Middle'].to_frame(),data['Wind_East'].to_frame(),data['Wind_Swest'].to_frame()]):
-            for j, month in enumerate(range(1,13)):
-                heat_maps_subplot(data, sector[i], month, YEAR, axes[i,j], cmap= 'coolwarm')
-                axes[0,j].set_title(month_title[j], fontsize = 14)
-            axes[i,0].set_ylabel(region[i], fontsize = 14)
-        plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation), profile_type + '_Heatmap.png')),dpi=800)
-        return min_value, max_value
-    
-permutation  = '2030_BS0001'    
-YEAR= 2030
-profile = ['Wind', 'PV_Rooftop','PV_Openfield', 'loadprofile']
+mdFile = MdUtils(file_name=  os.path.join(md_PATH, str(permutation) + '_' +scenario_num +'.md'), title='Simulation overview')
 
-for i in range(len(profile)):
-    profile_type = profile[i]
-    if profile_type =='loadprofile':
-        sector = ['electricity', 'gas', 'oil', 'dist_heating', 'biomass']
-        for j in range(len(sector)):
-            heat_maps(sim_data,YEAR,permutation , profile_type= profile_type,sector=sector[j])
-    else:
-        sector = None
-        heat_maps(sim_data,YEAR,permutation , profile_type= profile_type,sector=None)
-   
+mdFile.new_paragraph("This is a markdown file created using mdutils python package. This file gives an overview of the"
+                     "scenario and the changes in the energy model." 
+                     "\n**IMPORTANT:** This file is automatically generated at the end of the simulation. "
+                     "Key points from the analyis of the simulation must be added manually.")
+mdFile.new_paragraph("**OEMOF.solph version:** 0.5.2 \n"
+                     "**Simulation Year:** " + YEAR + "\n"
+                     "**Variation:** " + model_ID + "\n"
+                     "**Scenario_num:** " + scenario_num)
+
+
+mdFile.new_header(level=1, title= 'Model ID : ' + str(permutation) + '_' +scenario_num)
+
+mdFile.new_paragraph("**Hypothese**: ")
+mdFile.new_line(hypothese) 
+mdFile.new_paragraph("**Simulation remarks/changes**: ")
+mdFile.new_line(sim_remarks)
+
+
+mdFile.new_header(2, "Plots: ")
+
+image_text = "electricity_loadprofile"
+path = os.path.join(img_PATH, image_text+'_Heatmap.png')
+mdFile.new_header(3, image_text)
+mdFile.new_paragraph(Html.image(path=path, size='900x600'))
+mdFile.new_line()
+
+image_text = "Leistung_Erneuerbare"
+path = os.path.join(img_PATH, scenario_num +'_' + image_text +'.png')
+mdFile.new_header(3, image_text)
+mdFile.new_paragraph(Html.image(path=path, size='400'))
+mdFile.new_line()
+
+image_text = "PtX-Technologien"
+path = os.path.join(img_PATH, scenario_num +'_' + image_text +'.png')
+mdFile.new_header(3, image_text)
+mdFile.new_paragraph(Html.image(path=path, size='400'))
+mdFile.new_line()
+
+image_text = "Speicherkapazitäten"
+path = os.path.join(img_PATH, scenario_num +'_' + image_text +'.png')
+mdFile.new_header(3, image_text)
+mdFile.new_paragraph(Html.image(path=path, size='400'))
+mdFile.new_line()
+
+
+mdFile.create_md_file()
        
 
 

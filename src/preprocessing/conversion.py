@@ -297,8 +297,8 @@ def CO2_price_addition(scalars,sequences,YEAR):
         data_dict['import_brown_coal_price'] = sequences['Energy_price']['Brown_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Braunkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
         data_dict['import_biomass_price'] = sequences['Energy_price']['Biomass_'+ str(YEAR)]
         data_dict['import_synt_fuel_price'] = sequences['Energy_price']['Synthetic_fuel_'+ str(YEAR)]
-        data_dict['import_electricity_price'] = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]]
-        data_dict['export_electricity_price'] =  [i *(-1) for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]]
+        data_dict['import_electricity_price'] = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Electricity_'+str(YEAR)]]
+        data_dict['export_electricity_price'] =  [i *(-1) for i in sequences['Energy_price']['Electricity_'+str(YEAR)]]
         data_dict['export_hydrogen_price'] = [i*(-1) for i in sequences['Energy_price']['Hydrogen_' + str(YEAR)]]
         data_dict['import_hydrogen_price'] = [i+scalars['Hydrogen_grid']['hydrogen']['grid_operating_fee'] for i in sequences['Energy_price']['Hydrogen_' + str(YEAR)]]
     else:
@@ -306,10 +306,10 @@ def CO2_price_addition(scalars,sequences,YEAR):
         data_dict['import_oil_price'] = sequences['Energy_price']['Oil_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Oel']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
         data_dict['import_hard_coal_price'] = sequences['Energy_price']['Hard_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Steinkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])+1000000000     #to make no availability of coal to the optimizer
         data_dict['import_brown_coal_price'] = sequences['Energy_price']['Brown_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Braunkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])+1000000000
-        data_dict['import_electricity_price'] = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]]
+        data_dict['import_electricity_price'] = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee'] for i in sequences['Energy_price']['Electricity_'+str(YEAR)]]
         data_dict['import_biomass_price'] = sequences['Energy_price']['Biomass_'+ str(YEAR)]
         data_dict['import_synt_fuel_price'] = sequences['Energy_price']['Synthetic_fuel_'+ str(YEAR)]
-        data_dict['export_electricity_price'] = [i *(-1) for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]]
+        data_dict['export_electricity_price'] = [i *(-1) for i in sequences['Energy_price']['Electricity_'+str(YEAR)]]
         data_dict['export_hydrogen_price'] = [i*(-1) for i in sequences['Energy_price']['Hydrogen_' + str(YEAR)]]
         data_dict['import_hydrogen_price'] = [i+scalars['Hydrogen_grid']['hydrogen']['grid_operating_fee'] for i in sequences['Energy_price']['Hydrogen_' + str(YEAR)]]
     return (data_dict)

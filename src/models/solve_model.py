@@ -35,7 +35,7 @@ def solveModels(
 
     for permutation in permutations:
         DUMP_PATH = os.path.abspath(os.path.join(os.getcwd(), "dumps", permutation))
-        FIGURE_PATH = os.path.abspath(os.path.join(os.getcwd(), "figures", permutation))
+        FIGURE_PATH = os.path.abspath(os.path.join(os.getcwd(), "figures", permutation, scenario_num))
         YEAR, model_ID = permutation.split("_")
         YEAR = int(YEAR)
         os.makedirs(DUMP_PATH, exist_ok=True)
@@ -107,10 +107,10 @@ def solveModels(
             if profile_type =='loadprofile':
                 sector = ['electricity', 'gas', 'oil', 'dist_heating', 'biomass']
                 for j in range(len(sector)):
-                    heat_maps(sim_data,YEAR,permutation , profile_type= profile_type,sector=sector[j])
+                    heat_maps(sim_data,YEAR,permutation,scenario_num, profile_type= profile_type,sector=sector[j])
             else:
                 sector = None
-                heat_maps(sim_data,YEAR,permutation , profile_type= profile_type,sector=None)
+                heat_maps(sim_data,YEAR,permutation, scenario_num, profile_type= profile_type,sector=None)
         logging.info("Creating simulation doc...")    
         create_simulation_doc(permutation,scenario_num, hypothese, sim_remarks,csv)
         

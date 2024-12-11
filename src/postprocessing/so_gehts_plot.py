@@ -77,7 +77,7 @@ def so_gehts_bar_plot(csv, permutation, scenario_num):
     plt.grid(axis = 'y')
 
     plt.ylabel('Leistung in MW')
-    plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation), scenario_num + '_Leistung_Erneuerbare.png')),dpi=dpi_nr)
+    plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation),scenario_num, scenario_num + '_Leistung_Erneuerbare.png')),dpi=dpi_nr)
         
         
     fig, ax = plt.subplots(figsize=(75*mm, 70*mm))
@@ -113,7 +113,7 @@ def so_gehts_bar_plot(csv, permutation, scenario_num):
     plt.grid(axis = 'y')
 
     plt.ylabel('Leistung in MW')
-    plt.savefig(os.path.abspath(os.path.join(workdir, 'figures' , str(permutation), scenario_num + '_PtX-Technologien.png')),dpi=dpi_nr)
+    plt.savefig(os.path.abspath(os.path.join(workdir, 'figures' , str(permutation),scenario_num, scenario_num + '_PtX-Technologien.png')),dpi=dpi_nr)
 
 
     fig, ax = plt.subplots(figsize=(75*mm, 70*mm))
@@ -145,6 +145,6 @@ def so_gehts_bar_plot(csv, permutation, scenario_num):
     plt.grid(axis = 'y')
 
     plt.ylabel('Kapazität in MWh')
-    plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation), scenario_num + '_Speicherkapazitäten.png')),dpi=dpi_nr)
+    plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation),scenario_num, scenario_num + '_Speicherkapazitäten.png')),dpi=dpi_nr)
     
     return 
