@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0001"],
-        scenario_num = "003",
+        scenario_num = "004",
         years=[2030],# 2040, 2050],
         model_name="Basic_example_zorro_1",
         solver="gurobi",
@@ -18,11 +18,10 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "Influence of new Wind feed-in profiles developed using Hellman's exponent",
-        sim_remarks = "- The Wind feed-in profiles are developed with the help of Hellman's height formula. The weather data is acquired from Meteonorm at 10 m height "+
-                        "and the wind speed is exponentially scaled up to the hub height (150 m).\n"+
-                        "- The power curve of the Enercon E101 turbine was used to develop the energy yield. \n"+
-                        "- Other parameters remain the same [[2030_BS0001_001]]"
+        hypothese = "Influence of new PV feed-in profiles developed using PVlib",
+        sim_remarks = "- The PV feed-in profiles were developed with the help of PVlib package (open-source). The weather data is acquired from Meteonorm at 10 m height "+
+                        "and previouly was imported in PVsyst to develop the energy yield timeseries. PVlib uses a different algorithm but the same module and inverter specifications were implemented in PVlib to get similar energy yield.\n"+
+                        "- Other parameters remain the same [[2030_BS0001_003]]"
     )
 
     # %TODO: Auswertung der Dump-Daten (csv-daten erstellen, automatische grafiken etc.)
