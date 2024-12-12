@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0001"],
-        scenario_num = "001",
+        scenario_num = "002",
         years=[2030],# 2040, 2050],
         model_name="Basic_example_zorro_1",
         solver="gurobi",
@@ -18,9 +18,9 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "Influence of new oemof.solph version",
-        sim_remarks = "- BS in new oemof.solph version \n"+
-                        "- Transfer into new file and project structure."
+        hypothese = "Influence of raw electricity price from brainpool",
+        sim_remarks = "- The electricity price which was corelated to the feed-in profiles is replaced with raw electricity proce from brainpool \n"+
+                        "- Other parameters remain the same [[2030_BS0001_001]]"
     )
 
     # %TODO: Auswertung der Dump-Daten (csv-daten erstellen, automatische grafiken etc.)
