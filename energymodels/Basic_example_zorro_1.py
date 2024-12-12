@@ -209,7 +209,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='Wind_north', 
-        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Wind_north'],#north.Wind_feed_in_profile['Wind_feed_in'],
+        outputs={b_el: solph.Flow(fix=north.Wind_feed_in_profile['Wind_feed_in'],#sequences['feed_in_profile']['Wind_north'],
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                     #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_north_min'][model_ID],
@@ -218,7 +218,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='Wind_east', 
-        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Wind_east'],#east.Wind_feed_in_profile['Wind_feed_in'],
+        outputs={b_el: solph.Flow(fix=east.Wind_feed_in_profile['Wind_feed_in'],#sequences['feed_in_profile']['Wind_east'],#
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                     #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_east_min'][model_ID],
@@ -227,7 +227,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='Wind_middle', 
-        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Wind_middle'],#middle.Wind_feed_in_profile['Wind_feed_in'],
+        outputs={b_el: solph.Flow(fix=middle.Wind_feed_in_profile['Wind_feed_in'],#sequences['feed_in_profile']['Wind_middle'],#
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                     #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_middle_min'][model_ID],
@@ -236,7 +236,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='Wind_swest', 
-        outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Wind_swest'],#swest.Wind_feed_in_profile['Wind_feed_in'],
+        outputs={b_el: solph.Flow(fix=swest.Wind_feed_in_profile['Wind_feed_in'],#sequences['feed_in_profile']['Wind_swest'],#
                                         custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                         investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                     #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_swest_min'][model_ID],
