@@ -14,7 +14,8 @@ import os
 def create_simulation_doc(permutation, scenario_num, hypothese, sim_remarks,csv):
 
     md_PATH = os.path.abspath(os.path.join(os.getcwd(), "docs", "scenario"))
-    img_PATH = os.path.abspath(os.path.join(os.getcwd(), "figures", str(permutation), scenario_num))
+    github_link = "https://github.com/in-RET/ZO.RRO2/blob/new-structure"
+    img_PATH = github_link + "/figures/"+ str(permutation) +'/'+ scenario_num + '/'
     YEAR, model_ID = permutation.split("_")
 
            
@@ -41,55 +42,55 @@ def create_simulation_doc(permutation, scenario_num, hypothese, sim_remarks,csv)
     mdFile.new_header(2, "Plots: ")
     
     image_text = "Leistung_Erneuerbare"
-    path = os.path.join(img_PATH, scenario_num +'_' + image_text +'.png')
+    path = img_PATH + scenario_num +'_' + image_text +'.png'+'?raw=true'
     mdFile.new_header(3, image_text)
     mdFile.new_paragraph(Html.image(path=path, size='400'))
     mdFile.new_line()
 
     image_text = "PtX-Technologien"
-    path = os.path.join(img_PATH, scenario_num +'_' + image_text +'.png')
+    path = img_PATH + scenario_num +'_' + image_text +'.png'+'?raw=true'
     mdFile.new_header(3, image_text)
     mdFile.new_paragraph(Html.image(path=path, size='400'))
     mdFile.new_line()
 
     image_text = "Speicherkapazitäten"
-    path = os.path.join(img_PATH, scenario_num +'_' + image_text +'.png')
+    path = img_PATH + scenario_num +'_' + image_text +'.png'+'?raw=true'
     mdFile.new_header(3, image_text)
     mdFile.new_paragraph(Html.image(path=path, size='400'))
     mdFile.new_line()
 
     image_text = "electricity_loadprofile"
-    path = os.path.join(img_PATH, image_text+'_Heatmap.png')
+    path = img_PATH + image_text+'_Heatmap.png'+'?raw=true'
     mdFile.new_header(3, image_text)
     mdFile.new_paragraph(Html.image(path=path, size='900x600'))
     mdFile.new_line()
     
     image_text = "gas_loadprofile"
-    path = os.path.join(img_PATH, image_text+'_Heatmap.png')
+    path = img_PATH + image_text+'_Heatmap.png'+'?raw=true'
     mdFile.new_header(3, image_text)
     mdFile.new_paragraph(Html.image(path=path, size='900x600'))
     mdFile.new_line()
     
     image_text = "oil_loadprofile"
-    path = os.path.join(img_PATH, image_text+'_Heatmap.png')
+    path = img_PATH + image_text+'_Heatmap.png'+'?raw=true'
     mdFile.new_header(3, image_text)
     mdFile.new_paragraph(Html.image(path=path, size='900x600'))
     mdFile.new_line()
     
     image_text = "dist_heating_loadprofile"
-    path = os.path.join(img_PATH, image_text+'_Heatmap.png')
+    path = img_PATH + image_text+'_Heatmap.png'+'?raw=true'
     mdFile.new_header(3, image_text)
     mdFile.new_paragraph(Html.image(path=path, size='900x600'))
     mdFile.new_line()
     
     image_text = "PV_Openfield"
-    path = os.path.join(img_PATH, image_text+'_Heatmap.png')
+    path = img_PATH + image_text+'_Heatmap.png'+'?raw=true'
     mdFile.new_header(3, image_text)
     mdFile.new_paragraph(Html.image(path=path, size='900x600'))
     mdFile.new_line()
     
     image_text = "Wind"
-    path = os.path.join(img_PATH, image_text+'_Heatmap.png')
+    path = img_PATH + image_text+'_Heatmap.png'+'?raw=true'
     mdFile.new_header(3, image_text)
     mdFile.new_paragraph(Html.image(path=path, size='900x600'))
     mdFile.new_line()

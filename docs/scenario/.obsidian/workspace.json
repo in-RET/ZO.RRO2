@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Model tracking overview.md",
+                "file": "2030_BS0001_006.md",
                 "mode": "source",
-                "source": false
+                "source": true
               },
               "icon": "lucide-file",
-              "title": "Model tracking overview"
+              "title": "2030_BS0001_006"
             }
           }
         ]
@@ -161,28 +161,39 @@
   "active": "2f8f7c1efffcd0ca",
   "lastOpenFiles": [
     "2030_BS0001_007.md",
-    "Model tracking overview.md",
-    "2030_BS0001_005.md",
-    "2030_BS0001_003.md",
-    "2030_BS0001_004.md",
-    "2030_BS0001_001.md",
-    "2030_BS0001_002.md",
     "2030_BS0001_006.md",
-    "tmpvhlawi5w",
-    "tmpahsmn87m",
-    "tmpdcr26w4e",
-    "tmpkphu_ud9",
-    "tmp4utgqldz",
-    "tmpen10k5zh",
-    "tmp099s3yd_",
-    "tmpoy6h0kvj",
+    "2030_BS0001_005.md",
+    "2030_BS0001_004.md",
+    "2030_BS0001_003.md",
+    "2030_BS0001_002.md",
+    "2030_BS0001_001.md",
+    "tmpvxxdq6hc",
+    "ESM_ZORRO_II/figures/2030_BS0001/007/electricity_loadprofile_Heatmap.png.md",
+    "ESM_ZORRO_II/figures/2030_BS0001/007",
+    "ESM_ZORRO_II/figures/2030_BS0001",
+    "ESM_ZORRO_II/figures",
+    "ESM_ZORRO_II",
+    "figures/2030_BS0001/007/electricity_loadprofile_Heatmap.png",
+    "figures/bin/xdot.lib",
+    "figures/bin/vpsc.pdb",
+    "figures/bin/xdot.exp",
+    "figures/bin/xdot.dll",
+    "figures/bin/vpsc.lib",
+    "figures/2040_BS0001/BS_regionalization_grid.png",
+    "figures/2030_BS0001/007/PV_Openfield_Heatmap.png",
+    "figures/2030_BS0001/007/Wind_Heatmap.png",
+    "figures/2030_BS0001/007/PV_Rooftop_Heatmap.png",
+    "figures/2030_BS0001/007/oil_loadprofile_Heatmap.png",
+    "figures/2030_BS0001/007/007_Speicherkapazitäten.png",
+    "figures/2030_BS0001/007/gas_loadprofile_Heatmap.png",
+    "figures/2030_BS0001/007/dist_heating_loadprofile_Heatmap.png",
+    "figures/2030_BS0001/007/biomass_loadprofile_Heatmap.png",
+    "Model tracking overview.md",
     "Model tracking overview 1.md",
-    "tmpl9nn7clh",
     "Untitled 1.canvas",
     "Untitled 4.canvas",
     "Untitled 3.canvas",
     "Untitled 2.canvas",
-    "Untitled.canvas",
-    "tmpw3o26bsi"
+    "Untitled.canvas"
   ]
 }
