@@ -273,7 +273,7 @@ def export_csv(results, YEAR, permutation, model_name, scenario_num, sim_data):
 
     for i in range(0, len(b_el['sequences'][('Import_Electricity','Electricity'),'flow'])-1):
         Import_el_cost += (b_el['sequences'][('Import_Electricity','Electricity'),'flow'][i]) * sim_data['Import_prices']['import_electricity_price'][i]
-        Export_el_cost += (b_el['sequences'][('Electricity','Export_Electricity'),'flow'][i]) * sim_data['Timeseries']['Energy_price']['Electricity_'+str(YEAR)][i]
+        Export_el_cost += (b_el['sequences'][('Electricity','Export_Electricity'),'flow'][i]) * (-1) *sim_data['Import_prices']['export_electricity_price'][i]
         
         Import_gas_cost += (b_gas['sequences'][('Import_Gas','Gas'),'flow'][i]) * sim_data['Import_prices']['import_gas_price'][i]
         

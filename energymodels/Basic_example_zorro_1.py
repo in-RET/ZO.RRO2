@@ -23,8 +23,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
-    demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
-    #demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
+    #demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
+    demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
     epc_costs = investment_parameter(scalars, YEAR, model_ID)
     import_price = CO2_price_addition(scalars,sequences, YEAR)
     
@@ -434,14 +434,14 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_oil_fuel: solph.Flow(variable_costs = import_price['import_synt_fuel_price'],
             )}))
     
-    # #------------------------------------------------------------------------------
-    # # Import Hydrogen
-    # #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Source(
-    #     label='Import_Hydrogen',
-    #     outputs={b_H2: solph.Flow(nominal_value = scalars['Hydrogen_grid']['hydrogen']['max_power'],
-    #                               variable_costs = import_price['import_hydrogen_price'],
-    #         )}))
+    #------------------------------------------------------------------------------
+    # Import Hydrogen
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Import_Hydrogen',
+        outputs={b_H2: solph.Flow(nominal_value = scalars['Hydrogen_grid']['hydrogen']['max_power'],
+                                  variable_costs = import_price['import_hydrogen_price'],
+            )}))
     
     """
     Energy storage
@@ -642,14 +642,14 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                   investment=solph.Investment(ep_costs=epc_costs['biomass_combined_heat_and_power_plant']['epc']),
                                   custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]}),
                  
-                 # b_dist_heat: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]},
-                 #                           fix=sequences['Base_demand_profile']['base_load'],
-                 #                           #nominal_value= 1
-                 #                           investment = solph.Investment(ep_costs=0)
-                                           # )
+                  b_dist_heat: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]},
+                                            fix=sequences['Base_demand_profile']['base_load'],
+                                            #nominal_value= 1
+                                            investment = solph.Investment(ep_costs=0)
+                                            )
                  },
         conversion_factors={b_el: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_el_' +str(YEAR)][model_ID],
-                            # b_dist_heat: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_th_' +str(YEAR)][model_ID]
+                            b_dist_heat: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_th_' +str(YEAR)][model_ID]
                             }
         ))        
     
@@ -752,17 +752,17 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         conversion_factors={b_oil_fuel: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]}
         ))
     
-    # #------------------------------------------------------------------------------
-    # # Biomass-to-Liquid
-    # #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Converter(
-    #     label="BtL",
-    #     inputs={b_bio: solph.Flow()},
-    #     outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['biomass_to_liquid_system']['epc'], 
-    #                                                                          #maximum=scalars['Parameter_biomass_to_liquid_system']['potential'][model_ID]
-    #                                                                          ))},
-    #     conversion_factors={b_oil_fuel: scalars['Parameter_biomass_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]}
-    #     ))
+    #------------------------------------------------------------------------------
+    # Biomass-to-Liquid
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="BtL",
+        inputs={b_bio: solph.Flow()},
+        outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['biomass_to_liquid_system']['epc'], 
+                                                                              #maximum=scalars['Parameter_biomass_to_liquid_system']['potential'][model_ID]
+                                                                              ))},
+        conversion_factors={b_oil_fuel: scalars['Parameter_biomass_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]}
+        ))
     
     #------------------------------------------------------------------------------
     # Solid biomass in the same bus as coal

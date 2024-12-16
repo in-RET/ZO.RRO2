@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "2030_BS0001_006.md",
+                "file": "2030_BS0001_008.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "2030_BS0001_006"
+              "title": "2030_BS0001_008"
             }
           }
         ]
@@ -161,6 +161,8 @@
   "active": "2f8f7c1efffcd0ca",
   "lastOpenFiles": [
     "2030_BS0001_007.md",
+    "2030_BS0001_008.md",
+    "Model tracking overview.md",
     "2030_BS0001_006.md",
     "2030_BS0001_005.md",
     "2030_BS0001_004.md",
@@ -188,7 +190,6 @@
     "figures/2030_BS0001/007/gas_loadprofile_Heatmap.png",
     "figures/2030_BS0001/007/dist_heating_loadprofile_Heatmap.png",
     "figures/2030_BS0001/007/biomass_loadprofile_Heatmap.png",
-    "Model tracking overview.md",
     "Model tracking overview 1.md",
     "Untitled 1.canvas",
     "Untitled 4.canvas",
