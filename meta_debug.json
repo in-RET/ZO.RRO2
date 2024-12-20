@@ -1,0 +1,124 @@
+{
+  "title": "Ein Titel",
+  "description": "Beschreibung",
+  "language": "EN",
+  "id": "parameter_onshore_wind_power_plant_inret_51297",
+  "name": "parameter onshore wind power plant inret 51297",
+  "keywords": [],
+  "subject": [
+    [
+      "Debugging purposes"
+    ]
+  ],
+  "languages": [
+    "EN",
+    "DE"
+  ],
+  "licenses": [
+    {
+      "name": "CC-BY-4.0",
+      "path": "https://spdx.github.io/license-list-data/CC-BY-4.0.html",
+      "title": "Creative Commons Attribution 4.0 International"
+    }
+  ],
+  "context": {
+    "contact": "Hochschule Nordhausen - Institut für regenerative Energietechnik",
+    "homepage": "https://hs-nordhausen.de",
+    "documentation": "https://hs-nordhausen.de",
+    "sourceCode": "https://github.com/in-RET"
+  },
+  "resources": [
+    {
+      "name": "parameter_onshore_wind_power_plant_inret_51297",
+      "schema": {
+        "fields": [
+          {
+            "data_type": "int",
+            "type": "integer",
+            "unit": "",
+            "description": "",
+            "primary_key": true,
+            "name": "id"
+          },
+          {
+            "data_type": "varchar(100)",
+            "type": "string",
+            "unit": "",
+            "description": "",
+            "name": "model_id"
+          },
+          {
+            "data_type": "float",
+            "type": "number",
+            "unit": "eur per mw",
+            "description": "median investment costs for 2020",
+            "name": "investment_costs_2020"
+          },
+          {
+            "data_type": "float",
+            "type": "number",
+            "unit": "eur per mw",
+            "description": "",
+            "name": "investment_costs_2025"
+          },
+          {
+            "data_type": "float",
+            "type": "number",
+            "unit": "eur per mw",
+            "description": "",
+            "name": "investment_costs_2030"
+          },
+          {
+            "data_type": "float",
+            "type": "number",
+            "unit": "eur per mw",
+            "description": "",
+            "name": "investment_costs_2035"
+          },
+          {
+            "data_type": "float",
+            "type": "number",
+            "unit": "eur per mw",
+            "description": "",
+            "name": "investment_costs_2040"
+          },
+          {
+            "data_type": "float",
+            "type": "number",
+            "unit": "eur per mw",
+            "description": "",
+            "name": "investment_costs_2045"
+          },
+          {
+            "data_type": "float",
+            "type": "number",
+            "unit": "eur per mw",
+            "description": "",
+            "name": "investment_costs_2050"
+          },
+          {
+            "data_type": "float",
+            "type": "number",
+            "unit": "percent of investment costs",
+            "description": "",
+            "name": "operating_costs_2020"
+          },
+          {
+            "data_type": "float",
+            "type": "number",
+            "unit": "percent of investment costs",
+            "description": "",
+            "name": "operating_costs_2025"
+          },
+          {
+            "data_type": "float",
+            "type": "number",
+            "unit": "percent of investment costs",
+            "description": "",
+            "name": "operating_costs_2030"
+          }
+        ]
+      }
+    }
+  ]
+}

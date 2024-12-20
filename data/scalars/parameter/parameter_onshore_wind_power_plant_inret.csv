@@ -1,0 +1,10 @@
+name;id;model_id;investment_costs_2020;investment_costs_2025;investment_costs_2030;investment_costs_2035;investment_costs_2040;investment_costs_2045;investment_costs_2050;operating_costs_2020;operating_costs_2025;operating_costs_2030
+data_type;int;varchar(100);float;float;float;float;float;float;float;float;float;float
+type;integer;string;number;number;number;number;number;number;number;number;number;number
+unit;;;eur per mw;eur per mw;eur per mw;eur per mw;eur per mw;eur per mw;eur per mw;percent of investment costs;percent of investment costs;percent of investment costs
+description;;;median investment costs for 2020;;;;;;;;;
+primary_key;true;;;;;;;;;;;
+data;1;BS0002;1290000;1210000;1150000;1112500;1075000;1037500;1020840;2.415;2.425;2.475
+data;2;BS0003;1290000;1210000;1150000;1112500;1075000;1037500;1020840;2.415;2.425;2.475
+data;3;BS0004;1290000;1210000;1150000;1112500;1075000;1037500;1020840;2.415;2.425;2.475
+data;4;BS0005;1290000;1210000;1150000;1112500;1075000;1037500;1020840;2.415;2.425;2.475
