@@ -313,3 +313,24 @@ def CO2_price_addition(scalars,sequences,YEAR):
         data_dict['export_hydrogen_price'] = [i*(-1) for i in sequences['Energy_price']['Hydrogen_' + str(YEAR)]]
         data_dict['import_hydrogen_price'] = [i+scalars['Hydrogen_grid']['hydrogen']['grid_operating_fee'] for i in sequences['Energy_price']['Hydrogen_' + str(YEAR)]]
     return (data_dict)
+
+def COP_calculation(scalars, T_a, model_ID, YEAR):
+
+    T_VL = [None]*8760
+    COP = [None]*8760
+    T_VL_L = scalars['Temperature_dist_heat']['T_VL_L_' + str(YEAR)][model_ID]      # Lower limit of Forward temperature
+    T_VL_U = scalars['Temperature_dist_heat']['T_VL_U_' + str(YEAR)][model_ID]      # Upper limit of forward temperature
+    T_RL = scalars['Temperature_dist_heat']['T_RL_' + str(YEAR)][model_ID]          # Reverse temperature
+    T_L = scalars['Temperature_dist_heat']['T_L'][model_ID]                         # Ambient temperature lower limit
+    T_U = scalars['Temperature_dist_heat']['T_U'][model_ID]                         # Ambient temperature upper limit
+    
+    for i in range(len(T_a)):
+        if T_a[i] > T_L and T_a[i] < T_U:
+            T_VL[i] = T_VL_L - ((T_VL_L - T_VL_U)/(T_U - T_L)) * (T_a[i] - T_L)
+        elif T_a[i] <= T_L:
+            T_VL[i] = T_VL_L
+        elif T_a[i] >= T_U:
+            T_VL[i] = T_VL_U
+        nu_H = 0.36 #efficiency of heatpump
+        COP[i] = nu_H*(T_VL[i]+273.15) / (T_VL[i]-T_RL)
+    return pd.Series(COP)
