@@ -55,11 +55,28 @@ class OepHandler:
     auth_header = None
     api_url = None
     context = {
-        "contact": "Hochschule Nordhausen - Institut für regenerative Energietechnik",
+        "title": "Zero Cross Carbon Energy System (ZO.RRO), Fallbeispiel Thüringen II",
+        "contact": "Viktor Wesselak Viktor.Wesselak@hs-nordhausen.de, Christoph Schmidt Christoph.Schmidt@hs-nordhausen.de",
         "homepage": "https://hs-nordhausen.de",
-        "documentation": "https://hs-nordhausen.de",
-        "sourceCode": "https://github.com/in-RET"
+        "documentation": "https://github.com/in-RET/ZO.RRO2",
+        "publisher": "University of Applied Sciences Nordhausen - Institut for renewable energy technologies",
+        "publisherLogo": "https://www.hs-nordhausen.de/forschung/in-ret-institut-fuer-regenerative-energietechnik/",
+        "fundingAgency": "Thüringer Ministerium für Umwelt, Energie und Naturschutz"
+        "fundingAgencyLogo": "https://umwelt.thueringen.de/impressum"
+        "sourceCode": "https://github.com/in-RET/ZO.RRO2"
+        "grantNo": "0901-33-3417/148-3-34066/2021"        
     }
+
+#Bei Zeitreihen Spatial und Temporal ergänzen! Siehe https://github.com/OpenEnergyPlatform/oemetadata/blob/production/metadata/latest/metadata_key_description.md
+
+    sources = {
+        "title": "So geht's weiter 2", #mit richtigem Namen ergänzen
+        "authors": "Viktor Wesselak, Christoph Schmidt, Amélie Oberdorfer, Rohith Krishnan Bala Krishnan, Theresa Reinhardt, Andreas Lubojanski, Hinderrike Hauer-Berghuiss",
+        "description": "Final report of the Zero Cross Carbon Energy System (ZO.RRO) project, case study Thuringia II, literature review in chapter “Input parameters”",
+        "publicationYear": "2025",
+        "path": "https://github.com/in-RET/ZO.RRO2",
+    }
+    
 
     def __init__(self, api_url, token):
         self.api_url = api_url
