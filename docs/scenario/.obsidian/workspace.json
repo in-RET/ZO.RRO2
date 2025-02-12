@@ -13,15 +13,28 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "2030_BS0001_008.md",
-                "mode": "source",
+                "file": "2030_BS0001_007.md",
+                "mode": "preview",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "2030_BS0001_008"
+              "title": "2030_BS0001_007"
+            }
+          },
+          {
+            "id": "aa61ed08f4c90b00",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.8.4"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.8.4"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -40,7 +53,8 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "alphabetical"
+                "sortOrder": "alphabetical",
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -158,17 +172,17 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "2f8f7c1efffcd0ca",
+  "active": "aa61ed08f4c90b00",
   "lastOpenFiles": [
-    "2030_BS0001_007.md",
-    "2030_BS0001_008.md",
+    "2030_BS0001_001.md",
     "Model tracking overview.md",
+    "2030_BS0001_008.md",
+    "2030_BS0001_007.md",
     "2030_BS0001_006.md",
     "2030_BS0001_005.md",
     "2030_BS0001_004.md",
     "2030_BS0001_003.md",
     "2030_BS0001_002.md",
-    "2030_BS0001_001.md",
     "tmpvxxdq6hc",
     "ESM_ZORRO_II/figures/2030_BS0001/007/electricity_loadprofile_Heatmap.png.md",
     "ESM_ZORRO_II/figures/2030_BS0001/007",
