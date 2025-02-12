@@ -101,9 +101,9 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     """Link between HöS & HS""" 
     energysystem.add(solph.components.Link(
         label='HöS<->HS',
-        inputs= {b_hös: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
+        inputs= {b_hös: solph.Flow(),
                   b_hs: solph.Flow()},
-        outputs= {b_hs: solph.Flow(),
+        outputs= {b_hs: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
                   b_hös: solph.Flow()},
         conversion_factors = {(b_hös,b_hs): 1, (b_hs,b_hös):1}
         
@@ -113,10 +113,9 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Link(
         label='HS<->North',
         inputs= {b_hs: solph.Flow(),
-                 b_el_north: solph.Flow()},
-        outputs= {b_el_north: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_north'],
-                                         variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
-                  b_hs: solph.Flow()},
+                 b_el_north: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_north'])},
+        outputs= {b_el_north: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_north']),
+                  b_hs: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee'])},
         conversion_factors = {(b_hs,b_el_north): 1, (b_el_north,b_hs):1}
         ))
 
@@ -124,10 +123,9 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Link(
         label='HS<->East',
         inputs= {b_hs: solph.Flow(),
-                 b_el_east: solph.Flow()},
-        outputs= {b_el_east: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_east'],
-                                        variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
-                  b_hs: solph.Flow()},
+                 b_el_east: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_east'])},
+        outputs= {b_el_east: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_east']),
+                  b_hs: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee'])},
         conversion_factors = {(b_hs,b_el_east): 1, (b_el_east,b_hs):1}
         ))
 
@@ -135,10 +133,9 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Link(
         label='HS<->Middle',
         inputs= {b_hs: solph.Flow(),
-                 b_el_middle: solph.Flow()},
-        outputs= {b_el_middle: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_middle'],
-                                          variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
-                  b_hs: solph.Flow()},
+                 b_el_middle: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_middle'])},
+        outputs= {b_el_middle: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_middle']),
+                  b_hs: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee'])},
         conversion_factors = {(b_hs,b_el_middle): 1, (b_el_middle, b_hs): 1}
         ))
 
@@ -146,10 +143,9 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Link(
         label='HS<->Swest',
         inputs= {b_hs: solph.Flow(),
-                 b_el_swest: solph.Flow()},
-        outputs= {b_el_swest: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_swest'],
-                                         variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
-                  b_hs: solph.Flow()},
+                 b_el_swest: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_swest'])},
+        outputs= {b_el_swest: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power_swest']),
+                  b_hs: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee'])},
         conversion_factors = {(b_hs,b_el_swest): 1, (b_el_swest, b_hs):1}
         ))
 
@@ -157,30 +153,36 @@ def BS_regionalization(PERMUATION: str) -> solph.EnergySystem:
     """Link between HS & different regions""" 
     energysystem.add(solph.components.Link(
         label='North<->Middle',
-        inputs= {b_el_north: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle']),
-                 b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle'])},
-        outputs= {b_el_middle: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
-                 b_el_north: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee'])},
+        inputs= {b_el_north: solph.Flow(),
+                 b_el_middle: solph.Flow()},
+        outputs= {b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle'],
+                                          variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
+                 b_el_north: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle'],
+                                        variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee'])},
         conversion_factors = {(b_el_north,b_el_middle): 1, (b_el_middle,b_el_north):1}
         
         ))
 
     energysystem.add(solph.components.Link(
         label='Middle<->Swest',
-        inputs= {b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_middle_swest']),
-                 b_el_swest: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_middle_swest'])},
-        outputs= {b_el_swest: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
-                 b_el_middle: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee'])},
+        inputs= {b_el_middle: solph.Flow(),
+                 b_el_swest: solph.Flow()},
+        outputs= {b_el_swest: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_middle_swest'],
+                                         variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
+                 b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_middle_swest'],
+                                         variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee'])},
         conversion_factors = {(b_el_middle,b_el_swest): 1, (b_el_swest,b_el_middle):1}
         
         ))
 
     energysystem.add(solph.components.Link(
          label='East<->Middle',
-         inputs= {b_el_east: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_east_middle']),
-                  b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_east_middle'])},
-         outputs= {b_el_middle: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
-                  b_el_east: solph.Flow(variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee'])},
+         inputs= {b_el_east: solph.Flow(),
+                  b_el_middle: solph.Flow()},
+         outputs= {b_el_middle: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_east_middle'],
+                                           variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee']),
+                  b_el_east: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_east_middle'],
+                                        variable_costs= scalars['Electricity_grid']['electricity']['grid_operating_fee'])},
          conversion_factors = {(b_el_east,b_el_middle): 1, (b_el_middle,b_el_east):1}
          
          ))   
