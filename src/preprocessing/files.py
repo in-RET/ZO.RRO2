@@ -32,11 +32,16 @@ def read_input_files(folder_name, sub_folder_name= None):
     files = dict()
       
     for filename in os.listdir(path):
-        if filename.endswith('.csv'):
+        if filename.endswith('.csv') and not filename.startswith('Parameter'):
             file_path = os.path.join(path,filename)
             filename = filename[:-4]                            # to remove the file format from the file name (eg. removing .csv)
             files[filename] = pd.read_csv(file_path, sep=';', decimal = ',',encoding = 'unicode_escape', index_col=0)
-    
+        elif filename.startswith('Parameter') and filename.endswith('.csv'):
+             file_path = os.path.join(path,filename)
+             filename = filename[:-4]                            # to remove the file format from the file name (eg. removing .csv)
+             cols = list(pd.read_csv(file_path, sep=';', skiprows=[1,2,3,4,5] ,decimal = ',',encoding = 'unicode_escape', index_col=None))
+             
+             files[filename] = (pd.read_csv(file_path, sep=';', skiprows=[1,2,3,4,5] ,decimal = ',',encoding = 'unicode_escape', index_col=0, usecols = [i for i in cols if i not in ["name","id"]]))
     return(files)
 
 
