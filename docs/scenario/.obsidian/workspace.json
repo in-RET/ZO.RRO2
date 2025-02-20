@@ -192,20 +192,20 @@
                 "state": {
                   "type": "markdown",
                   "state": {
-                    "file": "Journal.md",
+                    "file": "Model tracking overview.md",
                     "mode": "source",
                     "source": false
                   },
                   "icon": "lucide-file",
-                  "title": "Journal"
+                  "title": "Model tracking overview"
                 }
               }
             ]
           }
         ],
         "direction": "vertical",
-        "x": 405,
-        "y": 27,
+        "x": 1771,
+        "y": 88,
         "width": 1576,
         "height": 1000,
         "maximize": true,
@@ -213,7 +213,7 @@
       }
     ]
   },
-  "active": "aa61ed08f4c90b00",
+  "active": "b19d0ac1ee950138",
   "lastOpenFiles": [
     "Journal.md",
     "Model tracking overview.md",

@@ -25,11 +25,20 @@
 hab bis 12.02. schritt nach schritt die Änderungen dokumentiert [[Model tracking overview]]
 
 - Stromnetzabbildung für die Regionalisierung geändert am 12.02. 
-- Basis szenario mit Hös und Goldistal aktualisiert
+- Postprocessing (automatic procesing from dumpfile without fixed variable)
+	- [x] dumpfile analysis
+	- [ ] graph funtion 
+	- [x] investment cost
+	- [x] operating cost
+	- [x] import/Export cost
+	- [ ] emission
+	
 
 # To-Dos
 
 - [ ] find grid operating fee for Höchspannungsnetz
 - [x] modify read_input_files functions because of new OEP csv file structure
 - [ ] clarify grid operating fee for both grids
-- [ ] Remove parameter storage heat block
+- [x] Remove parameter storage heat block
+- [ ] basis scenario final run with new blocks (simulation number 009)
+- [ ] Doc string for function and read me file for github for each folder level (bis 21.02)
