@@ -3,24 +3,24 @@
 Welcome to the ZO.RRO2 repository. This document provides an overview of the project's structure, including directories and key files, to help you navigate and understand the contents of this repository.
 
 ## Directory and File Descriptions
-  - github/workflows: Contains GitHub Actions workflow files for continuous integration and deployment
-  - run: Houses configuration files for development environment setups
-  - coverage: Stores code coverage reports generated from test suites
-  - data: Intended for datasets used by the project
-  - docs: Contains project documentation, scenario description and markdown files for each scenario. This folder can be used to track the project using obsidian
-  - energymodels: Includes energy system models (eg. Basic example, Basic example regionilized...)
-  - figures: Holds graphical outputs such as plots and diagrams.
-  - notebooks: Consists of Jupyter notebooks for exploratory data analysis and prototyping
-  - results: Contains results from simulations or analyses
-  - src: The main source code directory for the project's Python modules
-  - coveragerc: Configuration file for coverage.py, specifying rules for measuring code coverage
-  - gitignore: Specifies files and directories to be ignored by Git version control
-  - pre-commit-config.yaml: Configuration for pre-commit hooks to maintain code quality
-  - LICENSE: The project's license file, detailing terms of use and distribution
-  - README.md: This file provides an overview and instructions for the repository
-  - main.py: The main executable script that serves as the entry point for the project
-  - mkdocs.yml: Configuration file for MkDocs, a static site generator for project documentation
-  - requirements.txt: Lists Python dependencies required for the project
+  - **github/workflows**: Contains GitHub Actions workflow files for continuous integration and deployment
+  - **run**: Houses configuration files for development environment setups
+  - **coverage**: Stores code coverage reports generated from test suites
+  - **data**: Intended for datasets used by the project
+  - **docs**: Contains project documentation, scenario description and markdown files for each scenario. This folder can be used to track the project using obsidian
+  - **energymodels**: Includes energy system models (eg. Basic example, Basic example regionilized...)
+  - **figures**: Holds graphical outputs such as plots and diagrams.
+  - **notebooks**: Consists of Jupyter notebooks for exploratory data analysis and prototyping
+  - **results**: Contains results from simulations or analyses
+  - **src**: The main source code directory for the project's Python modules
+  - **coveragerc**: Configuration file for coverage.py, specifying rules for measuring code coverage
+  - **gitignore**: Specifies files and directories to be ignored by Git version control
+  - **pre-commit-config.yaml**: Configuration for pre-commit hooks to maintain code quality
+  - **LICENSE**: The project's license file, detailing terms of use and distribution
+  - **README.md**: This file provides an overview and instructions for the repository
+  - **main.py**: The main executable script that serves as the entry point for the project
+  - **mkdocs.yml**: Configuration file for MkDocs, a static site generator for project documentation
+  - **requirements.txt**: Lists Python dependencies required for the project
 
 ## Programming Parameter
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6ea8d776d6a849a6a2dbfec3f16506a8)](https://app.codacy.com/gh/in-RET/ZO.RRO2/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
