@@ -20,7 +20,7 @@ def create_simulation_doc(permutation, scenario_num, hypothese, sim_remarks,csv)
 
            
     mdFile = MdUtils(file_name=  os.path.join(md_PATH, str(permutation) + '_' +scenario_num +'.md'))
-    mdFile.new_paragraph("---\n"+
+    mdFile.new_line("---\n"+
                          "Model ID: " + str(permutation) + "_" + scenario_num + "\n"+ 
                          "Simulation Year: " + YEAR + "\n"+
                          "Variation: " + model_ID + "\n"+

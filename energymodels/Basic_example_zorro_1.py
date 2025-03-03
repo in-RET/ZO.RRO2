@@ -371,16 +371,16 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     # Environmental heat
     #------------------------------------------------------------------------------
     
-    # Load_profile_uw = ((north.weather_data_hour[' Ta'] + east.weather_data_hour[' Ta'] + middle.weather_data_hour[' Ta'] + swest.weather_data_hour[' Ta'])/4)
-    # Load_profile_uw[Load_profile_uw<0]=0
-    # Load_profile_uw = Load_profile_uw / sum(Load_profile_uw)    # developed with environmental temperature as fix for teh source block
+    Load_profile_uw = ((north.weather_data_hour[' Ta'] + east.weather_data_hour[' Ta'] + middle.weather_data_hour[' Ta'] + swest.weather_data_hour[' Ta'])/4)
+    Load_profile_uw[Load_profile_uw<0]=0
+    Load_profile_uw = Load_profile_uw / sum(Load_profile_uw)    # developed with environmental temperature as fix for teh source block
     
-    # energysystem.add(solph.components.Source(
-    #     label='UW', 
-    #     outputs={b_uw: solph.Flow(fix=Load_profile_uw, 
-    #                                       custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
-    #                                       nominal_value = 890
-    #     )}))
+    energysystem.add(solph.components.Source(
+        label='UW', 
+        outputs={b_uw: solph.Flow(fix=Load_profile_uw, 
+                                          custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
+                                          nominal_value = 890
+        )}))
     
     """ Imports """
     #------------------------------------------------------------------------------
@@ -873,8 +873,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
         label="Heatpump_water",
-        inputs={b_el: solph.Flow()},
-                #b_uw: solph.Flow()},
+        inputs={b_el: solph.Flow(),
+                b_uw: solph.Flow()},
         outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_ground_Flusswärme']['epc'], 
                                                                   maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]))},
         conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},    
