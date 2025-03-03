@@ -1,0 +1,345 @@
+- [x] **Sequences** : Time-series data OEP format csv files (liegt bei data/sequences)
+	- [ ] Base demand profile: dauerlast 
+	- [ ] Cooling demand/Heating demand: Building simulator (5RC model)
+	- [ ] Electricity household: RAMP
+	- [ ] Domestic hot water: Sigmoid funktion
+	- [ ] Energy price: Brainpool 2024
+	- [ ] Mobility demand: RAMP mobility
+	- [ ] other demand profile: von ZORRO I ubernommen (G0, G3, HA4, Prozessgas, T24)
+- [x] **Scalars**: Techno-economical parameter and other input parameters (leigt bei data/scalars)
+	- [ ] Parmetern
+	- [ ] Demand
+	- [ ] Wind Powercurve
+	- [ ] Electricity/Hydrogen grid
+- [ ] **Demand**: Skalierung der Lastprofile (New_profile check *True/False*)
+- [x] **epc_costs**: Equivalent periodic costs with CSV-Datei Parametern
+- [ ] **import_price**: CO2 price addition to the brainpool price
+- [ ] **Weather data**: TRY von Meteonorm für vier planungs Region (liegt bei data/Weather_Data)
+- [ ] **COP**:  Calculated based on district heating temperature levels for different years
+- [ ] **Busses**:
+	- [ ] b_Hös- Höchstspannung
+	- [ ] b_el - Electricity bus (Hochspannung)
+	- [ ] b_gas - Gas
+	- [ ] b_oil_fuel 
+	- [ ] b_bio - Biomass
+	- [ ] b_biowood- Wood
+	- [ ] b_dist_heat - Fernwärme
+	- [ ] b_H2 
+	- [ ] b_solidf - Solidfuel
+	- [ ] b_preheater
+	- [ ] b_abwärme
+	- [ ] b_uw - Umweltwärme
+- [ ] **Export**:
+	- [ ] Electricity 
+		- [ ] nominal value: scalars -> electricity grid -> maxpower
+		- [ ] variable cost: import function -> export electricity price(brain pool price)
+	- [ ] Hydrogen
+		- [ ] namoinal value: scalars-> hydrogen grid ->max power
+		- [ ] variable cost: import funtion -> export hydrogen price
+- [ ] **Demand**: 
+		*Zusammensetzung siehe preprocess -> Load profile scaling function*
+	- [ ] Electricity
+	- [ ] Biomass
+	- [ ] Gas
+	- [ ] Material demand gas
+	- [ ] Oil
+	- [ ] Mobility - only combustion 
+	- [ ] Material demand oil
+	- [ ] Heat
+	- [ ] Hydrogen
+- [ ] **Renewable energy sources**:
+	- [ ] Wind ( vier Planungsregion)
+		- [ ] Einspeiseprofil
+		- [ ] emission_factor
+		- [ ] investment model
+		- [ ] epc_cost
+		- [ ] maximum
+		- [ ] minimum (existing)
+	- [ ] PV Freifeld ( vier Planungsregion)
+		- [ ] Einspeiseprofil
+		- [ ] emission_factor
+		- [ ] investment model
+		- [ ] epc_cost
+		- [ ] maximum
+		- [ ] minimum (existing)
+	- [ ] PV Aufdach ( vier Planungsregion)
+		- [ ] Einspeiseprofil
+		- [ ] emission_factor
+		- [ ] investment model
+		- [ ] epc_cost
+		- [ ] maximum
+		- [ ] minimum (existing)
+	 - [ ] Hydro power plant
+		- [ ] Einspeiseprofil
+		- [ ] emission_factor
+		- [ ] investment model
+		- [ ] epc_cost
+		- [ ] maximum
+		- [ ] minimum (max = min)
+	- [ ] Solat thermal
+		- [ ] Einspeiseprofil
+		- [ ] emission_factor
+		- [ ] investment model
+		- [ ] epc_cost
+		- [ ] maximum
+		- [ ] minimum (existing)
+	- [ ] Umweltwärme
+		- [ ] Einspeiseprofil (Verlauf von Durchschnittstemperatur Profil )
+		- [ ] emission_factor
+		- [ ] nominal = 890 MW
+- [ ] **Imports**:
+	- [ ] **Electricity (b_HöS)**
+		- [ ] _nominal value_ - scalars -> electricity grid -> max_power
+		- [ ] _variable cost_ -  Brain pool price (import price function)
+		- [ ] _CO2 factor_ - Scalars -> system config -> Emission Strom
+	- [ ]  **Link HöS & HS**
+		- [ ] _output flow_ grid operating fee (zweiseitig)
+		- [ ] _conversion factor_ als 100% ohne verlust
+	- [ ] **Import solid fuel**
+		- [ ] _varialble cost_: import biomasse price
+		- [ ] _biogasneuanlagen factor_ 
+	- [ ] **Import wood**
+		- [ ] _variable cost_: import biomass price
+		- [ ] _biomasse factor_
+	- [ ] **Import brown coal**
+		- [ ] _variable cost_: import brown coal price (ZORRO I)
+		- [ ] _fix_: Base load profile
+		- [ ] _epc cost_ = 0
+		- [ ] _summed_max_ = Menge_Browncoal * len(import price) Menge-> system config
+		- [ ] _CO2 factor_
+	- [ ] **Import Hard coal**
+		- [ ] _variable cost_: import hard coal price (ZORRO I)
+		- [ ] _fix_: Base load profile
+		- [ ] _epc cost_ = 0
+		- [ ] _summed_max_ = Menge_hardcoal * len(import price) Menge-> system config
+		- [ ] _CO2 factor_
+	- [ ] **Import Gas**
+		- [ ] _variable cost_: Import gas price
+		- [ ] _CO2 factor_
+	- [ ] **Import Oil**
+		- [ ] _variable cost_: Import oil price
+		- [ ] _CO2 factor_
+	- [ ] **Import synthetic fuel**
+		- [ ] _variable cost_: import synt fuel price (ZORRO I)
+	- [ ] **Import Hydrogen**
+		- [ ] _nominal value_: scalars -> hydrogen grid -> maxpower
+		- [ ] _variable cost_: import hydrogen price
+- [ ] **Storage**:
+	- [ ] **Battery**
+		- [ ] _loss rate_: 0
+		- [ ] _inflow_conversion_factor_ : scalars -> parameter storage electricty -> efficiency_in
+		- [ ] _outflow_conversion_factor_ : scalars -> parameter storage electricty -> efficiency_out
+		- [ ] _initial storage level_ : scalars -> parameter storage electricty -> initial storage level
+		- [ ] _balanced_: bool
+		- [ ] _invest_realation_input_capacity_ / _invest_output_capacity_: 1/ scalars -> Paramerter storage electricity -> inverse c rate
+		- [ ] investment modal
+			- [ ] epc cost
+			- [ ] maximum
+			- [ ] minimum
+	- [ ] **Dist heating storage**:
+		- [ ] inputs /output:
+			- [ ] _custom attributes_: Keyword WSP
+			- [ ] _nominal_value_: potential /inverse C rate
+		- [ ] _loss rate_: Loss rate/24
+		- [ ] _inflow_conversion_factor_ : scalars -> efficiency_in
+		- [ ] _outflow_conversion_factor_ : scalars -> efficiency_out
+		- [ ] _initial storage level_ : scalars -> initial storage level
+		- [ ] _balanced_: bool
+		- [ ] _invest_realation_input_capacity_ / _invest_output_capacity_: 1/ scalars -> inverse c rate
+		- [ ] investment modal
+			- [ ] epc cost
+			- [ ] maximum?
+			- [ ] minimum?
+	- [ ] **Seasonal heat storage**:
+		- [ ] inputs /output:
+			- [ ] _custom attributes_: Keyword WSP
+			- [ ] _nominal_value_: potential /inverse C rate
+			- [ ] _output flow_: preheater bus
+		- [ ] _loss rate_: Loss rate/24
+		- [ ] _inflow_conversion_factor_ : scalars -> efficiency_in
+		- [ ] _outflow_conversion_factor_ : scalars -> efficiency_out
+		- [ ] _initial storage level_ : scalars -> initial storage level
+		- [ ] _balanced_: bool
+		- [ ] _invest_realation_input_capacity_ / _invest_output_capacity_: 1/ scalars -> inverse c rate
+		- [ ] investment modal
+			- [ ] epc cost
+			- [ ] maximum?
+			- [ ] minimum = 1
+	- [ ] **Pumped hydro storage**:
+		- [ ] inputs /output:
+		- [ ] _loss rate_: 0
+		- [ ] _inflow_conversion_factor_ : scalars -> efficiency_in
+		- [ ] _outflow_conversion_factor_ : scalars -> efficiency_out
+		- [ ] _initial storage level_ : scalars -> initial storage level
+		- [ ] _balanced_: bool
+		- [ ] _invest_realation_input_capacity_ / _invest_output_capacity_: 1/ scalars -> inverse c rate
+		- [ ] investment modal
+			- [ ] epc cost
+			- [ ] maximum -> potential_max
+			- [ ] minimum ->potential_min
+	- [ ] **Pumped hydro storage_Goldistal**:
+		- [ ] inputs /output:
+			- [ ] _varialble cost_ (only in input flow): grid operating fee
+		- [ ] _loss rate_: 0
+		- [ ] _inflow_conversion_factor_ : scalars -> efficiency_in
+		- [ ] _outflow_conversion_factor_ : scalars -> efficiency_out
+		- [ ] _initial storage level_ : scalars -> initial storage level
+		- [ ] _balanced_: bool
+		- [ ] _invest_realation_input_capacity_ / _invest_output_capacity_: 1/ scalars -> inverse c rate
+		- [ ] investment modal
+			- [ ] epc cost
+			- [ ] maximum : potential_Hös_min
+			- [ ] minimum: Potential_Hös_min
+	- [ ] **Gas storage**:
+		- [ ] inputs /output:
+		- [ ] _loss rate_: 0
+		- [ ] _inflow_conversion_factor_ : scalars -> efficiency_in
+		- [ ] _outflow_conversion_factor_ : scalars -> efficiency_out
+		- [ ] _initial storage level_ : scalars -> initial storage level
+		- [ ] _balanced_: bool
+		- [ ] _invest_realation_input_capacity_ / _invest_output_capacity_: 1/ scalars -> inverse c rate
+		- [ ] investment modal
+			- [ ] epc cost
+			- [ ] maximum- > die Werte ist och nicht regionalisiert, aber als 1100000 definiert
+			- [ ] minimum
+	- [ ] **H2 storage**:
+		- [ ] inputs /output:
+		- [ ] _loss rate_: 0
+		- [ ] _inflow_conversion_factor_ : scalars -> efficiency_in
+		- [ ] _outflow_conversion_factor_ : scalars -> efficiency_out
+		- [ ] _initial storage level_ : scalars -> initial storage level
+		- [ ] _balanced_: bool
+		- [ ] _invest_realation_input_capacity_ / _invest_output_capacity_: 1/ scalars -> inverse c rate
+		- [ ] investment modal
+			- [ ] epc cost
+			- [ ] maximum-> 1255000
+			- [ ] minimum
+- [ ] **Transformers**:
+	- [ ] **Pre-Heater**
+		- [ ] _input_: Pre-heater bus
+		- [ ] _output_: 
+			- [ ] bus: b_dist_heat
+			- [ ] invetment model:
+				- [ ] epc
+				- [ ] maximum?
+		- [ ] _conversion_factor_ : scalars-> efficiency
+	- [ ] **Electrolysis**.
+		- [ ] investment model
+			- [ ] _epc_
+			- [ ] _maximum_ : potential
+		- [ ] _conversion_factor_: efficiency
+	- [ ] **Electric boiler**:
+		- [ ] investment_model
+			- [ ] _epc_
+		- [ ] _conversion_facttor_: maximum
+	- [ ] **GuD**:
+		- [ ] _input flow_: time_factor
+		- [ ] _output flow_:
+			- [ ] Investment model
+				- [ ] epc
+				- [ ] maximum - scalars -> potential
+		- [ ] _conversion factor_: efficiency
+	- [ ] **Methanisation**:
+		- [ ] Investment model
+			- [ ] epc
+			- [ ] maximum
+			- [ ] minimum
+		- [ ] _conversion_factor_ : efficiency
+	- [ ] **Biogas**:
+		- [ ] _input_flow_:
+			- [ ] _fix_: base load profile
+			- [ ] _investment_: 0
+			- [ ] _Biogasbestand_factor
+		- [ ] _output_:
+			- [ ] b_el , b_dist_heat
+			- [ ] _fix_ : Base_load
+			- [ ] investment on B_el flow
+		- [ ] _conversion factor_ : efficiency b_el & b_dist_heat
+	- [ ] **Biomasse_elec**.
+		- [ ] _input flow_:
+			- [ ] b_biowood 
+			- [ ] _fix_ : Base_load_profile
+			- [ ] _investment_: 
+		- [ ] _output flow_.
+			- [ ] b_el , b_dist_heat
+			- [ ] _fix_ : Base_load
+			- [ ] investment on B_el flow
+		- [ ] _conversion factor_ : efficiency b_el & b_dist_heat
+	- [ ] **Biomasse_heat**:
+		- [ ] _input_flow_:
+			- [ ] _fix_: Baseload
+			- [ ] _investment_: 0
+		- [ ] _output flow_
+			- [ ] _fix_: base load
+			- [ ] _investment_: epc_cost
+			- [ ] _emission factor_
+		- [ ] _conversion factor_: efficiency
+	- [ ]  **Biogas_feed_in_existing**:
+		- [ ] _input_flow_:
+			- [ ] _fix_: Baseload
+			- [ ] _investment_: 0
+			- [ ] _BiogasBestandfactor_
+		- [ ] _output flow_
+			- [ ] _fix_: base load
+			- [ ] _investment_: epc_cost
+		- [ ] _conversion factor_: efficiency
+		- [ ] _emission_factor
+	- [ ] **Biogas_feed_in_new**:
+		- [ ] _input_flow_:
+			- [ ] _fix_: Baseload
+			- [ ] _investment_: 0
+		- [ ] _output flow_
+			- [ ] _fix_: base load
+			- [ ] _investment_: epc_cost
+		- [ ] _conversion factor_: efficiency
+		- [ ] _emission_factor
+	- [ ] **Hydrogen_feed_in**:
+		- [ ] _output flow_
+			- [ ] _fix_: H2 feed_in load
+			- [ ] _investment_: epc_cost
+			- [ ] _maximum_: max(load)
+	- [ ] **Heatpump_water**:
+		- [ ] _input_
+			- [ ] b_el, b_uw
+		- [ ] _output_:
+			- [ ] _investment_: epc
+			- [ ] _maximum_
+		- [ ] _conversion factor_ : efficiency
+	- [ ] **Heatpump_air**:
+		- [ ] _input_
+			- [ ] b_el
+		- [ ] _output_:
+			- [ ] _investment_: epc
+			- [ ] _maximum_
+		- [ ] _conversion factor_ : efficiency
+	- [ ] **Heatpump_recovery heat**:
+		- [ ] _input_
+			- [ ] b_el, b_abwaerme
+		- [ ] _output_:
+			- [ ] _investment_: epc
+			- [ ] _maximum_
+		- [ ] _conversion factor_ : efficiency
+	- [ ] **PtL**:
+		- [ ] _input_
+			- [ ] b_H2
+		- [ ] _output_:
+			- [ ] _investment_: epc
+			- [ ] _maximum_ : not defined
+		- [ ] _conversion factor_ : efficiency
+	- [ ] **BtL**:
+		- [ ] _input_
+			- [ ] b_bio
+		- [ ] _output_:
+			- [ ] _investment_: epc
+			- [ ] _maximum_ : not defined
+		- [ ] _conversion factor_ : efficiency
+	- [ ] **BioTransformer**:
+		- [ ] flow control: Link between b_biowood and b_solidfuel
+- [ ] **Excess**:
+	- _Variable_cost_: 10000000
+	- [ ] B_el
+	- [ ] b_gas
+	- [ ] b_oil_fuel
+	- [ ] b_bio
+	- [ ] b_distheat
+	- [ ] b_H2

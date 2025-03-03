@@ -96,10 +96,11 @@ def solveModels(
             export_csv_region(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
             grid_energy_map(energysystem.results["main"],permutation, model_name, scenario_num)
         else:
-            csv=export_csv(energysystem.results["main"], YEAR, permutation, model_name, scenario_num, sim_data)
+            csv=None
+            #csv=export_csv(energysystem.results["main"], YEAR, permutation, model_name, scenario_num, sim_data)
                 
         logging.info("Plotting different plots")
-        so_gehts_bar_plot(csv, permutation, scenario_num)
+        #so_gehts_bar_plot(csv, permutation, scenario_num)
         profile = ['Wind', 'PV_Rooftop','PV_Openfield', 'loadprofile']
         
         for i in range (len(profile)):
