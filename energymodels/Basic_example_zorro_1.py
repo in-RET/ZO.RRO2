@@ -9,9 +9,6 @@ import os
 workdir= os.getcwd()
 import pandas as pd
 from oemof import network, solph
-from oemof.tools import economics
-
-from src.preprocessing.create_input_dataframe import createDataFrames
 from src.preprocessing.files import read_input_files
 from src.preprocessing.conversion import investment_parameter, CO2_price_addition, load_profile_scaling, COP_calculation
 from src.preprocessing.zorro_1_load_profile import zorro_1_loadprofile_scaling 
@@ -100,12 +97,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     # Solidfuel Bus
     #------------------------------------------------------------------------------
     b_solidf = solph.buses.Bus(label="Solidfuel")
-    
-    #------------------------------------------------------------------------------
-    # Preheater
-    #------------------------------------------------------------------------------
-    b_preheat = solph.buses.Bus(label="Preheating")
-    
+       
     #------------------------------------------------------------------------------
     # Abwärme Bus
     #------------------------------------------------------------------------------
@@ -117,7 +109,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     b_uw = solph.buses.Bus(label="Environmental heat")
         
     # Hinzufügen der Busse zum Energiesystem-Modell 
-    energysystem.add(b_el, b_gas, b_oil_fuel, b_bio, b_bioWood, b_dist_heat, b_H2, b_solidf, b_preheat, b_abwaerme, b_uw, b_hös)
+    energysystem.add(b_el, b_gas, b_oil_fuel, b_bio, b_bioWood, b_dist_heat, b_H2, b_solidf, b_abwaerme, b_uw, b_hös)
 
 
     """
@@ -568,7 +560,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
         nominal_storage_capacity = solph.Investment(ep_costs=epc_costs['storage_heat_seasonal']['epc'], 
-                                      #minimum= 1
+                                      
                                       )
                                       
         ))
@@ -690,16 +682,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #     conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},
     #     ))
     
-    # energysystem.add(solph.components.Converter(
-    #     label="Pre-heater",
-    #     inputs={b_preheat: solph.Flow(),
-    #             },
-    #     outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_ground_Flusswärme']['epc'], 
-    #                                                               #maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential'][model_ID]
-    #                                                               ))},
-    #     conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},    
-    #     ))
     
+       
     #------------------------------------------------------------------------------
     # Elektrolysis
     #------------------------------------------------------------------------------
@@ -894,14 +878,14 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     # Heatpump: Recovery heat
     #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Converter(
-    #     label="Heatpump_recovery_heat",
-    #     inputs={b_el: solph.Flow(),
-    #             b_abwaerme: solph.Flow()},
-    #     outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
-    #                                                               maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]))},
-    #     conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
-    #     ))
+    energysystem.add(solph.components.Converter(
+        label="Heatpump_recovery_heat",
+        inputs={b_el: solph.Flow(),
+                b_abwaerme: solph.Flow(nominal_value = 0)},
+        outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
+                                                                  maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]))},
+        conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
+        ))
     
     #------------------------------------------------------------------------------
     # Power-to-Liquid
