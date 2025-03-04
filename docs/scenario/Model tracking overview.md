@@ -14,5 +14,5 @@ Model ID: **YEAR**------**VARIATIONnum**------**SCENARIOnum**
 | **[[2030_BS0001_008]]** | Influence of Biomass Heizkraftwerk statt Kraftwerk                                                                                            |
 | **[[2030_BS0001_009]]** | BS with new components (higher level grid, two heat storage)                                                                                  |
 | **[[2030_BS0001_010]]** | Influence of environmental heat as an additional source to the heat pump and additional heat pump with recovery heat potential (defined as 0) |
-| **[[2030_BS0001_011]]** | Adding preheater to the seasonal storage                                                                                                      |
-| **[[2030_BS0001_012]]** | Additional recovery heat pump with zero potential, Goldistal to the higher level grid                                                         |
+| **[[2030_BS0001_011]]** | Goldistal to the higher level grid                                                                                                            |
+| **[[2030_BS0001_012]]** | Adding preheater to the seasonal storage                                                                                                      |

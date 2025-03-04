@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0001"],
-        scenario_num = "008",
+        scenario_num = "011",
         years=[2030],# 2040, 2050],
         model_name="Basic_example_zorro_1",
         solver="gurobi",
@@ -18,11 +18,9 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "Influence of Biomass Heizkraftwerk statt Kraftwerk",
-        sim_remarks = "- Previously in ZORRO I biomass Kraftwerk was implemented which produces only electricity. \n"+
-                        "- The analysis from Lynn Vincent proves that there is no technology at the moment in thüringen which produces only electricity. "+
-                        "Hence the component is replaced by a Biomass Heizkraftwerk which produces electricty and heat. \n"+
-                        "- Other parameters remain the same [[2030_BS0001_006]]"
+        hypothese = "Influence of adding goldistal to the higher grid level",
+        sim_remarks = "- Attempt to build the exact grid structure in Thuringia \n"+
+                        "- Other parameters remain the same [[2030_BS0001_010]]"
     )
 
     # %TODO: Auswertung der Dump-Daten (csv-daten erstellen, automatische grafiken etc.)
