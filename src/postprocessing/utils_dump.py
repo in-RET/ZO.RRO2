@@ -94,7 +94,7 @@ def calculate_investment_costs(epc_costs, all_component_scalars):
     investment_costs = {}
     
     component_mapping_info ={
-        "Battery":                  ("storage_electricity", "Electricity"),
+        "Battery":                  ("storage_electricity", "None"),
         "Biogas":                   ("biogas_combined_heat_and_power_plant", "Electricity"),
         "Biogas_feedin_existing":   ("biomethane_injection_plant", "Gas"),
         "Biogas_feedin_new":        ("biogas_upgrading_plant","Gas"),
