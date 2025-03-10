@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0001"],
-        scenario_num = "011",
+        scenario_num = "013",
         years=[2030],# 2040, 2050],
         model_name="Basic_example_zorro_1",
         solver="gurobi",
@@ -18,9 +18,10 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "Influence of adding goldistal to the higher grid level",
-        sim_remarks = "- Attempt to build the exact grid structure in Thuringia \n"+
-                        "- Other parameters remain the same [[2030_BS0001_010]]"
+        hypothese = "Adding a preheater to feed-in the energy stored in the seasonal heat storage",
+        sim_remarks = "- To feed-in the stored eneergy back to the district heating bus an preheater is necessary. \n"+
+                        "- An water-water heat pump is implemented as a preheater"
+                        "- Other parameters remain the same [[2030_BS0001_012]]"
     )
 
     # %TODO: Auswertung der Dump-Daten (csv-daten erstellen, automatische grafiken etc.)

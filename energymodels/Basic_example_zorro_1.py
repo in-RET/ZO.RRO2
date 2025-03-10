@@ -107,9 +107,14 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     # Umweltwaerme
     #------------------------------------------------------------------------------
     b_uw = solph.buses.Bus(label="Environmental heat")
+    
+    #------------------------------------------------------------------------------
+    # Preheat
+    #------------------------------------------------------------------------------
+    b_preheat = solph.buses.Bus(label="Pre-heating")
         
     # Hinzufügen der Busse zum Energiesystem-Modell 
-    energysystem.add(b_el, b_gas, b_oil_fuel, b_bio, b_bioWood, b_dist_heat, b_H2, b_solidf, b_abwaerme, b_uw, b_hös)
+    energysystem.add(b_el, b_gas, b_oil_fuel, b_bio, b_bioWood, b_dist_heat, b_H2, b_solidf, b_abwaerme, b_uw, b_hös, b_preheat)
 
 
     """
@@ -369,9 +374,10 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='UW', 
-        outputs={b_uw: solph.Flow(fix=Load_profile_uw, 
+        outputs={b_uw: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
                                           custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
-                                          nominal_value = 890
+                                          investment=solph.Investment(ep_costs= 0,
+                                                                      maximum = 890)
         )}))
     
     """ Imports """
@@ -547,7 +553,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                   nominal_value=float(scalars['Parameter_storage_heat_seasonal']['potential'][model_ID]/scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
                                   #nonconvex=solph.NonConvex()
                                     )},
-        outputs={b_dist_heat: solph.Flow(
+        outputs={b_preheat: solph.Flow(
                                     custom_attributes={'keywordWSP': 1},
                                     nominal_value=float(scalars['Parameter_storage_heat_seasonal']['potential'][model_ID]/scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
                                     #nonconvex=solph.NonConvex()
@@ -673,14 +679,14 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     # Nachheizung
     #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Converter(
-    #     label="Preheater",
-    #     inputs={b_preheat: solph.Flow()},
-    #     outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['heat_pump_ground_Flusswärme']['epc'], 
-    #                                                               maximum=scalars['Parameter_electrolysis']['potential'][model_ID]
-    #                                                               ))},
-    #     conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},
-    #     ))
+    energysystem.add(solph.components.Converter(
+        label="Preheater",
+        inputs={b_preheat: solph.Flow()},
+        outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['heat_pump_ground_Flusswärme']['epc'], 
+                                                                  maximum=scalars['Parameter_electrolysis']['potential'][model_ID]
+                                                                  ))},
+        conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},
+        ))
     
     
        
