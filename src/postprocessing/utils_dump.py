@@ -11,6 +11,10 @@ from oemof.solph import processing
 import pandas as pd
 import os
 import pickle
+from openpyxl import load_workbook
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.utils import get_column_letter
+
 workdir = os.getcwd()
 my_path = os.path.abspath(os.path.dirname(__file__))
 def get_dump_file_path(year, variation, model_name, scenario_num):
@@ -22,7 +26,7 @@ def get_dump_file_path(year, variation, model_name, scenario_num):
 def load_results_from_dump(dump_path):
     energysystem = solph.EnergySystem()
     energysystem.restore(my_path, dump_path)
-    return energysystem.results["main"]
+    return energysystem, energysystem.results["main"]
 
 def interpret_results(results):          
     bus_sequences = {}
@@ -142,6 +146,7 @@ def calculate_investment_costs(epc_costs, all_component_scalars):
         total_scenario_cost = 0
 
         for component, (epc_category, value_type) in component_mapping_info.items():
+            investment_costs[scenario][component] = {}
             investk = epc_costs.get(epc_category, {}).get("investk", 0)
             operatk = epc_costs.get(epc_category, {}).get("betriebsk", 0)
 
@@ -152,9 +157,11 @@ def calculate_investment_costs(epc_costs, all_component_scalars):
                 value = 0  # Fail-safe: Missing component defaults to zero
 
             total_component_investment = (value * investk)  + (value * operatk)# Compute cost
-            investment_costs[scenario][component] = total_component_investment
+            #investment_costs[scenario][component] = total_component_investment
+            investment_costs[scenario][component]['capital costs'] = (value * investk)
+            investment_costs[scenario][component]['operating costs'] = (value * operatk)
             total_scenario_cost += total_component_investment
-        investment_costs[scenario]['total'] = sum
+        investment_costs[scenario]['total'] = total_scenario_cost
 
     return investment_costs
 
@@ -343,3 +350,158 @@ def calc_energyexport_cost(import_price,cleaned_sequences_bus):
         # Store the import costs for this scenario in the main dictionary
         export_costs[scenario] = scenario_export_costs
     return export_costs
+
+def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, permutation, scenarios, output_path):
+    """
+    Save the sum of flows classified by bus name and component name to an Excel file. 
+    Created for easy linking with Sankey diagram.
+    
+    Parameters:
+        all_bus_sequences (dict): Dictionary with scenario numbers as keys and bus sequences as values.
+                                  This dict contains flow values from bus to a component.
+        all_component_sequences (dict): Dictionary with scenario numbers as keys and component sequences as values.
+                                        This dict contains flow values from component to bus.
+        model_name (str): The model ID to write at the top of each sheet.
+        scenarios (list): List of scenario numbers to process.
+        output_path (str): Path to save the Excel file.
+    """
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    year, variation = permutation.split('_') 
+    
+    def adjust_column_width_for_all_sheets(wb):
+        for sheet in wb.sheetnames: 
+            current_sheet = wb[sheet]
+            for col in current_sheet.columns:
+                max_length = 0
+                column = col[0].column_letter
+                for cell in col:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(str(cell.value))
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                current_sheet.column_dimensions[column].width = adjusted_width
+
+    with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
+        # create a dummy sheet to prevent index error
+        pd.DataFrame({"Message": ["Dummy sheet, will be deleted"]}).to_excel(writer, sheet_name="Dummy_Sheet", index=False)
+        pd.DataFrame({"Info: Use the drop down box to select the scenario": [""]}).to_excel(writer, sheet_name="Main_Sheet", index=False)
+        sheets_created = False
+
+        # extract reference structure from the last scenario
+        last_scenario = max(scenarios)
+        reference_bus_structure = all_bus_sequences[last_scenario]
+        reference_component_structure = all_component_sequences[last_scenario]
+
+        for scenario_num in scenarios:
+            bus_sequences = all_bus_sequences.get(scenario_num, {})
+            component_sequences = all_component_sequences.get(scenario_num, {})
+
+            if not bus_sequences and not component_sequences:
+                print(f"Warning: No sequences found for scenario {scenario_num}")
+                continue
+
+            data_frames = []
+
+            # process buses using reference structure
+            for bus_name, reference_components in reference_bus_structure.items():
+                bus_data = []
+                for component_name in reference_components:
+                    if bus_name in bus_sequences and component_name in bus_sequences[bus_name]:
+                        flow_sum = bus_sequences[bus_name][component_name]['flow'].sum()
+                    else:
+                        flow_sum = 0
+                    
+                    bus_data.append({
+                        'Bus': bus_name,
+                        'From': bus_name + " Bus",
+                        'To': component_name,
+                        'Flow': flow_sum,
+                        'Unit': 'MWh',
+                        'Type': 'Bus sequence'
+                    })
+                if bus_data:
+                    bus_df = pd.DataFrame(bus_data)
+                    data_frames.append(bus_df)
+
+            # process components using reference structure
+            for component_name, reference_buses in reference_component_structure.items():
+                component_data = []
+                for bus_name in reference_buses:
+                    if component_name in component_sequences and bus_name in component_sequences[component_name] and bus_name != 'None' :
+                        flow_sum = component_sequences[component_name][bus_name]['flow'].sum()
+                    else:
+                        flow_sum = 0
+                    
+                    component_data.append({
+                        'Bus': bus_name,
+                        'From': component_name,
+                        'To': bus_name + " Bus",
+                        'Flow': flow_sum,
+                        'Unit': 'MWh',
+                        'Type': 'Component sequence'
+                    })
+                    
+                if component_data:
+                    component_df = pd.DataFrame(component_data)
+                    data_frames.append(component_df)
+
+            # combine all data frames for the scenario
+            if data_frames:
+                combined_df = pd.concat(data_frames)
+
+                # sort teh excel according to bus name 
+                separated_df = pd.DataFrame()
+                for bus_name in combined_df['Bus'].unique():
+                    bus_df = combined_df[combined_df['Bus'] == bus_name]
+                    separated_df = pd.concat([separated_df, bus_df, pd.DataFrame([[]])])
+
+                # create sheet for the scenario
+                sheet_name = f"{permutation}_{scenario_num}"
+                df_model_info = pd.DataFrame({
+                    'Model ID': [model_name],
+                    'Scenario Number': [permutation + '_' + str(scenario_num)]
+                })
+
+                # write the data to the sheet
+                df_model_info.to_excel(writer, sheet_name=sheet_name, index=False, header=False, startrow=0)
+                separated_df.to_excel(writer, sheet_name=sheet_name, index=False, startrow=5)
+
+                sheets_created = True
+
+    # remove dummy sheet
+    workbook = load_workbook(output_path)
+    if 'Dummy_Sheet' in workbook.sheetnames and sheets_created:
+        del workbook['Dummy_Sheet']
+
+    # add dropdowns and hyperlinks in the Main_Sheet
+    main_sheet = workbook["Main_Sheet"]
+    main_sheet['A2'] = "Year"
+    main_sheet['B2'] = str(year)
+    main_sheet['A3'] = "Select scenario:"
+    main_sheet['B3']= sheet_name
+
+    dv = DataValidation(
+            type="list",
+            formula1=f'"{",".join([f"{permutation}_{s}" for s in scenarios])}"',  # Reference scenario names
+            showDropDown=False
+        )
+
+    main_sheet.add_data_validation(dv)
+    dv.add(main_sheet["B3"])
+        
+    # use Indirect to set live links
+    for row in range(5, 93):  
+            for col in range(1, 7):  
+                cell = main_sheet.cell(row=row, column=col)
+                cell.value = f"=INDIRECT(B3 & \"!{get_column_letter(col)}{row}\")"
+
+    # Adjust column widths and save
+    adjust_column_width_for_all_sheets(workbook)
+    workbook.save(output_path)
+
+    print(f"Sankey excel saved to {output_path}")
+    
+
+    
