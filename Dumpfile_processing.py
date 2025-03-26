@@ -17,7 +17,7 @@ my_path = os.path.abspath(os.path.dirname(__file__))
 
 
 # Define the scenarios you want to compare
-scenarios = ["001", "002", "003","004","005","006","007","008","009","010","011", "012", "013"]  
+scenarios = ["001", "002", "003","004","005","006","007","008","009","010","011", "012", "013", "ref"]  
 year = 2030
 variation = "BS0001"
 model_name = "Basic_example_zorro_1"
@@ -90,4 +90,6 @@ export_cost = calc_energyexport_cost(import_price, cleaned_sequences_bus)
 sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, permutation, scenarios, Sankey_excel_path)
 
 print("Ende")
+
+
 

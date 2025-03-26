@@ -54,7 +54,7 @@ def interpret_results(results):
                 bus_scalars[bus_name][component_name] = value["scalars"]["total"]
     
         
-        elif isinstance(key[0], (solph.components.Source, solph.components.Converter, solph.components.Sink, solph.components.GenericStorage)):
+        elif isinstance(key[0], (solph.components.Source, solph.components.Link, solph.components.Converter, solph.components.Sink, solph.components.GenericStorage)):
             component_name = str(key[0].label)  # Extract component name
             # Extract sequences for Component
             if isinstance(value, dict):
@@ -368,6 +368,76 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     year, variation = permutation.split('_') 
     
+    bus_name_mapping = {
+        'BioWood': 'Bioholz',
+        'Biomass': 'Biomass',
+        'District heating': 'Fernwaerme',
+        'Electricity': 'Strom',
+        'Environmental heat': 'Umweltwaerme',
+        'Gas': 'Gas',
+        'Hydrogen': 'Wassterstoff',
+        'Oil_fuel': 'Oel&Kraftstoff',
+        'Pre-heating': 'Nachheizung',
+        'Recovery heat': 'Abwaerme',
+        'Solidfuel': 'Festbrennstoff'
+    }
+
+    component_name_mapping = {
+        'BioTransformer' : 'Biomasse als Festbrennstoff',
+        'Biomasse_elec_heat': 'Biomasse - Heizkraftwerk',
+        'Biomasse_elec': 'Biomasse - Kraftwerk',
+        'Biomasse_heat': 'Biomasse - Heizwerk',
+        'Import_Wood': 'Biomasse - Holz',
+        'Import_solid_fuel': 'Biomasse - Substrat',
+        'Biogas- BHKW': 'Biogas-BHKW',
+        'Electric boiler': 'Elektodenheizstab',
+        'GuD': 'GuD in KWK',
+        'Heat storage_dist_heat': 'Fernwaermespeicher',
+        'Heatpump_air' : 'Luft-Waermepumpe',
+        'Heatpump_recovery_heat': 'Abwaerme-Waermepumpe',
+        'Heatpump_water': 'Erd-Waermepumpe',
+        'Preheater': 'Nachheizung',
+        'ST': 'Solarthermie',
+        'Battery': 'Batteriespeicher',
+        'Fuelcell': 'Brennstoffzelle',
+        'Hydro power plant': 'Wasserkraft',
+        'Pumped_hydro_storage': 'Pumpspeicherkraftwerk',
+        'Import_Electricity' : 'Import - Stromboerse',
+        'Pumped_hydro_storage_Goldistal': 'Pumpspeicherkraftwerk - Goldistal',
+        'UW' : 'Umweltwaerme',
+        'Biogas_feedin_existing': 'Biogasaufbereitunganlage',
+        'Biogas_feedin_new': 'Biomethaneinspeisungsanlage',
+        'Gas_storage' : 'Erdgasspeicher',
+        'Hydrogen_feedin': 'Wasserstoff-Einspeisung',
+        'Import_Gas': 'Import - Gasnetz',
+        'Methanisation': 'Methanisierung',
+        'Electrolysis': 'Elektrolyse',
+        'H2_storage': 'Wasserstoffspeicher',
+        'Import_Hydrogen': 'Import - Wasserstoff',
+        'BtL': 'Biomass to Liquid',
+        'Import_Oil': 'Import - Heizoel & Kraftstoffe',
+        'Import_Synthetic_fuel': 'Import - Synth. Kraftstoffe',
+        'PtL' : 'Power to Liquid',
+        'Heat storage_seasonal': 'Saisonaler Waermespeicher',
+        'Import_brown_coal' : 'Import - Braunkohle',
+        'Import_hard_coal': 'Import - Steinkohle',
+        "PV_open_east":"PV_open_east",
+        "PV_open_middle":"PV_open_middle",
+        "PV_open_north":"PV_open_north",
+        "PV_open_swest":"PV_open_swest",
+        "PV_rooftop_east":"PV_rooftop_east",
+        "PV_rooftop_middle":"PV_rooftop_middle",
+        "PV_rooftop_north":"PV_rooftop_north",
+        "PV_rooftop_swest":"PV_rooftop_swest",
+        "Wind_east":"Wind_east",
+        "Wind_middle":"Wind_middle",
+        "Wind_north":"Wind_north",
+        "Wind_swest":"Wind_swest",
+        "Preheater- WP": "Nachheizung - WP",
+        "Preheater- Electric boiler": "Nachheizung - Heizstab"
+
+    }
+
     def adjust_column_width_for_all_sheets(wb):
         for sheet in wb.sheetnames: 
             current_sheet = wb[sheet]
@@ -382,6 +452,10 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
                         pass
                 adjusted_width = (max_length + 2)
                 current_sheet.column_dimensions[column].width = adjusted_width
+                
+    def map_name(original_name, name_mapping):
+        return name_mapping.get(original_name, original_name)
+
 
     with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
         # create a dummy sheet to prevent index error
@@ -389,12 +463,17 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
         pd.DataFrame({"Info: Use the drop down box to select the scenario": [""]}).to_excel(writer, sheet_name="Main_Sheet", index=False)
         sheets_created = False
 
-        # extract reference structure from the last scenario
-        last_scenario = max(scenarios)
-        reference_bus_structure = all_bus_sequences[last_scenario]
-        reference_component_structure = all_component_sequences[last_scenario]
-
+        # extract reference structure from the ref scenario
+        ref_scenario = 'ref'#max(scenarios)
+        reference_bus_structure = all_bus_sequences[ref_scenario]
+        reference_component_structure = all_component_sequences[ref_scenario]
+        
         for scenario_num in scenarios:
+            total_pv = 0
+            total_wind = 0
+            total_pumpspeicher_ein = 0
+            total_pumpspeicher_aus = 0
+            import_strom = 0
             bus_sequences = all_bus_sequences.get(scenario_num, {})
             component_sequences = all_component_sequences.get(scenario_num, {})
 
@@ -406,17 +485,27 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
 
             # process buses using reference structure
             for bus_name, reference_components in reference_bus_structure.items():
+                mapped_bus_name = map_name(bus_name, bus_name_mapping)
                 bus_data = []
                 for component_name in reference_components:
+                    mapped_component_name = map_name(component_name, component_name_mapping)
                     if bus_name in bus_sequences and component_name in bus_sequences[bus_name]:
                         flow_sum = bus_sequences[bus_name][component_name]['flow'].sum()
                     else:
                         flow_sum = 0
+                    if mapped_component_name.startswith("PV_"):
+                        total_pv += flow_sum
+                    elif mapped_component_name.startswith("Wind_"):
+                        total_wind += flow_sum
+                    elif mapped_component_name.startswith("Pumpspeicherkraftwerk"):
+                        total_pumpspeicher_ein += flow_sum
+                    elif mapped_component_name.startswith("Luft-Waermepumpe"):
+                        elec_WP_flow = flow_sum
                     
                     bus_data.append({
-                        'Bus': bus_name,
-                        'From': bus_name + " Bus",
-                        'To': component_name,
+                        'Bus': mapped_bus_name,
+                        'From': mapped_bus_name + " Bus",
+                        'To': mapped_component_name,
                         'Flow': flow_sum,
                         'Unit': 'MWh',
                         'Type': 'Bus sequence'
@@ -427,17 +516,29 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
 
             # process components using reference structure
             for component_name, reference_buses in reference_component_structure.items():
+                mapped_component_name = map_name(component_name, component_name_mapping)
                 component_data = []
                 for bus_name in reference_buses:
+                    mapped_bus_name = map_name(bus_name, bus_name_mapping)
                     if component_name in component_sequences and bus_name in component_sequences[component_name] and bus_name != 'None' :
                         flow_sum = component_sequences[component_name][bus_name]['flow'].sum()
                     else:
                         flow_sum = 0
+                    if mapped_component_name.startswith("PV_"):
+                        total_pv += flow_sum
+                    elif mapped_component_name.startswith("Wind_"):
+                        total_wind += flow_sum
+                    elif mapped_component_name.startswith("Pumpspeicherkraftwerk"):
+                        total_pumpspeicher_aus += flow_sum
+                    elif mapped_component_name.startswith("Import - Stromboerse"):
+                        import_strom += flow_sum
+                    elif mapped_component_name.startswith("Luft-Waermepumpe"):
+                        WP_heat_flow = flow_sum
                     
                     component_data.append({
-                        'Bus': bus_name,
-                        'From': component_name,
-                        'To': bus_name + " Bus",
+                        'Bus': mapped_bus_name,
+                        'From': mapped_component_name,
+                        'To': mapped_bus_name + " Bus",
                         'Flow': flow_sum,
                         'Unit': 'MWh',
                         'Type': 'Component sequence'
@@ -455,7 +556,7 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
                 separated_df = pd.DataFrame()
                 for bus_name in combined_df['Bus'].unique():
                     bus_df = combined_df[combined_df['Bus'] == bus_name]
-                    separated_df = pd.concat([separated_df, bus_df, pd.DataFrame([[]])])
+                    separated_df = pd.concat([separated_df, bus_df, pd.DataFrame([[]]*6)])
 
                 # create sheet for the scenario
                 sheet_name = f"{permutation}_{scenario_num}"
@@ -466,8 +567,22 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
 
                 # write the data to the sheet
                 df_model_info.to_excel(writer, sheet_name=sheet_name, index=False, header=False, startrow=0)
-                separated_df.to_excel(writer, sheet_name=sheet_name, index=False, startrow=5)
-
+                separated_df.to_excel(writer, sheet_name=sheet_name, index=False, startrow=20)
+                
+                workbook = writer.book
+                scenario_sheet = workbook[sheet_name]
+                scenario_sheet['A7'] = "Import Strom flow"
+                scenario_sheet['B7'] = import_strom
+                scenario_sheet['A8'] = "Total PV Flow"
+                scenario_sheet['B8'] = total_pv
+                scenario_sheet['A9'] = "Total Wind Flow"
+                scenario_sheet['B9'] = total_wind
+                scenario_sheet['A10'] = "Total Pumpspeicher Eingangsflow"
+                scenario_sheet['B10'] = total_pumpspeicher_ein
+                scenario_sheet['A11'] = "Total Pumpspeicher Ausgangsflow"
+                scenario_sheet['B11'] = total_pumpspeicher_aus
+                scenario_sheet['A12'] = "Umweltwaermemenge_Luft_waermepumpe"
+                scenario_sheet['B12'] =  WP_heat_flow - elec_WP_flow 
                 sheets_created = True
 
     # remove dummy sheet
@@ -482,6 +597,7 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
     main_sheet['A3'] = "Select scenario:"
     main_sheet['B3']= sheet_name
 
+
     dv = DataValidation(
             type="list",
             formula1=f'"{",".join([f"{permutation}_{s}" for s in scenarios])}"',  # Reference scenario names
@@ -492,10 +608,10 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
     dv.add(main_sheet["B3"])
         
     # use Indirect to set live links
-    for row in range(5, 93):  
+    for row in range(7, 500):  
             for col in range(1, 7):  
                 cell = main_sheet.cell(row=row, column=col)
-                cell.value = f"=INDIRECT(B3 & \"!{get_column_letter(col)}{row}\")"
+                cell.value = f'=IF(INDIRECT(B3 & "!{get_column_letter(col)}{row}")="", "", INDIRECT(B3 & "!{get_column_letter(col)}{row}"))'
 
     # Adjust column widths and save
     adjust_column_width_for_all_sheets(workbook)

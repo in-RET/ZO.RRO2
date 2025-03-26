@@ -16,27 +16,27 @@
 - [ ] **import_price**: CO2 price addition to the brainpool price
 - [ ] **Weather data**: TRY von Meteonorm für vier planungs Region (liegt bei data/Weather_Data)
 - [ ] **COP**:  Calculated based on district heating temperature levels for different years
-- [ ] **Busses**:
-	- [ ] b_Hös- Höchstspannung
-	- [ ] b_el - Electricity bus (Hochspannung)
-	- [ ] b_gas - Gas
-	- [ ] b_oil_fuel 
-	- [ ] b_bio - Biomass
-	- [ ] b_biowood- Wood
-	- [ ] b_dist_heat - Fernwärme
-	- [ ] b_H2 
-	- [ ] b_solidf - Solidfuel
-	- [ ] b_preheater
-	- [ ] b_abwärme
-	- [ ] b_uw - Umweltwärme
-- [ ] **Export**:
-	- [ ] Electricity 
+- [x] **Busses**:
+	- [x] b_Hös- Höchstspannung
+	- [x] b_el - Electricity bus (Hochspannung)
+	- [x] b_gas - Gas
+	- [x] b_oil_fuel 
+	- [x] b_bio - Biomass
+	- [x] b_biowood- Wood
+	- [x] b_dist_heat - Fernwärme
+	- [x] b_H2 
+	- [x] b_solidf - Solidfuel
+	- [x] b_preheater
+	- [x] b_abwärme
+	- [x] b_uw - Umweltwärme
+- [x] **Export**:
+	- [x] Electricity 
 		- [ ] nominal value: scalars -> electricity grid -> maxpower
 		- [ ] variable cost: import function -> export electricity price(brain pool price)
-	- [ ] Hydrogen
+	- [x] Hydrogen
 		- [ ] namoinal value: scalars-> hydrogen grid ->max power
 		- [ ] variable cost: import funtion -> export hydrogen price
-- [ ] **Demand**: 
+- [x] **Demand**: 
 		*Zusammensetzung siehe preprocess -> Load profile scaling function*
 	- [ ] Electricity
 	- [ ] Biomass
@@ -47,85 +47,95 @@
 	- [ ] Material demand oil
 	- [ ] Heat
 	- [ ] Hydrogen
-- [ ] **Renewable energy sources**:
+- [x] **Renewable energy sources**:
 	- [ ] Wind ( vier Planungsregion)
-		- [ ] Einspeiseprofil
-		- [ ] emission_factor
-		- [ ] investment model
-		- [ ] epc_cost
-		- [ ] maximum
+		- [x] Einspeiseprofil
+		- [x] emission_factor
+		- [x] investment model
+		- [x] epc_cost
+		- [x] maximum
 		- [ ] minimum (existing)
 	- [ ] PV Freifeld ( vier Planungsregion)
-		- [ ] Einspeiseprofil
-		- [ ] emission_factor
-		- [ ] investment model
-		- [ ] epc_cost
-		- [ ] maximum
+		- [x] Einspeiseprofil
+		- [x] emission_factor
+		- [x] investment model
+		- [x] epc_cost
+		- [x] maximum
 		- [ ] minimum (existing)
 	- [ ] PV Aufdach ( vier Planungsregion)
-		- [ ] Einspeiseprofil
-		- [ ] emission_factor
-		- [ ] investment model
-		- [ ] epc_cost
-		- [ ] maximum
+		- [x] Einspeiseprofil
+		- [x] emission_factor
+		- [x] investment model
+		- [x] epc_cost
+		- [x] maximum
 		- [ ] minimum (existing)
 	 - [ ] Hydro power plant
-		- [ ] Einspeiseprofil
-		- [ ] emission_factor
-		- [ ] investment model
-		- [ ] epc_cost
-		- [ ] maximum
-		- [ ] minimum (max = min)
+		- [x] Einspeiseprofil
+		- [x] emission_factor
+		- [x] investment model
+		- [x] epc_cost
+		- [x] maximum
+		- [x] minimum (max = min)
 	- [ ] Solat thermal
-		- [ ] Einspeiseprofil
-		- [ ] emission_factor
-		- [ ] investment model
-		- [ ] epc_cost
-		- [ ] maximum
+		- [x] Einspeiseprofil
+		- [x] emission_factor
+		- [x] investment model
+		- [x] epc_cost
+		- [x] maximum
 		- [ ] minimum (existing)
 	- [ ] Umweltwärme
-		- [ ] Einspeiseprofil (Verlauf von Durchschnittstemperatur Profil )
-		- [ ] emission_factor
-		- [ ] nominal = 890 MW
+		- [ ] Einspeiseprofil 
+			- [ ] (Verlauf von Durchschnittstemperatur Profil )
+			- [x] Base load
+		- [x] emission_factor
+		- [x] maximum = 890 MW
+	- [ ]  Abwärme
+		- [ ] Einspeiseprofil 
+			- [ ] (Verlauf von Durchschnittstemperatur Profil )
+			- [x] Base load
+		- [x] emission_factor
+		- [x] nominal = 0 MW
 - [ ] **Imports**:
-	- [ ] **Electricity (b_HöS)**
+	- [x] **Electricity (b_HöS)**
 		- [ ] _nominal value_ - scalars -> electricity grid -> max_power
 		- [ ] _variable cost_ -  Brain pool price (import price function)
 		- [ ] _CO2 factor_ - Scalars -> system config -> Emission Strom
-	- [ ]  **Link HöS & HS**
-		- [ ] _output flow_ grid operating fee (zweiseitig)
-		- [ ] _conversion factor_ als 100% ohne verlust
-	- [ ] **Import solid fuel**
+	- [x]  **Link HöS & HS**
+		- [x] _output flow_ grid operating fee (zweiseitig)
+		- [x] _conversion factor_ als 100% ohne verlust
+		- [ ] variable cost - grid operating fee
+	- [x] **Import solid fuel**
 		- [ ] _varialble cost_: import biomasse price
 		- [ ] _biogasneuanlagen factor_ 
 	- [ ] **Import wood**
 		- [ ] _variable cost_: import biomass price
 		- [ ] _biomasse factor_
-	- [ ] **Import brown coal**
+		- [ ] _potential??_
+	- [x] **Import brown coal**
 		- [ ] _variable cost_: import brown coal price (ZORRO I)
 		- [ ] _fix_: Base load profile
 		- [ ] _epc cost_ = 0
 		- [ ] _summed_max_ = Menge_Browncoal * len(import price) Menge-> system config
 		- [ ] _CO2 factor_
-	- [ ] **Import Hard coal**
+	- [x] **Import Hard coal**
 		- [ ] _variable cost_: import hard coal price (ZORRO I)
 		- [ ] _fix_: Base load profile
 		- [ ] _epc cost_ = 0
 		- [ ] _summed_max_ = Menge_hardcoal * len(import price) Menge-> system config
 		- [ ] _CO2 factor_
-	- [ ] **Import Gas**
+	- [x] **Import Gas**
 		- [ ] _variable cost_: Import gas price
 		- [ ] _CO2 factor_
-	- [ ] **Import Oil**
+	- [x] **Import Oil**
 		- [ ] _variable cost_: Import oil price
 		- [ ] _CO2 factor_
-	- [ ] **Import synthetic fuel**
+	- [x] **Import synthetic fuel**
 		- [ ] _variable cost_: import synt fuel price (ZORRO I)
-	- [ ] **Import Hydrogen**
+	- [x] **Import Hydrogen**
 		- [ ] _nominal value_: scalars -> hydrogen grid -> maxpower
 		- [ ] _variable cost_: import hydrogen price
 - [ ] **Storage**:
-	- [ ] **Battery**
+	- [x] **Battery**
 		- [ ] _loss rate_: 0
 		- [ ] _inflow_conversion_factor_ : scalars -> parameter storage electricty -> efficiency_in
 		- [ ] _outflow_conversion_factor_ : scalars -> parameter storage electricty -> efficiency_out
@@ -136,7 +146,7 @@
 			- [ ] epc cost
 			- [ ] maximum
 			- [ ] minimum
-	- [ ] **Dist heating storage**:
+	- [x] **Dist heating storage**:
 		- [ ] inputs /output:
 			- [ ] _custom attributes_: Keyword WSP
 			- [ ] _nominal_value_: potential /inverse C rate
@@ -150,7 +160,7 @@
 			- [ ] epc cost
 			- [ ] maximum?
 			- [ ] minimum?
-	- [ ] **Seasonal heat storage**:
+	- [x] **Seasonal heat storage**:
 		- [ ] inputs /output:
 			- [ ] _custom attributes_: Keyword WSP
 			- [ ] _nominal_value_: potential /inverse C rate
@@ -165,7 +175,7 @@
 			- [ ] epc cost
 			- [ ] maximum?
 			- [ ] minimum = 1
-	- [ ] **Pumped hydro storage**:
+	- [x] **Pumped hydro storage**:
 		- [ ] inputs /output:
 		- [ ] _loss rate_: 0
 		- [ ] _inflow_conversion_factor_ : scalars -> efficiency_in
@@ -179,7 +189,7 @@
 			- [ ] minimum ->potential_min
 	- [ ] **Pumped hydro storage_Goldistal**:
 		- [ ] inputs /output:
-			- [ ] _varialble cost_ (only in input flow): grid operating fee
+			- [ ] _varialble cost_ (only in input flow): grid operating fee muss be calculated on the difference
 		- [ ] _loss rate_: 0
 		- [ ] _inflow_conversion_factor_ : scalars -> efficiency_in
 		- [ ] _outflow_conversion_factor_ : scalars -> efficiency_out
@@ -190,7 +200,7 @@
 			- [ ] epc cost
 			- [ ] maximum : potential_Hös_min
 			- [ ] minimum: Potential_Hös_min
-	- [ ] **Gas storage**:
+	- [x] **Gas storage**:
 		- [ ] inputs /output:
 		- [ ] _loss rate_: 0
 		- [ ] _inflow_conversion_factor_ : scalars -> efficiency_in
@@ -202,7 +212,7 @@
 			- [ ] epc cost
 			- [ ] maximum- > die Werte ist och nicht regionalisiert, aber als 1100000 definiert
 			- [ ] minimum
-	- [ ] **H2 storage**:
+	- [x] **H2 storage**:
 		- [ ] inputs /output:
 		- [ ] _loss rate_: 0
 		- [ ] _inflow_conversion_factor_ : scalars -> efficiency_in
@@ -215,12 +225,20 @@
 			- [ ] maximum-> 1255000
 			- [ ] minimum
 - [ ] **Transformers**:
-	- [ ] **Pre-Heater**
-		- [ ] _input_: Pre-heater bus
+	- [ ] **Pre-Heater**-WP
+		- [x] _input_: Pre-heater bus
 		- [ ] _output_: 
 			- [ ] bus: b_dist_heat
-			- [ ] invetment model:
-				- [ ] epc
+			- [x] invetment model:
+				- [x] epc
+				- [ ] maximum?
+		- [ ] _conversion_factor_ : scalars-> efficiency
+	- [ ]  **Pre-Heater**-Boiler
+		- [x] _input_: Pre-heater bus
+		- [ ] _output_: 
+			- [x] bus: b_dist_heat
+			- [x] invetment model:
+				- [x] epc
 				- [ ] maximum?
 		- [ ] _conversion_factor_ : scalars-> efficiency
 	- [ ] **Electrolysis**.

@@ -54,14 +54,9 @@ Input daten
 parametern
 output
 Plots nur mit Links
-Logseq als vergleich markdown datei schauen
 Bilder einmal auf geringer Auflösung und einmal hochaufgelöst
 
 
-"Influence of Higher level grid, seperating Goldistal(pumped storge and splitting heat storages",
-        sim_remarks = "- Previously in ZORRO I gird and storages were not well defined. \n"+
-                        "- The grid is classified into Höchste- und Hochspannung to obtain a clean comparision with the regionalisation model. "+
-                        "- Hence the component pumped hydro storage is split into two, where the Golistal is connected to teh higest grid level. \n"+
-                        "- The heat storages are sub classified into seasonal and district heating storages. \n"+
-                        "- Additionally a preheater is connected to the seasonal storage tank to give the heat at necessary temperature back to the district heating network. \n"+
-                        "- Other parameters remain the same [[2030_BS0001_008]]"
+**Sankey- To-do's:**
+
+

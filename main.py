@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0001"],
-        scenario_num = "013",
+        scenario_num = "ref",
         years=[2030],# 2040, 2050],
         model_name="Basic_example_zorro_1",
         solver="gurobi",
@@ -18,10 +18,10 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "Adding a preheater to feed-in the energy stored in the seasonal heat storage",
-        sim_remarks = "- To feed-in the stored eneergy back to the district heating bus an preheater is necessary. \n"+
-                        "- An water-water heat pump is implemented as a preheater"
-                        "- Other parameters remain the same [[2030_BS0001_012]]"
+        hypothese = "This is a reference scenario with all the final components defined in the flow chart.",
+        sim_remarks = "- This scenario is used as reference fro the labels and results format. \n"+
+                        "- The results in this scenario will not make any sense, so no need of analysing."
+                        "- New simulation will be done from the start with this scenario as reference."
     )
 
     # %TODO: Auswertung der Dump-Daten (csv-daten erstellen, automatische grafiken etc.)
