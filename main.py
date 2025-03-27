@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0001"],
-        scenario_num = "001",
+        scenario_num = "002",
         years=[2030],# 2040, 2050],
         model_name="Basic_example_zorro_1",
         solver="gurobi",
@@ -18,10 +18,10 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "ZORRO 1 model in new structure",
-        sim_remarks = "- Heat storage = Frenwaermespeicher \n"+
-                        "- Old demand and old time series.\n"
-                        "- To check if the structure has any errors in it."
+        hypothese = "Influence of raw electricity price from brainpool",
+        sim_remarks = "- The electricity price which was corelated to the feed-in profiles is replaced with raw electricity price from brainpool. \n"+
+                        "- Other parameters remain the same [[2030_BS0001_001]] "
+                        
     )
 
     # %TODO: Auswertung der Dump-Daten (csv-daten erstellen, automatische grafiken etc.)
