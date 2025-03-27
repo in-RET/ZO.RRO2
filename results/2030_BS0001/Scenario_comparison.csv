@@ -1,49 +1,54 @@
-Component;Scenario 001;Scenario 002;Scenario 003;Scenario 004;Scenario 005;Scenario 006;Scenario 007;Scenario 008;Scenario 009;Scenario 010;Scenario 011;Scenario 012
-Battery;{'None': 2293,8675879011894, 'Electricity': 573,4668969752973};{'None': 1957,4814365733416, 'Electricity': 489,3703591433354};{'None': 1770,0111013114624, 'Electricity': 442,50277532786566};{'None': 1674,718712483988, 'Electricity': 418,679678120997};{'None': 1743,7114484419549, 'Electricity': 435,9278621104887};{'None': 1743,711448441955, 'Electricity': 435,9278621104888};{'None': 3362,1877557499242, 'Electricity': 840,5469389374811};{'None': 1712,227468159527, 'Electricity': 428,05686703988175};{'None': 5000,0, 'Electricity': 1250,0};{'None': 5000,0, 'Electricity': 1250,0};{'None': 5000,0, 'Electricity': 1250,0};{'None': 5000,0, 'Electricity': 1250,0}
-BioTransformer;{'Solidfuel': 0};{'Solidfuel': 0};{'Solidfuel': 0};{'Solidfuel': 0};{'Solidfuel': 0};{'Solidfuel': 0};{'Solidfuel': 0};{'Solidfuel': 0};{'Solidfuel': 0};{'Solidfuel': 0};{'Solidfuel': 0};{'Solidfuel': 0}
-Biogas;{'District heating': 155,79588880009132, 'Electricity': 120,82130151843818};{'District heating': 155,79588880009132, 'Electricity': 120,82130151843818};{'District heating': 155,79588880009132, 'Electricity': 120,82130151843818};{'District heating': 155,79588880009132, 'Electricity': 120,82130151843818};{'District heating': 155,79588880009132, 'Electricity': 120,82130151843818};{'District heating': 155,79588880009132, 'Electricity': 120,82130151843818};{'District heating': 155,79588880009132, 'Electricity': 120,82130151843818};{'District heating': 155,79588880009132, 'Electricity': 120,82130151843818};{'District heating': 321,57731512894105, 'Electricity': 249,38648928366857};{'District heating': 321,295957177837, 'Electricity': 249,1682933215879};{'District heating': 321,295957177837, 'Electricity': 249,1682933215879};{'District heating': 321,57731512894105, 'Electricity': 249,38648928366857}
-Biogas_feedin_existing;{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0}
-Biogas_feedin_new;{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0}
-Biomasse_elec;{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'District heating': 11,903737830080306, 'Electricity': 4,058092442072831};{'District heating': 0,0, 'Electricity': 0,0};{'District heating': 0,0, 'Electricity': 0,0};{'District heating': 0,0, 'Electricity': 0,0};{'District heating': 0,0, 'Electricity': 0,0}
-Biomasse_heat;{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0}
-BtL;0;0;0;0;0;{'Oil_fuel': 1168,3763858812756};0;{'Oil_fuel': 1168,3763858812756};{'Oil_fuel': 0,0};{'Oil_fuel': 0,0};{'Oil_fuel': 0,0};{'Oil_fuel': 0,0}
-Electric boiler;{'District heating': 279,88239533275896};{'District heating': 1050,4115850636517};{'District heating': 1082,7932728802002};{'District heating': 1061,2843486718061};{'District heating': 1180,4133052782993};{'District heating': 1180,4133052782993};{'District heating': 119,78225125243627};{'District heating': 1168,7101121615058};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0}
-Electrolysis;{'Hydrogen': 308,0};{'Hydrogen': 308,0};{'Hydrogen': 308,0};{'Hydrogen': 308,0};{'Hydrogen': 308,0};{'Hydrogen': 308,0};{'Hydrogen': 308,0};{'Hydrogen': 308,0};{'Hydrogen': 0,0};{'Hydrogen': 0,0};{'Hydrogen': 0,0};{'Hydrogen': 0,0}
-Fuelcell;{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 1427,0};{'Electricity': 1427,0};{'Electricity': 1427,0};{'Electricity': 1427,0}
-Gas_storage;{'None': 0,0, 'Gas': 0,0};{'None': 0,0, 'Gas': 0,0};{'None': 0,0, 'Gas': 0,0};{'None': 0,0, 'Gas': 0,0};{'None': 0,0, 'Gas': 0,0};{'None': 0,0, 'Gas': 0,0};{'None': 0,0, 'Gas': 0,0};{'None': 0,0, 'Gas': 0,0};{'None': 1100000,0, 'Gas': 1375,0};{'None': 1100000,0, 'Gas': 1375,0};{'None': 1100000,0, 'Gas': 1375,0};{'None': 1100000,0, 'Gas': 1375,0}
-GuD;{'District heating': 0, 'Electricity': 444,5};{'District heating': 0, 'Electricity': 338,74881314376887};{'District heating': 0, 'Electricity': 332,6139406204895};{'District heating': 0, 'Electricity': 332,21384381776943};{'District heating': 0, 'Electricity': 362,89690407449234};{'District heating': 0, 'Electricity': 362,8969040744912};{'District heating': 0, 'Electricity': 0,0};{'District heating': 0, 'Electricity': 346,7053097112099};{'District heating': 0, 'Electricity': 0,0};{'District heating': 0, 'Electricity': 0,0};{'District heating': 0, 'Electricity': 0,0};{'District heating': 0, 'Electricity': 0,0}
-H2_storage;{'None': 0,0, 'Hydrogen': 0,0};{'None': 0,0, 'Hydrogen': 0,0};{'None': 0,0, 'Hydrogen': 0,0};{'None': 0,0, 'Hydrogen': 0,0};{'None': 0,0, 'Hydrogen': 0,0};{'None': 0,0, 'Hydrogen': 0,0};{'None': 0,0, 'Hydrogen': 0,0};{'None': 0,0, 'Hydrogen': 0,0};{'None': 1255000,0, 'Hydrogen': 983,0030547505286};{'None': 1255000,0, 'Hydrogen': 983,0030547505286};{'None': 1255000,0, 'Hydrogen': 983,0030547505286};{'None': 1255000,0, 'Hydrogen': 983,0030547505286}
-Heat storage_dist_heat;0;0;0;0;0;0;0;0;{'None': 0,0, 'District heating': 0,0};{'None': 0,0, 'District heating': 0,0};{'None': 0,0, 'District heating': 0,0};{'None': 0,0, 'District heating': 0,0}
-Heat storage_seasonal;0;0;0;0;0;0;0;0;{'None': 626965,6752429857, 'District heating': 62696,567524298574};{'None': 627468,3680234562, 'District heating': 62746,83680234562};{'None': 627468,3680234562, 'District heating': 62746,83680234562};{'None': 626965,6752429857, 'District heating': 62696,567524298574}
-Heatpump_air;{'District heating': 55,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0}
-Heatpump_recovery_heat;0;0;0;0;0;0;0;0;0;{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0}
-Heatpump_water;{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,7582135104674957};{'District heating': 0,7582135104674957};{'District heating': 0,0}
-Hydro power plant;{'Electricity': 31,0};{'Electricity': 31,0};{'Electricity': 31,0};{'Electricity': 31,0};{'Electricity': 31,0};{'Electricity': 31,0};{'Electricity': 31,0};{'Electricity': 31,0};{'Electricity': 31,0};{'Electricity': 31,0};{'Electricity': 31,0};{'Electricity': 31,0}
-Hydrogen_feedin;{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 5,367695856515922};{'Gas': 5,367695856515922};{'Gas': 5,367695856515922};{'Gas': 5,367695856515922}
-Import_Electricity;{'Electricity': 0};{'Electricity': 0};{'Electricity': 0};{'Electricity': 0};{'Electricity': 0};{'Electricity': 0};{'Electricity': 0};{'Electricity': 0};{'Electricity_Hös': 0};{'Electricity_Hös': 0};{'Electricity_Hös': 0};{'Electricity_Hös': 0}
-Import_Gas;{'Gas': 0};{'Gas': 0};{'Gas': 0};{'Gas': 0};{'Gas': 0};{'Gas': 0};{'Gas': 0};{'Gas': 0};{'Gas': 0};{'Gas': 0};{'Gas': 0};{'Gas': 0}
-Import_Hydrogen;0;0;0;0;0;{'Hydrogen': 0};0;{'Hydrogen': 0};{'Hydrogen': 0};{'Hydrogen': 0};{'Hydrogen': 0};{'Hydrogen': 0}
-Import_Oil;{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0}
-Import_Synthetic_fuel;{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0};{'Oil_fuel': 0}
-Import_Wood;{'BioWood': 0};{'BioWood': 0};{'BioWood': 0};{'BioWood': 0};{'BioWood': 0};{'BioWood': 0};{'BioWood': 0};{'BioWood': 0};{'BioWood': 0};{'BioWood': 0};{'BioWood': 0};{'BioWood': 0}
-Import_brown_coal;{'Solidfuel': 0,0};{'Solidfuel': 0,0};{'Solidfuel': 0,0};{'Solidfuel': 0,0};{'Solidfuel': 0,0};{'Solidfuel': 0,0};{'Solidfuel': 0,0};{'Solidfuel': 0,0};{'Solidfuel': 0,0};{'Solidfuel': 0,0};{'Solidfuel': 0,0};{'Solidfuel': 0,0}
-Import_hard_coal;{'Solidfuel': 47,3449695904205};{'Solidfuel': 47,3449695904205};{'Solidfuel': 47,3449695904205};{'Solidfuel': 47,3449695904205};{'Solidfuel': 47,30826354418036};{'Solidfuel': 47,30826354418029};{'Solidfuel': 0,0};{'Solidfuel': 60,83523835108777};{'Solidfuel': 47,30826354418085};{'Solidfuel': 47,30826354418085};{'Solidfuel': 47,30826354418085};{'Solidfuel': 47,30826354418085}
-Import_solid_fuel;{'Biomass': 0};{'Biomass': 0};{'Biomass': 0};{'Biomass': 0};{'Biomass': 0};{'Biomass': 0};{'Biomass': 0};{'Biomass': 0};{'Biomass': 0};{'Biomass': 0};{'Biomass': 0};{'Biomass': 0}
-Methanisation;{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0};{'Gas': 0,0}
-PV_open_east;{'Electricity': 965,3523784116313};{'Electricity': 1111,254681369837};{'Electricity': 1239,7081431594725};{'Electricity': 647,2482714628671};{'Electricity': 551,5287286949905};{'Electricity': 551,528728695002};{'Electricity': 1248,0602455343658};{'Electricity': 439,03797635040985};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0}
-PV_open_middle;{'Electricity': 0,0};{'Electricity': 1137,9431499653103};{'Electricity': 1101,719405414232};{'Electricity': 2081,0831736147793};{'Electricity': 2157,0526934893555};{'Electricity': 2157,0526934893574};{'Electricity': 3290,9330057821485};{'Electricity': 2136,3803995467574};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0}
-PV_open_north;{'Electricity': 1519,572493309966};{'Electricity': 839,4185389731516};{'Electricity': 726,8488358092297};{'Electricity': 1898,9916009766675};{'Electricity': 1918,74934607981};{'Electricity': 1918,7493460797828};{'Electricity': 2934,82282846637};{'Electricity': 1904,8091593250106};{'Electricity': 1914,4017689707641};{'Electricity': 1918,0688142383383};{'Electricity': 1918,0688142383383};{'Electricity': 1914,4017689757502}
-PV_open_swest;{'Electricity': 2244,172089118649};{'Electricity': 1640,4805947379407};{'Electricity': 1561,0454004518265};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0}
-PV_rooftop_east;{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0}
-PV_rooftop_middle;{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0}
-PV_rooftop_north;{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0}
-PV_rooftop_swest;{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0};{'Electricity': 0,0}
-PtL;{'Oil_fuel': 0,0};{'Oil_fuel': 0,0};{'Oil_fuel': 0,0};{'Oil_fuel': 0,0};{'Oil_fuel': 0,0};{'Oil_fuel': 0,0};{'Oil_fuel': 0,0};{'Oil_fuel': 0,0};{'Oil_fuel': 1579,735718679974};{'Oil_fuel': 1579,735718679974};{'Oil_fuel': 1579,735718679974};{'Oil_fuel': 1579,735718679974}
-Pumped_hydro_storage;{'None': 2304,0, 'Electricity': 288,0};{'None': 2304,0, 'Electricity': 288,0};{'None': 2304,0, 'Electricity': 288,0};{'None': 2304,0, 'Electricity': 288,0};{'None': 2304,0, 'Electricity': 288,0};{'None': 2304,0, 'Electricity': 288,0};{'None': 2304,0, 'Electricity': 288,0};{'None': 2304,0, 'Electricity': 288,0};{'None': 9360,0, 'Electricity': 1170,0};{'None': 9360,0, 'Electricity': 1170,0};{'None': 9360,0, 'Electricity': 1170,0};{'None': 9360,0, 'Electricity': 1170,0}
-Pumped_hydro_storage_Goldistal;0;0;0;0;0;0;0;0;0;0;{'None': 1052,0, 'Electricity_Hös': 131,5};{'None': 1052,0, 'Electricity_Hös': 131,5}
-ST;{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0};{'District heating': 0,0}
-UW;0;0;0;0;0;0;0;0;0;{'Environmental heat': 0};{'Environmental heat': 0};{'Environmental heat': 0,0}
-Wind_east;{'Electricity': 1820,0};{'Electricity': 1820,0};{'Electricity': 1820,0};{'Electricity': 1820,0};{'Electricity': 1820,0};{'Electricity': 1820,0};{'Electricity': 1820,0};{'Electricity': 1820,0};{'Electricity': 1820,0};{'Electricity': 1820,0};{'Electricity': 1820,0};{'Electricity': 1820,0}
-Wind_middle;{'Electricity': 1640,0};{'Electricity': 1640,0};{'Electricity': 1640,0};{'Electricity': 1640,0};{'Electricity': 1640,0};{'Electricity': 1640,0};{'Electricity': 1640,0};{'Electricity': 1640,0};{'Electricity': 1640,0};{'Electricity': 1640,0};{'Electricity': 1640,0};{'Electricity': 1640,0}
-Wind_north;{'Electricity': 1210,0};{'Electricity': 1210,0};{'Electricity': 1210,0};{'Electricity': 1210,0};{'Electricity': 1210,0};{'Electricity': 1210,0};{'Electricity': 1210,0};{'Electricity': 1210,0};{'Electricity': 1210,0};{'Electricity': 1210,0};{'Electricity': 1210,0};{'Electricity': 1210,0}
-Wind_swest;{'Electricity': 900,0};{'Electricity': 900,0};{'Electricity': 900,0};{'Electricity': 900,0};{'Electricity': 900,0};{'Electricity': 900,0};{'Electricity': 900,0};{'Electricity': 900,0};{'Electricity': 900,0};{'Electricity': 900,0};{'Electricity': 900,0};{'Electricity': 900,0}
+Component;Scenario 001;Scenario ref
+AW;0;{'Recovery heat': 0}
+Battery;{'None': 2293,867587901195, 'Electricity': 573,4668969752987};{'None': 5000,0, 'Electricity': 1250,0}
+BioTransformer;{'Solidfuel': 0};{'Solidfuel': 0}
+Biogas- BHKW;{'District heating': 155,79588880009132, 'Electricity': 120,82130151843818};{'District heating': 210,02614013463838, 'Electricity': 162,87741479829097}
+Biogas_feedin_existing;{'Gas': 0,0};{'Gas': 0,0}
+Biogas_feedin_new;{'Gas': 0,0};{'Gas': 0,0}
+Biomasse_elec;{'Electricity': 0,0};{'Electricity': 405,80924420726006}
+Biomasse_elec_heat;0;{'District heating': 0,0, 'Electricity': 0,0}
+Biomasse_heat;{'District heating': 0,0};{'District heating': 0,0}
+BtL;0;{'Oil_fuel': 0,0}
+Electric boiler;{'District heating': 279,8823953327587};{'District heating': 0,0}
+Electrolysis;{'Hydrogen': 308,0};{'Hydrogen': 0,0}
+Fuelcell;{'Electricity': 0,0};{'Electricity': 1427,0}
+Gas_storage;{'None': 0,0, 'Gas': 0,0};{'None': 1100000,0, 'Gas': 1375,0}
+GuD;{'District heating': 0, 'Electricity': 444,5};{'District heating': 0, 'Electricity': 301,3960860768241}
+H2_storage;{'None': 0,0, 'Hydrogen': 0,0};{'None': 1255000,0, 'Hydrogen': 983,0030547505286}
+Heat storage_dist_heat;{'None': 94341,73872230724, 'District heating': 9434,173872230725};{'None': 6237,423209028449, 'District heating': 623,7423209028449}
+Heat storage_seasonal;0;{'None': 683705,3242934915, 'Pre-heating': 68370,53242934916}
+Heatpump_air;{'District heating': 55,0};{'District heating': 0,0}
+Heatpump_recovery_heat;0;{'District heating': 0,0}
+Heatpump_water;{'District heating': 0,0};{'District heating': 0,0}
+Hydro power plant;{'Electricity': 31,0};{'Electricity': 31,0}
+Hydrogen_feedin;{'Gas': 0,0};{'Gas': 5,380447346401245}
+Hös<->HS;{'Electricity': 0, 'Electricity_Hös': 0};{'Electricity': 0, 'Electricity_Hös': 0}
+Import_Electricity;{'Electricity_Hös': 0};{'Electricity_Hös': 0}
+Import_Gas;{'Gas': 0};{'Gas': 0}
+Import_Hydrogen;0;{'Hydrogen': 0}
+Import_Oil;{'Oil_fuel': 0};{'Oil_fuel': 0}
+Import_Synthetic_fuel;{'Oil_fuel': 0};{'Oil_fuel': 0}
+Import_Wood;{'BioWood': 0};{'BioWood': 0}
+Import_brown_coal;{'Solidfuel': 0,0};{'Solidfuel': 0,0}
+Import_hard_coal;{'Solidfuel': 47,3449695904205};{'Solidfuel': 60,83523835108777}
+Import_solid_fuel;{'Biomass': 0};{'Biomass': 0}
+Methanisation;{'Gas': 0,0};{'Gas': 0,0}
+PV_open_east;{'Electricity': 965,352378411947};{'Electricity': 0,0}
+PV_open_middle;{'Electricity': 0,0};{'Electricity': 0,0}
+PV_open_north;{'Electricity': 1519,5724933106073};{'Electricity': 0,0}
+PV_open_swest;{'Electricity': 2244,1720891181626};{'Electricity': 0,0}
+PV_rooftop_east;{'Electricity': 0,0};{'Electricity': 0,0}
+PV_rooftop_middle;{'Electricity': 0,0};{'Electricity': 0,0}
+PV_rooftop_north;{'Electricity': 0,0};{'Electricity': 0,0}
+PV_rooftop_swest;{'Electricity': 0,0};{'Electricity': 0,0}
+Preheater- Electric boiler;0;{'District heating': 0,0}
+Preheater- WP;0;{'District heating': 0,0}
+PtL;{'Oil_fuel': 0,0};{'Oil_fuel': 1576,1926495676842}
+Pumped_hydro_storage;{'None': 2304,0, 'Electricity': 288,0};{'None': 9360,0, 'Electricity': 1170,0}
+Pumped_hydro_storage_Goldistal;0;{'None': 1052,0, 'Electricity_Hös': 131,5}
+ST;{'District heating': 0,0};{'District heating': 0,0}
+UW;0;{'Environmental heat': 0,0}
+Wind_east;{'Electricity': 1820,0};{'Electricity': 1820,0}
+Wind_middle;{'Electricity': 1640,0};{'Electricity': 1640,0}
+Wind_north;{'Electricity': 1210,0};{'Electricity': 1210,0}
+Wind_swest;{'Electricity': 900,0};{'Electricity': 900,0}

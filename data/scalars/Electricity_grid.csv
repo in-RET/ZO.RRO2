@@ -9,3 +9,11 @@ max_power_east;MW;1100;5,6,7
 connection_north_middle;MW;460;
 connection_middle_swest;MW;1060;
 connection_east_middle;MW;1360;
+grid_operating_fee_HöS<2500h;€/MWh;64,5;50Hertz Preisblatt 2024
+grid_operating_fee_HöS>2500h;€/MWh;11,2;50Hertz Preisblatt 2024
+grid_annualperformance_fee_Hös<2500h;€/MW/a;25760;50Hertz Preisblatt 2024
+grid_annualperformance_fee>2500h;€/MW/a;158980;50Hertz Preisblatt 2024
+grid_operating_fee_HS<2500h;€/MWh;52,2;TEN Preisblatt 2025
+grid_operating_fee_HS>2500h;€/MWh;5,6;TEN Preisblatt 2025
+grid_annualperformance_fee_Hös<2500h;€/MW/a;36330;TEN Preisblatt 2025
+grid_annualperformance_fee>2500h;€/MW/a;152690;TEN Preisblatt 2025
