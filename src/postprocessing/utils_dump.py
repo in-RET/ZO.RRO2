@@ -79,6 +79,19 @@ def interpret_results(results):
 
     return bus_sequences, bus_scalars, component_sequences, component_scalars
 
+def extract_value(component_name, value):
+    if isinstance(value, dict):
+        if component_name == 'Battery' or 'storage' in component_name:
+            return value.get('None', list(value.values())[0])
+        elif component_name == 'Biogas- BHKW' or 'GuD':
+            return value.get('Electricity', list(value.values())[0])
+        else:
+            return list(value.values())[0]
+    elif isinstance(value, (int, float)):
+        return float(value)
+    else:
+        return None
+
 def calculate_investment_costs(epc_costs, all_component_scalars):
     """
     This calculates the investment and the operating costs for each components

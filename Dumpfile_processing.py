@@ -10,14 +10,14 @@ import os
 from src.preprocessing.files import read_input_files
 from src.preprocessing.conversion import investment_parameter, CO2_price_addition
 from src.postprocessing.utils_dump import get_dump_file_path, load_results_from_dump, interpret_results, calculate_investment_costs,clean_sequence_data, calc_energyimport_cost
-from src.postprocessing.utils_dump import calc_energyexport_cost, sankey_excel_output
+from src.postprocessing.utils_dump import calc_energyexport_cost, sankey_excel_output, extract_value
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 workdir = os.getcwd()
 my_path = os.path.abspath(os.path.dirname(__file__))
 
 
 # Define the scenarios you want to compare
-scenarios = ["001","ref"]#, "002", "003","004","005","006","007","008","009","010","011", "012", "013", "ref"]  
+scenarios = ["001","002", "ref"]#, "002", "003","004","005","006","007","008","009","010","011", "012", "013", "ref"]  
 year = 2030
 variation = "BS0001"
 model_name = "Basic_example_zorro_1"
@@ -71,13 +71,18 @@ for scenario_num in scenarios:
 component_scalars_list = []
 
 # to compare all scenarios and export as csv
-for component_name in all_component_scalars[scenarios[-1]]:  # Use first scenario as a reference
+for component_name in all_component_scalars["ref"]:  # Use first scenario as a reference
     row = {"Component": component_name}
     for scenario_num in scenarios:
         row[f"Scenario {scenario_num}"] = all_component_scalars.get(scenario_num, {}).get(component_name, 0)  # Default to 0 if missing
     component_scalars_list.append(row)
 
 df_component_scalars_formatted = pd.DataFrame(component_scalars_list)
+
+for column in df_component_scalars_formatted.columns:
+    if column.startswith('Scenario'):  
+        df_component_scalars_formatted[column] = df_component_scalars_formatted.apply(lambda row: extract_value(row['Component'], row[column]), axis=1)
+
 df_component_scalars_formatted.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH, sep = ';', index=False)
 
 # Calculate investment costs
