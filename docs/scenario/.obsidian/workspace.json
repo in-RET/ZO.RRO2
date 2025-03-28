@@ -29,7 +29,7 @@
               "state": {
                 "file": "Model tracking overview.md",
                 "mode": "source",
-                "source": false
+                "source": true
               },
               "icon": "lucide-file",
               "title": "Model tracking overview"
@@ -204,9 +204,10 @@
   },
   "active": "a81a3d3d00b0dd56",
   "lastOpenFiles": [
+    "2030_BS0001_003.md",
+    "Model tracking overview.md",
     "2030_BS0001_002.md",
     "2030_BS0001_001.md",
-    "Model tracking overview.md",
     "CHECKLIST.md",
     "2030_BS0001_ref.md",
     "Journal.md",
@@ -226,7 +227,6 @@
     "2023-007_sk-kli_hsn_inRET/inRET-feat-DS",
     "2023-007_sk-kli_hsn_inRET",
     "2030_BS0001_007.md",
-    "2030_BS0001_003.md",
     "2030_BS0001_006.md",
     "2030_BS0001_005.md",
     "tmpvxxdq6hc",
