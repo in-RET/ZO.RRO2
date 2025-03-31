@@ -170,7 +170,7 @@ class Location(object):
                           inverter_parameters = inverter,
                           racking_model= racking_model_open_field,
                           temperature_model_parameters = temperature_model_parameters,
-                          losses_parameters = pvwatts_losses()
+                          #losses_parameters = pvwatts_losses()
                           )
         
         system_rooftop = PVSystem(
@@ -183,7 +183,7 @@ class Location(object):
                           inverter_parameters = inverter,
                           racking_model= racking_model_rooftop,
                           temperature_model_parameters = temperature_model_parameters,
-                          losses_parameters = pvwatts_losses()
+                          #losses_parameters = pvwatts_losses()
                           )
 
         mc_openfield = ModelChain(system_openfield, location,aoi_model="no_loss", spectral_model="no_loss")
@@ -204,7 +204,10 @@ class Location(object):
         AC_power_1.columns = ['AC_Power']
         AC_power_1[AC_power_1<0]= 0                         # Due to system losses you get a small negative value which is neglected by setting the value to zero 
         AC_power_nom_1 = AC_power_1/capacity
+               
+
         self.PV_AC_power_openfield = AC_power_1
+        self.PV_feed_in_profile_openfield =AC_power_nom_1
         self.PV_feed_in_profile_openfield = (AC_power_nom_1/int(AC_power_nom_1.sum()))*950
         self.PV_full_load_hours_openfield = int(AC_power_nom_1.sum())
         
@@ -221,5 +224,6 @@ class Location(object):
         AC_power[AC_power<0]= 0                         # Due to system losses you get a small negative value which is neglected by setting the value to zero 
         AC_power_nom = AC_power/capacity
         self.PV_AC_power_rooftop = AC_power
+        self.PV_feed_in_profile_rooftop = AC_power_nom
         self.PV_feed_in_profile_rooftop = (AC_power_nom/int(AC_power_nom.sum()))*915
         self.PV_full_load_hours_rooftop = int(AC_power_nom.sum())

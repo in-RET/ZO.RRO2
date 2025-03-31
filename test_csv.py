@@ -11,6 +11,7 @@ import matplotlib
 from src .preprocessing.conversion import investment_parameter
 from src.preprocessing.files import read_input_files
 from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
+from src.preprocessing.location import Location
 import numpy as np
 import matplotlib.image as mpimg
 from oemof.tools import economics
@@ -43,72 +44,48 @@ model_ID = 'BS0001'
 # plt.show()
 sequences = read_input_files(
     folder_name='data/sequences', sub_folder_name=None)
-scalars = read_input_files(folder_name='data/scalars', sub_folder_name='parameter')
+scalars = read_input_files(folder_name='data/scalars', sub_folder_name=None)
 #demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
 #demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
 epc_costs = investment_parameter(scalars, YEAR, model_ID)
 results = energysystem.results["main"]
 year = [2030, 2040, 2050]
-#sim_data = sim_data
-#csv=export_csv(results, 2030, '2030_BS0001', 'Basic_example_zorro_1_2030_BS0001', '005', sim_data)
-#export = export_csv_region(results, 2030 , '2030_BS0001', 'BS_regionalization_2030_BS0001')
-#grid_energy_map(results,'2030_BS0001', 'BS_regionalization_2030_BS0001')
 
-# b_el = solph.views.node(results, 'Electricity')
-# b_gas = solph.views.node(results, 'Gas')
-# b_oil = solph.views.node(results, 'Oil_fuel')
-# b_bio = solph.views.node(results, 'Biomass')
-# b_bioWood = solph.views.node(results, 'BioWood')
-# b_solidf = solph.views.node(results, 'Solidfuel')
-# b_dist_heat = solph.views.node(results, 'District heating')
-# b_H2 = solph.views.node(results, 'Hydrogen')
-# #Syntbus = solph.views.node(results, 'Synthetische_Kraftstoffe')
-# Battery = solph.views.node(results, 'Battery')
-# Heat_storage = solph.views.node(results, 'Heat storage')
-# Pumped_hydro_storage = solph.views.node(results, 'Pumped_hydro_storage')
-# Gas_storage = solph.views.node(results, 'Gas_storage')
-# H2_storage = solph.views.node(results, 'H2_storage')
-#%%
-import pickle
-dump_file_path =os.path.join(workdir,'dumps', '2030_BS0001', 'Basic_example_zorro_1_2030_BS0001_001.dump')
+Weather_dir = os.path.abspath(os.path.join(workdir, 'data','weatherdata'))
+middle = Location(os.path.join(Weather_dir,'Erfurt_Binderslebn-hour.csv'), os.path.join(Weather_dir,'Erfurt_Binderslebn-min.dat'))
+north = Location(os.path.join(Weather_dir,'Nordhausen-hour.csv'), os.path.join(Weather_dir,'Nordhausen-min.dat'))
+swest= Location(os.path.join(Weather_dir,'Hildburghausen-hour.csv'), os.path.join(Weather_dir,'Hildburghausen-min.dat'))
+east = Location(os.path.join(Weather_dir,'Gera-Leumnitz-hour.csv'), os.path.join(Weather_dir,'Gera-Leumnitz-min.dat'))
 
-with open(dump_file_path, "rb") as file:
-    results = pickle.load(file)
+Planing_region = [middle, north, swest, east]
+""" Simulate Wind feed-in profile for the desired location """
+for L in Planing_region:
+    L.Wind_feed_in_profile(YEAR)
+    L.PV_feed_in_profile(YEAR)
 
-# Extract flow results
-if "Main" in results and "flows" in results["Main"]:
-    flows = results["Main"]["flows"]
-    
-    # Convert to a structured DataFrame
-    data = []
-    for (source, target), flow_data in flows.items():
-        if hasattr(flow_data, "values"):  # Check if values exist
-            for time_index, value in enumerate(flow_data.values):
-                data.append([time_index, source.label, target.label, value])
-    
-    df = pd.DataFrame(data, columns=["Time", "Source", "Target", "Flow Value"])
+    #%%
+AC_power_nom_1_n = north.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for openfield
+AC_power_nom_1_e = east.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for rooftop
+AC_power_nom_1_w = swest.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for openfield
+AC_power_nom_1_m = middle.PV_feed_in_profile_openfield['AC_Power']
+# Sort the data to create the duration curve (highest values first)
+sorted_n = np.sort(AC_power_nom_1_n)[::-1]
+sorted_e = np.sort(AC_power_nom_1_e)[::-1]
+sorted_w = np.sort(AC_power_nom_1_w)[::-1]
+sorted_m = np.sort(AC_power_nom_1_m)[::-1]
 
+# Plotting the duration curves for both Openfield and Rooftop
+plt.figure(figsize=(10, 6))
+plt.plot(AC_power_nom_1_n, label='north', color='blue')
+plt.plot(AC_power_nom_1_e, label='east', color='green')
+plt.plot(AC_power_nom_1_w, label='w', color='orange')
+plt.plot(AC_power_nom_1_m, label='m', color='red')
+
+# Adding titles and labels
+plt.title("Year Duration Curve", fontsize=16)
+plt.xlabel("Hours of the Year", fontsize=14)
+plt.ylabel("Normalized Power Output (kW)", fontsize=14)
+plt.legend()
+plt.grid(True)
 #%%
 
-def COP(scalars, T_a, model_ID, YEAR):
-
-    T_VL = [None]*8760
-    COP = [None]*8760
-    T_VL_L = scalars['Temperature_dist_heat']['T_VL_L_' + str(YEAR)][model_ID]
-    T_VL_U = scalars['Temperature_dist_heat']['T_VL_U_' + str(YEAR)][model_ID]
-    T_RL = scalars['Temperature_dist_heat']['T_RL_' + str(YEAR)][model_ID]
-    T_L = scalars['Temperature_dist_heat']['T_L'][model_ID]
-    T_U = scalars['Temperature_dist_heat']['T_U'][model_ID]
-    
-    for i in range(len(T_a)):
-        if T_a[i] > T_L and T_a[i] < T_U:
-            T_VL[i] = T_VL_L - ((T_VL_L - T_VL_U)/(T_U - T_L)) * (T_a[i] - T_L)
-        elif T_a[i] <= T_L:
-            T_VL[i] = T_VL_L
-        elif T_a[i] >= T_U:
-            T_VL[i] = T_VL_U
-        nu_H = 0.36
-        COP[i] = nu_H*(T_VL[i]+273.15) / (T_VL[i]-T_RL)
-    return pd.Series(COP)
-    
-COP = COP(scalars, T_a, model_ID, YEAR)

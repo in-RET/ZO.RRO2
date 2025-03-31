@@ -26,8 +26,8 @@ Model ID: **YEAR**------**VARIATIONnum**------**SCENARIOnum**
 | **[[2030_BS0001_002]]** | Electricity price timeseries from Brainpool uncorrected with the feed-in profiles (2019)   
 | **[[2030_BS0001_003]]** | Electricity price timeseries from Brainpool uncorrected with the feed-in profiles (2024)  
 | **[[2030_BS0001_004]]** | New Biomass import price (2024) from Deutsche Pelletinstitute                                                                                       |
-| **[[2030_BS0001_004]]** | New PV timeseries, calculated with PVlib                                                                                                      |
-| **[[2030_BS0001_005]]** | ZORRO I Demand with newly developed demand timeseries                                                                                         |
+| **[[2030_BS0001_005]]** | New PV timeseries, calculated with PVlib **skipped for review**                                                                                                     |
+| **[[2030_BS0001_006]]** | ZORRO I Demand with newly developed demand timeseries                                                                                         |
 | **[[2030_BS0001_006]]** | additional H2 import and Biomass-to-liquid component                                                                                          |
 | **[[2030_BS0001_007]]** | ZORRO II demand and new loadprofiles                                                                                                          |
 | **[[2030_BS0001_008]]** | Influence of Biomass Heizkraftwerk statt Kraftwerk                                                                                            |

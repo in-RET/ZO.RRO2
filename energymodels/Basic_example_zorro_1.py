@@ -21,7 +21,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
     #demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
-    demand = zorro_1_loadprofile_scaling(YEAR, new_profile=False)
+    demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
     epc_costs = investment_parameter(scalars, YEAR, model_ID)
     import_price = CO2_price_addition(scalars,sequences, YEAR)
     feed_in_profile_new = False

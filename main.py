@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0001"],
-        scenario_num = "004",
+        scenario_num = "006",
         years=[2030],# 2040, 2050],
         model_name="Basic_example_zorro_1",
         solver="gurobi",
@@ -18,10 +18,10 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "Influence of new biomass price due to less availability of trees. **(2024)**",
-        sim_remarks = "- Due to abundance of trees the Hackholzschnitzel price keeps increasing with time. New prices were taken from Deutsche Pelletinstitute \n"+
-                        "- Hackschnitzel A2 class:\n Price- 35.6€/MWh \n Source link: https://www.depi.de/p/1622b2bc-85fc-4f7a-b3df-7da7a1cc7828 \n"+                
-                        "- Other parameters remain the same [[2030_BS0001_001]] "
+        hypothese = "Influence of newly developed demand time series. **(2024)**",
+        sim_remarks = "- The demand time series are developed with various algorithms like stochastic, statistical, 5R1C model etc. \n"+
+                        "- In Zorro 1 the standard demand profiles were used for simualtion. The new demand profiles are specifically developed for Thuringia. \n"+                
+                        "- Other parameters remain the same [[2030_BS0001_004]] "
                         
     )
 
