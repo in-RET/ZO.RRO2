@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0001"],
-        scenario_num = "006",
+        scenario_num = "010",
         years=[2030],# 2040, 2050],
         model_name="Basic_example_zorro_1",
         solver="gurobi",
@@ -18,10 +18,9 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "Influence of newly developed demand time series. **(2024)**",
-        sim_remarks = "- The demand time series are developed with various algorithms like stochastic, statistical, 5R1C model etc. \n"+
-                        "- In Zorro 1 the standard demand profiles were used for simualtion. The new demand profiles are specifically developed for Thuringia. \n"+                
-                        "- Other parameters remain the same [[2030_BS0001_004]] "
+        hypothese = "Influence of additional seasonal heat storage with heat pump and heat boiler as preheater",
+        sim_remarks = "- Additional seasoanl heat storage to the energy system \n"+
+                      "- Other parameters remain the same [[2030_BS0001_009]] "
                         
     )
 

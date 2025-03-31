@@ -616,14 +616,14 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_oil_fuel: solph.Flow(variable_costs = import_price['import_synt_fuel_price'],
             )}))
     
-    # #------------------------------------------------------------------------------
-    # # Import Hydrogen
-    # #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Source(
-    #     label='Import_Hydrogen',
-    #     outputs={b_H2: solph.Flow(nominal_value = scalars['Hydrogen_grid']['hydrogen']['max_power'],
-    #                               variable_costs = import_price['import_hydrogen_price'],
-    #         )}))
+    #------------------------------------------------------------------------------
+    # Import Hydrogen
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Source(
+        label='Import_Hydrogen',
+        outputs={b_H2: solph.Flow(nominal_value = scalars['Hydrogen_grid']['hydrogen']['max_power'],
+                                  variable_costs = import_price['import_hydrogen_price'],
+            )}))
     
     """
     Energy storage
@@ -674,33 +674,33 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                       )
         ))
     
-    # #------------------------------------------------------------------------------
-    # # Seasonal Heat storage
-    # #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.GenericStorage(
-    #     label='Heat storage_seasonal',
-    #     inputs={b_dist_heat: solph.Flow(
-    #                               custom_attributes={'keywordWSP': 1},
-    #                               nominal_value=float(scalars['Parameter_storage_heat_seasonal']['potential'][model_ID]/scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
-    #                               #nonconvex=solph.NonConvex()
-    #                                 )},
-    #     outputs={b_preheat: solph.Flow(
-    #                                 custom_attributes={'keywordWSP': 1},
-    #                                 nominal_value=float(scalars['Parameter_storage_heat_seasonal']['potential'][model_ID]/scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
-    #                                 #nonconvex=solph.NonConvex()
-    #                                 )},
-    #     loss_rate=float(scalars['Parameter_storage_heat_seasonal']['loss_rate'][model_ID]/24),
-    #     inflow_conversion_factor=scalars['Parameter_storage_heat_seasonal']['efficiency_in_'+str(YEAR)][model_ID]/100,
-    #     outflow_conversion_factor=scalars['Parameter_storage_heat_seasonal']['efficiency_out_'+str(YEAR)][model_ID]/100,
-    #     initial_storage_level=scalars['Parameter_storage_heat_seasonal']['initial_storage_level'][model_ID],
-    #     balanced=bool(scalars['Parameter_storage_heat_seasonal']['balanced'][model_ID]),
-    #     invest_relation_input_capacity = 1/(scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
-    #     invest_relation_output_capacity = 1/(scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
-    #     nominal_storage_capacity = solph.Investment(ep_costs=epc_costs['storage_heat_seasonal']['epc'], 
+    #------------------------------------------------------------------------------
+    # Seasonal Heat storage
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.GenericStorage(
+        label='Heat storage_seasonal',
+        inputs={b_dist_heat: solph.Flow(
+                                  custom_attributes={'keywordWSP': 1},
+                                  nominal_value=float(scalars['Parameter_storage_heat_seasonal']['potential'][model_ID]/scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
+                                  #nonconvex=solph.NonConvex()
+                                    )},
+        outputs={b_preheat: solph.Flow(
+                                    custom_attributes={'keywordWSP': 1},
+                                    nominal_value=float(scalars['Parameter_storage_heat_seasonal']['potential'][model_ID]/scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
+                                    #nonconvex=solph.NonConvex()
+                                    )},
+        loss_rate=float(scalars['Parameter_storage_heat_seasonal']['loss_rate'][model_ID]/24),
+        inflow_conversion_factor=scalars['Parameter_storage_heat_seasonal']['efficiency_in_'+str(YEAR)][model_ID]/100,
+        outflow_conversion_factor=scalars['Parameter_storage_heat_seasonal']['efficiency_out_'+str(YEAR)][model_ID]/100,
+        initial_storage_level=scalars['Parameter_storage_heat_seasonal']['initial_storage_level'][model_ID],
+        balanced=bool(scalars['Parameter_storage_heat_seasonal']['balanced'][model_ID]),
+        invest_relation_input_capacity = 1/(scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
+        invest_relation_output_capacity = 1/(scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
+        nominal_storage_capacity = solph.Investment(ep_costs=epc_costs['storage_heat_seasonal']['epc'], 
                                       
-    #                                   )
+                                      )
                                       
-    #     ))
+        ))
     
     # #------------------------------------------------------------------------------
     # # Heat storage
@@ -807,33 +807,33 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     Transformers
     """
     
-    # #------------------------------------------------------------------------------
-    # # Nachheizung- WP
-    # #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Converter(
-    #     label="Preheater- WP",
-    #     inputs={b_el: solph.Flow(),
-    #             b_preheat: solph.Flow()},
-    #     outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['heat_pump_ground_Flusswärme']['epc'], 
-    #                                                               #maximum=scalars['Parameter_electrolysis']['potential'][model_ID]
-    #                                                               ))},
-    #     conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]/100
-    #                         },
-    #     ))
+    #------------------------------------------------------------------------------
+    # Nachheizung- WP
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Preheater- WP",
+        inputs={b_el: solph.Flow(),
+                b_preheat: solph.Flow()},
+        outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['heat_pump_ground_Flusswärme']['epc'], 
+                                                                  #maximum=scalars['Parameter_electrolysis']['potential'][model_ID]
+                                                                  ))},
+        conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]/100
+                            },
+        ))
     
-    # #------------------------------------------------------------------------------
-    # # Nachheizung - Boiler
-    # #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Converter(
-    #     label="Preheater- Electric boiler",
-    #     inputs={b_el: solph.Flow(),
-    #             b_preheat: solph.Flow()},
-    #     outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['electrical_heater']['epc'], 
-    #                                                               #maximum=scalars['Parameter_electrolysis']['potential'][model_ID]
-    #                                                               ))},
-    #     conversion_factors={b_dist_heat: scalars['Parameter_electrical_heater']['efficiency_' +str(YEAR)][model_ID]/100
-    #                         },
-    #     ))
+    #------------------------------------------------------------------------------
+    # Nachheizung - Boiler
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Preheater- Electric boiler",
+        inputs={b_el: solph.Flow(),
+                b_preheat: solph.Flow()},
+        outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['electrical_heater']['epc'], 
+                                                                  #maximum=scalars['Parameter_electrolysis']['potential'][model_ID]
+                                                                  ))},
+        conversion_factors={b_dist_heat: scalars['Parameter_electrical_heater']['efficiency_' +str(YEAR)][model_ID]/100
+                            },
+        ))
     
     
        
@@ -915,29 +915,29 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                             b_dist_heat: scalars['Parameter_biogas_combined_heat_and_power_plant']['efficiency_th_'+str(YEAR)][model_ID]/100}
         ))
     
-    # #------------------------------------------------------------------------------
-    # # Biomasse (for electricty  and heatproduction)
-    # #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Converter(
-    #     label='Biomasse_elec_heat',
-    #     inputs={b_bioWood: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
-    #                                         #nominal_value = 1
-    #                                         investment = solph.Investment(ep_costs=0)
-    #                                         )},
-    #     outputs={b_el: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
-    #                               investment=solph.Investment(ep_costs=epc_costs['biomass_combined_heat_and_power_plant']['epc']),
-    #                               custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]}),
+    #------------------------------------------------------------------------------
+    # Biomasse (for electricty  and heatproduction)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label='Biomasse_elec_heat',
+        inputs={b_bioWood: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+                                            #nominal_value = 1
+                                            investment = solph.Investment(ep_costs=0)
+                                            )},
+        outputs={b_el: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+                                  investment=solph.Investment(ep_costs=epc_costs['biomass_combined_heat_and_power_plant']['epc']),
+                                  custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]}),
                  
-    #               b_dist_heat: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]},
-    #                                         fix=sequences['Base_demand_profile']['base_load'],
-    #                                         #nominal_value= 1
-    #                                         investment = solph.Investment(ep_costs=0)
-    #                                         )
-    #              },
-    #     conversion_factors={b_el: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_el_' +str(YEAR)][model_ID]/100,
-    #                         b_dist_heat: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_th_' +str(YEAR)][model_ID]/100
-    #                         }
-    #     ))     
+                  b_dist_heat: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]},
+                                            fix=sequences['Base_demand_profile']['base_load'],
+                                            #nominal_value= 1
+                                            investment = solph.Investment(ep_costs=0)
+                                            )
+                  },
+        conversion_factors={b_el: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_el_' +str(YEAR)][model_ID]/100,
+                            b_dist_heat: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_th_' +str(YEAR)][model_ID]/100
+                            }
+        ))     
     
     #------------------------------------------------------------------------------
     # Biomasse (for electricty production)
@@ -1082,17 +1082,17 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #     conversion_factors={b_oil_fuel: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]/100}
     #     ))
     
-    # #------------------------------------------------------------------------------
-    # # Biomass-to-Liquid
-    # #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Converter(
-    #     label="BtL",
-    #     inputs={b_bio: solph.Flow()},
-    #     outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['biomass_to_liquid_system']['epc'], 
-    #                                                                           #maximum=scalars['Parameter_biomass_to_liquid_system']['potential'][model_ID]
-    #                                                                           ))},
-    #     conversion_factors={b_oil_fuel: scalars['Parameter_biomass_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]/100}
-    #     ))
+    #------------------------------------------------------------------------------
+    # Biomass-to-Liquid
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="BtL",
+        inputs={b_bio: solph.Flow()},
+        outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['biomass_to_liquid_system']['epc'], 
+                                                                              #maximum=scalars['Parameter_biomass_to_liquid_system']['potential'][model_ID]
+                                                                              ))},
+        conversion_factors={b_oil_fuel: scalars['Parameter_biomass_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]/100}
+        ))
     
     #------------------------------------------------------------------------------
     # Solid biomass in the same bus as coal
