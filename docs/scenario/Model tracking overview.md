@@ -31,7 +31,8 @@ Model ID: **YEAR**------**VARIATIONnum**------**SCENARIOnum**
 | **[[2030_BS0001_007]]** | additional H2 import and Biomass-to-liquid component 
 | **[[2030_BS0001_008]]** | Biomass to liquid componet                                                                                                         |
 | **[[2030_BS0001_009]]** | Influence of additional Biomass Heizkraftwerk                                                                                             |
-| **[[2030_BS0001_010]]** | additional seasonal heat storage with heat pump and heat boiler as preheater                                                                                  |
-| **[[2030_BS0001_010]]** | Influence of environmental heat as an additional source to the heat pump and additional heat pump with recovery heat potential (defined as 0) |
+| **[[2030_BS0001_010]]** | additional seasonal heat storage with heat pump and heat boiler as preheater    
+| **[[2030_BS0001_011]]** | Influence of environmental heat as an additional source to the heat pump and eaaditional heat pump with recovery heat potential (defined as 0) 
+| **[[2030_BS0001_012]]** | AAdditional heat pump with recovery heat potential (defined as 0) 
 | **[[2030_BS0001_011]]** | Goldistal to the higher level grid                                                                                                            |
 | **[[2030_BS0001_012]]** | Adding preheater to the seasonal storage      

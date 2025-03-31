@@ -481,33 +481,33 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                                                       maximum=scalars['Parameter_solar_thermal_power_plant']['potential_north_max'][model_ID])
         )}))
     
-    # #------------------------------------------------------------------------------
-    # # Environmental heat
-    # #------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------
+    # Environmental heat
+    #------------------------------------------------------------------------------
     
-    # Load_profile_uw = ((north.weather_data_hour[' Ta'] + east.weather_data_hour[' Ta'] + middle.weather_data_hour[' Ta'] + swest.weather_data_hour[' Ta'])/4)
-    # Load_profile_uw[Load_profile_uw<0]=0
-    # Load_profile_uw = Load_profile_uw / sum(Load_profile_uw)    # developed with environmental temperature as fix for teh source block
+    Load_profile_uw = ((north.weather_data_hour[' Ta'] + east.weather_data_hour[' Ta'] + middle.weather_data_hour[' Ta'] + swest.weather_data_hour[' Ta'])/4)
+    Load_profile_uw[Load_profile_uw<0]=0
+    Load_profile_uw = Load_profile_uw / sum(Load_profile_uw)    # developed with environmental temperature as fix for teh source block
     
-    # energysystem.add(solph.components.Source(
-    #     label='UW', 
-    #     outputs={b_uw: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
-    #                                       custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
-    #                                       investment=solph.Investment(ep_costs= 0,
-    #                                                                   maximum = 890)
-    #     )}))
+    energysystem.add(solph.components.Source(
+        label='UW', 
+        outputs={b_uw: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
+                                          custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
+                                          investment=solph.Investment(ep_costs= 0,
+                                                                      maximum = 890)
+        )}))
     
-    # #------------------------------------------------------------------------------
-    # # Recovery heat
-    # #------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------
+    # Recovery heat
+    #------------------------------------------------------------------------------
     
        
-    # energysystem.add(solph.components.Source(
-    #     label='AW', 
-    #     outputs={b_abwaerme: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
-    #                                       custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
-    #                                       nominal_value = 0)
-    #              }))
+    energysystem.add(solph.components.Source(
+        label='AW', 
+        outputs={b_abwaerme: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
+                                          custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
+                                          nominal_value = 0)
+                  }))
     
     """ Imports """
     #------------------------------------------------------------------------------
@@ -1047,20 +1047,31 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
+    #------------------------------------------------------------------------------
+    # Heatpump: Recovery heat
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Heatpump_recovery_heat",
+        inputs={b_el: solph.Flow(),
+                b_abwaerme: solph.Flow()},
+        outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
+                                                                  maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]))},
+        conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]/100},    
+        ))
+    
     # #------------------------------------------------------------------------------
-    # # Heatpump: Recovery heat
+    # # Power-to-Liquid (ZoRRO 1)
     # #------------------------------------------------------------------------------
     # energysystem.add(solph.components.Converter(
-    #     label="Heatpump_recovery_heat",
-    #     inputs={b_el: solph.Flow(),
-    #             b_abwaerme: solph.Flow()},
-    #     outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
-    #                                                               maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]))},
-    #     conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]/100},    
+    #     label="PtL",
+    #     inputs={b_H2: solph.Flow()},
+    #     outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['power_to_liquid_system']['epc'], 
+    #                                                                           maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]))},
+    #     conversion_factors={b_oil_fuel: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]/100}
     #     ))
     
     #------------------------------------------------------------------------------
-    # Power-to-Liquid (ZoRRO 1)
+    # Power-to-Liquid (with elec source)
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
         label="PtL",
@@ -1069,18 +1080,6 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                                                               maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]))},
         conversion_factors={b_oil_fuel: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]/100}
         ))
-    
-    # #------------------------------------------------------------------------------
-    # # Power-to-Liquid (with elec source)
-    # #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Converter(
-    #     label="PtL",
-    #     inputs={b_el: solph.Flow(),
-    #             b_H2: solph.Flow()},
-    #     outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['power_to_liquid_system']['epc'], 
-    #                                                                           maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]))},
-    #     conversion_factors={b_oil_fuel: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]/100}
-    #     ))
     
     #------------------------------------------------------------------------------
     # Biomass-to-Liquid

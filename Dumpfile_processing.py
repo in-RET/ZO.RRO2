@@ -17,7 +17,7 @@ my_path = os.path.abspath(os.path.dirname(__file__))
 
 
 # Define the scenarios you want to compare
-scenarios = ["001","002","003", "004", "005", "006","007","008","009","010","ref"]#, ,,"011", "012", "013", "ref"]  
+scenarios = ["001","002","003", "004", "005", "006","007","008","009","010","011","012","ref"]#, ,,  "013", "ref"]  
 year = 2030
 variation = "BS0001"
 model_name = "Basic_example_zorro_1"
