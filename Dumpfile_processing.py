@@ -10,14 +10,14 @@ import os
 from src.preprocessing.files import read_input_files
 from src.preprocessing.conversion import investment_parameter, CO2_price_addition
 from src.postprocessing.utils_dump import get_dump_file_path, load_results_from_dump, interpret_results, calculate_investment_costs,clean_sequence_data, calc_energyimport_cost
-from src.postprocessing.utils_dump import calc_energyexport_cost, sankey_excel_output, extract_value
+from src.postprocessing.utils_dump import calc_energyexport_cost, sankey_excel_output, extract_value, grid_operating_fee
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 workdir = os.getcwd()
 my_path = os.path.abspath(os.path.dirname(__file__))
 
 
 # Define the scenarios you want to compare
-scenarios = ["001","002","003", "004", "005", "006","007","008","009","010","011","012","ref"]#, ,,  "013", "ref"]  
+scenarios = ["001","002","003", "004", "005", "006","007","008","009","010","011","012", "013","014","ref"]#, ,,  "ref"]  
 year = 2030
 variation = "BS0001"
 model_name = "Basic_example_zorro_1"
@@ -25,12 +25,12 @@ permutation = str(year)+'_'+variation
 
 sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
 scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
-import_price = CO2_price_addition(scalars,sequences, year)
+import_price = CO2_price_addition(scalars,sequences, year, 'Energy_price_brainpool_2024')
 epc_costs = investment_parameter(scalars, year, variation)
 
 CSV_DIR = os.path.abspath(os.path.join(workdir,"results", permutation))
 CSV_PATH = os.path.join(CSV_DIR, "Scenario_comparison.csv")
-INVESTMENT_COSTS_PATH = os.path.join(CSV_DIR, "Investment_Costs.csv")
+COSTS_PATH = os.path.join(CSV_DIR, "Costs.csv")
 Sankey_excel_path = os.path.join(CSV_DIR, "Sankey_sequences_all_scenarios.xlsx")
 os.makedirs(CSV_DIR, exist_ok=True)
 
@@ -82,7 +82,7 @@ df_component_scalars_formatted = pd.DataFrame(component_scalars_list)
 for column in df_component_scalars_formatted.columns:
     if column.startswith('Scenario'):  
         df_component_scalars_formatted[column] = df_component_scalars_formatted.apply(lambda row: extract_value(row['Component'], row[column]), axis=1)
-
+del df_component_scalars_formatted['Scenario ref'] #delete the refernce scenario
 df_component_scalars_formatted.applymap(lambda x: str(x).replace('.', ',')).to_csv(CSV_PATH, sep = ';', index=False)
 
 # Calculate investment costs
@@ -90,11 +90,40 @@ investment_costs = calculate_investment_costs(epc_costs, all_component_scalars)
 
 cleaned_sequences_component = clean_sequence_data(all_component_sequences, data_source='component')
 cleaned_sequences_bus = clean_sequence_data(all_bus_sequences, data_source= 'bus')
-import_cost = calc_energyimport_cost(import_price, cleaned_sequences_component)
-export_cost = calc_energyexport_cost(import_price, cleaned_sequences_bus)
+import_costs = calc_energyimport_cost(year,import_price, cleaned_sequences_component)
+export_costs = calc_energyexport_cost(year,import_price, cleaned_sequences_bus)
+grid_import_usage_fee = grid_operating_fee(all_component_sequences, import_price)
 sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, permutation, scenarios, Sankey_excel_path)
 
+#%% Export cost csv
+
+categories = ["Capital costs", "Operating costs", "Import cost", "Export cost", "Grid usage cost", "Grid yearly cost", "Total cost"]
+data = {category: [] for category in categories}
+#dicts = [investment_costs,import_cost,export_cost,grid_import_usage_fee]
+total_scenarios = len(scenarios)
+for scenario in scenarios:
+    capital_cost = investment_costs.get(scenario, {}).get("total_capital_cost", 0)
+    operating_cost = investment_costs.get(scenario, {}).get("total_operating_cost", 0)
+    import_cost = import_costs.get(scenario, {}).get("total_import_cost", 0)
+    export_cost = export_costs.get(scenario, {}).get("total_export_cost", 0)
+    grid_cost = grid_import_usage_fee.get(scenario, {}).get("total_grid_usage_fee", 0)
+    grid_yearly_cost = grid_import_usage_fee.get(scenario, {}).get("peak_load", 0)* scalars['Electricity_grid']['electricity']['grid_annualperformance_fee']
+    # Append the costs to the corresponding lists
+    data["Capital costs"].append(capital_cost)
+    data["Operating costs"].append(operating_cost)
+    data["Import cost"].append(import_cost)
+    data["Export cost"].append(export_cost)
+    data["Grid usage cost"].append(grid_cost)
+    data["Grid yearly cost"].append(grid_yearly_cost)
+
+    total_cost = capital_cost + operating_cost + import_cost + grid_cost +grid_yearly_cost - export_cost
+    data["Total cost"].append(total_cost)
+    
+df = (pd.DataFrame(data, index=[f"Scenario {scenario}" for scenario in scenarios]).T)/1000000
+df.applymap(lambda x: str(x).replace('.', ',')).to_csv(COSTS_PATH, sep = ';', index=False)
+
 print("Ende")
+
 
 
 

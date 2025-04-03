@@ -14,6 +14,8 @@ import pickle
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import get_column_letter
+from src.preprocessing.files import read_input_files
+from src.preprocessing.conversion import investment_parameter, CO2_price_addition
 
 workdir = os.getcwd()
 my_path = os.path.abspath(os.path.dirname(__file__))
@@ -112,10 +114,11 @@ def calculate_investment_costs(epc_costs, all_component_scalars):
     
     component_mapping_info ={
         "Battery":                  ("storage_electricity", "None"),
-        "Biogas":                   ("biogas_combined_heat_and_power_plant", "Electricity"),
+        "Biogas- BHKW":             ("biogas_combined_heat_and_power_plant", "Electricity"),
         "Biogas_feedin_existing":   ("biomethane_injection_plant", "Gas"),
         "Biogas_feedin_new":        ("biogas_upgrading_plant","Gas"),
-        "Biomasse_elec":            ("biomass_combined_heat_and_power_plant", "Electricity"),
+        "Biomasse_elec_heat":       ("biomass_combined_heat_and_power_plant", "Electricity"),
+        "Biomasse_elec":            ("biomass_power_plant", "Electricity"),
         "Biomasse_heat":            ("biomass_heating_plant","District heating"),
         "BioTransformer":           ("biotransformer","Solidfuel"),
         "Pre-heater":               ("heat_pump_ground_Flusswärme","District heating"),
@@ -151,12 +154,17 @@ def calculate_investment_costs(epc_costs, all_component_scalars):
         "Wind_middle":              ("onshore_wind_power_plant","Electricity"),
         "Wind_north":               ("onshore_wind_power_plant","Electricity"),
         "Wind_swest":               ("onshore_wind_power_plant","Electricity"),
+        "Preheater- WP":            ("heat_pump_ground_Flusswärme","District heating"),
+        "Preheater- Electric boiler":("electrical_heater","District heating"),
+        
     }
 
 
     for scenario, components in all_component_scalars.items():
         investment_costs[scenario] = {}
-        total_scenario_cost = 0
+        total_scenario_capital_cost = 0
+        total_scenario_operating_cost = 0
+        total_scenario_cost=0
 
         for component, (epc_category, value_type) in component_mapping_info.items():
             investment_costs[scenario][component] = {}
@@ -168,13 +176,28 @@ def calculate_investment_costs(epc_costs, all_component_scalars):
                 value = components[component].get(value_type, 0)  # Get electricity or dist_heating value
             else:
                 value = 0  # Fail-safe: Missing component defaults to zero
-
-            total_component_investment = (value * investk)  + (value * operatk)# Compute cost
-            #investment_costs[scenario][component] = total_component_investment
-            investment_costs[scenario][component]['capital costs'] = (value * investk)
-            investment_costs[scenario][component]['operating costs'] = (value * operatk)
+            if component == "Pumped_hydro_storage_Goldistal":
+                total_component_investment = (value * operatk)# Compute cost
+                component_capital_cost = 0
+                component_operating_cost = (value * operatk)
+                #investment_costs[scenario][component] = total_component_investment
+                investment_costs[scenario][component]['capital costs'] = component_capital_cost
+                investment_costs[scenario][component]['operating costs'] = component_operating_cost
+                
+            else:
+                total_component_investment = (value * investk)  + (value * operatk)# Compute cost
+                #investment_costs[scenario][component] = total_component_investment
+                component_capital_cost = (value * investk)
+                component_operating_cost = (value * operatk)
+                investment_costs[scenario][component]['capital costs'] = component_capital_cost
+                investment_costs[scenario][component]['operating costs'] = component_operating_cost
+            
             total_scenario_cost += total_component_investment
-        investment_costs[scenario]['total'] = total_scenario_cost
+            total_scenario_capital_cost += component_capital_cost
+            total_scenario_operating_cost += component_operating_cost
+        investment_costs[scenario]['total_cost'] = total_scenario_cost
+        investment_costs[scenario]['total_capital_cost'] = total_scenario_capital_cost
+        investment_costs[scenario]['total_operating_cost'] = total_scenario_operating_cost
 
     return investment_costs
 
@@ -233,7 +256,7 @@ def clean_sequence_data(all_sequences, data_source):
         
     return cleaned_data
 
-def calc_energyimport_cost (import_price,cleaned_sequences):
+def calc_energyimport_cost (year,import_price,cleaned_sequences):
     """
     This function calculates the costs for importing the energy based on price timeseries and flow values.
 
@@ -250,9 +273,11 @@ def calc_energyimport_cost (import_price,cleaned_sequences):
         import cost for every energy carrier
 
     """
+    
     import_costs = {}
     total_import_cost = 0
-    
+    sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
+    scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
     # Define mapping for price lookup
     price_mapping = {
         'Import_Electricity': 'import_electricity_price',
@@ -268,7 +293,23 @@ def calc_energyimport_cost (import_price,cleaned_sequences):
     for scenario, components_data in cleaned_sequences.items():
         # Initialize the import costs for this scenario
         scenario_import_costs = {}
-        
+        if scenario == '001':
+            import_price = CO2_price_addition(scalars, sequences, year, 'Energy_price')
+        elif scenario =='002':
+            import_price = CO2_price_addition(scalars, sequences, year, 'Energy_price')
+            price_mapping = {
+                'Import_Electricity': 'import_electricity_price_2019',
+                'Import_Gas': 'import_gas_price',
+                'Import_Oil': 'import_oil_price',
+                'Import_Hydrogen': 'import_hydrogen_price',
+                'Import_Synthetic_fuel': 'import_synt_fuel_price',
+                'Import_Wood': 'import_biomass_price',
+                'Import_brown_coal': 'import_brown_coal_price',
+                'Import_hard_coal': 'import_hard_coal_price',
+                'Import_solid_fuel': 'import_biomass_price'
+            }
+        else:
+            import_price = import_price
         # Iterate through the components and energy types within the scenario
         for component, bus_data in components_data.items():  # `bus_data` is a dict with bus names as keys
             # Check if the component has a price mapping
@@ -296,13 +337,13 @@ def calc_energyimport_cost (import_price,cleaned_sequences):
     
                             # Add the component's cost to the total import cost
                             total_import_cost += cost
-        scenario_import_costs["Total_Import_Cost"] = sum(scenario_import_costs.values())
+        scenario_import_costs["total_import_cost"] = sum(scenario_import_costs.values())
         # Store the import costs for this scenario in the main dictionary
         import_costs[scenario] = scenario_import_costs
     
     return import_costs
 
-def calc_energyexport_cost(import_price,cleaned_sequences_bus):
+def calc_energyexport_cost(year,import_price,cleaned_sequences_bus):
     
     """
     This function calculates the costs for exporting the energy based on price timeseries and flow values.
@@ -322,7 +363,8 @@ def calc_energyexport_cost(import_price,cleaned_sequences_bus):
     """
     export_costs = {}
     total_export_cost = 0
-    
+    sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
+    scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
     # Define mapping for price lookup
     price_mapping = {
         'Export_Electricity': 'export_electricity_price',
@@ -331,7 +373,16 @@ def calc_energyexport_cost(import_price,cleaned_sequences_bus):
     for scenario, bus_data in cleaned_sequences_bus.items():
         # Initialize the import costs for this scenario
         scenario_export_costs = {}
-        
+        if scenario == '001':
+            import_price = CO2_price_addition(scalars, sequences, year, 'Energy_price')
+        elif scenario =='002':
+            import_price = CO2_price_addition(scalars, sequences, year, 'Energy_price')
+            price_mapping = {
+                'Export_Electricity': 'export_electricity_price_2019',
+                'Export_Hydrogen': 'export_hydrogen_price',
+            }
+        else:
+            import_price = import_price
         # Iterate through the components and energy types within the scenario
         for bus, component_data in bus_data.items():  # `bus_data` is a dict with bus names as keys
             # Check if the component has a price mapping
@@ -359,10 +410,71 @@ def calc_energyexport_cost(import_price,cleaned_sequences_bus):
     
                         # Add the component's cost to the total import cost
                         total_export_cost += cost
-        scenario_export_costs["Total_Export_Cost"] = sum(scenario_export_costs.values())
+        scenario_export_costs["total_export_cost"] = sum(scenario_export_costs.values())
         # Store the import costs for this scenario in the main dictionary
         export_costs[scenario] = scenario_export_costs
     return export_costs
+
+def grid_operating_fee(data,grid_fees):
+    selected_components = {"Import_Electricity", "Hös<->HS"}
+    result = {}
+    
+    for scenario, components in data.items():
+        scenario_results = {}
+        total_grid_fee = 0
+        if scenario != 'ref':
+            scenario_num = int(scenario)
+        for component in selected_components:
+            
+            bus_data = components[component]
+            scenario_results[component] = {}
+    
+            for bus,df in bus_data.items():  # Auto-detect buses for each component
+                sequence = df['flow']
+    
+                total_sum = sequence.sum()
+                max_value = sequence.max()
+                total_usage_time = total_sum / max_value if max_value > 0 else 0
+                
+                if scenario_num >= 14:
+                    if component == 'Import_Electricity':
+                        variable_cost = (
+                            grid_fees["grid_operating_fee_HöS<2500h"]
+                            if total_usage_time <= 2500
+                            else grid_fees["grid_operating_fee_HöS>2500h"]
+                        )
+                    elif component== 'Hös<->HS':
+                        variable_cost = (
+                            grid_fees["grid_operating_fee_HS<2500h"]
+                            if total_usage_time <= 2500
+                            else grid_fees["grid_operating_fee_HS>2500h"]
+                        )
+                else:
+                    variable_cost = grid_fees["grid_operating_fee_old"]
+                
+                if scenario_num < 14 and component == 'Import_Electricity' or scenario_num>= 14:
+                    if len(variable_cost)== len(sequence):
+                        grid_cost = (sequence * variable_cost).sum()
+                    elif len(variable_cost) == 1:
+                        grid_cost = total_sum * grid_fees
+                elif scenario_num < 14 and component == 'Hös<->HS':
+                    grid_cost = 0
+                
+                    
+                total_grid_fee += grid_cost
+    
+                scenario_results[component][bus] = {
+                    "Total Sum": total_sum,
+                    "Max Value": max_value,
+                    "Total Usage Time": total_usage_time,
+                    "Variable Cost": variable_cost,
+                    "Grid_usage_Cost": grid_cost,
+                    }
+        scenario_results["total_grid_usage_fee"]= total_grid_fee
+        scenario_results["peak_load"]= max_value
+    
+        result[scenario] = scenario_results  # Store results for the scenario
+    return result
 
 def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, permutation, scenarios, output_path):
     """
@@ -602,6 +714,7 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
     workbook = load_workbook(output_path)
     if 'Dummy_Sheet' in workbook.sheetnames and sheets_created:
         del workbook['Dummy_Sheet']
+    
 
     # add dropdowns and hyperlinks in the Main_Sheet
     main_sheet = workbook["Main_Sheet"]

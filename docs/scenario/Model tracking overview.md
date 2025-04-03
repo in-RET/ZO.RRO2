@@ -34,5 +34,5 @@ Model ID: **YEAR**------**VARIATIONnum**------**SCENARIOnum**
 | **[[2030_BS0001_010]]** | additional seasonal heat storage with heat pump and heat boiler as preheater    
 | **[[2030_BS0001_011]]** | Influence of environmental heat as an additional source to the heat pump and eaaditional heat pump with recovery heat potential (defined as 0) 
 | **[[2030_BS0001_012]]** | AAdditional heat pump with recovery heat potential (defined as 0) 
-| **[[2030_BS0001_011]]** | Goldistal to the higher level grid                                                                                                            |
-| **[[2030_BS0001_012]]** | Adding preheater to the seasonal storage      
+| **[[2030_BS0001_013]]** | Goldistal to the higher level grid                                                                                                            |
+| **[[2030_BS0001_014]]** | Constraints for heat storage      
