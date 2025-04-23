@@ -113,13 +113,13 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     b_preheat = solph.buses.Bus(label="Pre-heating")
     
-    # #------------------------------------------------------------------------------
-    # # Nonconvex
-    # #------------------------------------------------------------------------------
-    # b_nonconvex = solph.buses.Bus(label="Non-convex")
+    #------------------------------------------------------------------------------
+    # Nonconvex
+    #------------------------------------------------------------------------------
+    b_nonconvex = solph.buses.Bus(label="Non-convex")
         
     # Hinzufügen der Busse zum Energiesystem-Modell 
-    energysystem.add(b_el, b_gas, b_oil_fuel, b_bio, b_bioWood, b_dist_heat, b_H2, b_solidf, b_abwaerme, b_uw, b_hös, b_preheat)
+    energysystem.add(b_el, b_gas, b_oil_fuel, b_bio, b_bioWood, b_dist_heat, b_H2, b_solidf, b_abwaerme, b_uw, b_hös, b_preheat, b_nonconvex)
 
 
     """
@@ -520,20 +520,51 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     
     energysystem.add(solph.components.Source(
-       label='Import_Electricity',
-       outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
-                                 variable_costs = import_price['import_electricity_price']+ import_price['grid_operating_fee_HöS<2500h'],
-                                 custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]},
-                                 
-           )}))
-   
+        label='Import_Electricity<2500h',
+        outputs={b_hös: solph.Flow(investment = solph.Investment(ep_costs = scalars['Electricity_grid']['electricity']['grid_annualperformance_fee_Hös<2500h'],
+                                                                 maximum = scalars['Electricity_grid']['electricity']['max_power']),
+                                   full_load_time_max=2499,
+                                   variable_costs = import_price['import_electricity_price']+ import_price['grid_operating_fee_HöS<2500h'],
+                                   custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]},
+                                  
+            )}))
+    
+    energysystem.add(solph.components.Source(
+        label='Import_Electricity>2500h',
+        outputs={b_hös: solph.Flow(investment = solph.Investment(ep_costs = scalars['Electricity_grid']['electricity']['grid_annualperformance_fee_Hös>2500h'],
+                                                                 maximum = scalars['Electricity_grid']['electricity']['max_power']),
+                                   variable_costs = import_price['import_electricity_price']+ import_price['grid_operating_fee_HöS>2500h'],
+                                   custom_attributes={'CO2_factor': scalars['System_configurations']['System']['Emission_Strom_'+ str(YEAR)]},
+                                  
+            )}))
+    
+    
+    
+    
     """Link between HöS & HS""" 
     energysystem.add(solph.components.Link(
-        label='Hös<->HS',
+        label='Hös<->HS(<2500h)',
         inputs= {b_hös: solph.Flow(),
                  b_el: solph.Flow()},
-        outputs= {b_el: solph.Flow(variable_costs= import_price['grid_operating_fee_HS<2500h']),
-                  b_hös: solph.Flow(variable_costs= import_price['grid_operating_fee_HS<2500h'])},
+        outputs= {b_el: solph.Flow(investment= solph.Investment(ep_costs = scalars['Electricity_grid']['electricity']['grid_annualperformance_fee_HS<2500h']),
+                                   variable_costs= import_price['grid_operating_fee_HS<2500h']),
+                  b_hös: solph.Flow(investment= solph.Investment(ep_costs = scalars['Electricity_grid']['electricity']['grid_annualperformance_fee_HS<2500h']),
+                                             variable_costs= import_price['grid_operating_fee_HS<2500h'],
+                                             full_load_time_max=2499)},
+        # outputs= {b_el: solph.Flow(),
+        #           b_hös: solph.Flow()},
+        conversion_factors = {(b_hös,b_el): 1, (b_el,b_hös):1}
+        ))
+    
+    energysystem.add(solph.components.Link(
+        label='Hös<->HS(>2500h)',
+        inputs= {b_hös: solph.Flow(),
+                 b_el: solph.Flow()},
+        outputs= {b_el: solph.Flow(investment= solph.Investment(ep_costs = scalars['Electricity_grid']['electricity']['grid_annualperformance_fee_HS>2500h']),
+                                   variable_costs= import_price['grid_operating_fee_HS>2500h']),
+                  b_hös: solph.Flow(investment= solph.Investment(ep_costs = scalars['Electricity_grid']['electricity']['grid_annualperformance_fee_HS>2500h']),
+                                             variable_costs= import_price['grid_operating_fee_HS>2500h'],
+                                             )},
         # outputs= {b_el: solph.Flow(),
         #           b_hös: solph.Flow()},
         conversion_factors = {(b_hös,b_el): 1, (b_el,b_hös):1}
@@ -663,9 +694,9 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                   nominal_value=float(scalars['Parameter_storage_heat_district_heating']['potential'][model_ID]/scalars['Parameter_storage_heat_district_heating']['inverse_c_rate'][model_ID]),
                                   #nonconvex=solph.NonConvex()    
                                     )},
-        outputs={b_dist_heat: solph.Flow(
-                                    custom_attributes={'keywordWSP': 1},
-                                    nominal_value=float(scalars['Parameter_storage_heat_district_heating']['potential'][model_ID]/scalars['Parameter_storage_heat_district_heating']['inverse_c_rate'][model_ID]),
+        outputs={b_nonconvex: solph.Flow(
+                                    #custom_attributes={'keywordWSP': 1},
+                                    #nominal_value=float(scalars['Parameter_storage_heat_district_heating']['potential'][model_ID]/scalars['Parameter_storage_heat_district_heating']['inverse_c_rate'][model_ID]),
                                     #nonconvex=solph.NonConvex()
                                     )},
         loss_rate=float(scalars['Parameter_storage_heat_district_heating']['loss_rate'][model_ID]/24),
@@ -854,16 +885,17 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         ))
     
     
-    # #------------------------------------------------------------------------------
-    # # Non-convex transfromer
-    # #------------------------------------------------------------------------------
-    # energysystem.add(solph.components.Converter(
-    #     label="storage_trafo_nc",
-    #     inputs={b_nonconvex: solph.Flow()},
-    #     outputs={b_dist_heat: solph.Flow(nonconvex=solph.NonConvex()
-    #                                       )},
-    #     conversion_factors={b_dist_heat:1},
-    #     ))
+    #------------------------------------------------------------------------------
+    # Non-convex transfromer
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="storage_trafo_nc",
+        inputs={b_nonconvex: solph.Flow()},
+        outputs={b_dist_heat: solph.Flow(custom_attributes={'keywordWSP': 1},
+                                         nominal_value=float(scalars['Parameter_storage_heat_district_heating']['potential'][model_ID]/scalars['Parameter_storage_heat_district_heating']['inverse_c_rate'][model_ID]),
+                                         nonconvex=solph.NonConvex())},
+        conversion_factors={b_dist_heat:1},
+        ))
     
     #------------------------------------------------------------------------------
     # Electric boiler

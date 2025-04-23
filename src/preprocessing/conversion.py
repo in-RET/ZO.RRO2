@@ -291,10 +291,10 @@ def CO2_price_addition(scalars,sequences,YEAR, filename):
     data_dict = {}
     
     if YEAR <= 2030:
-        data_dict['import_gas_price'] = sequences[filename]['Gas_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Erdgas']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
-        data_dict['import_oil_price'] = sequences[filename]['Oil_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Oel']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
-        data_dict['import_hard_coal_price'] = sequences[filename]['Hard_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Steinkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
-        data_dict['import_brown_coal_price'] = sequences[filename]['Brown_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Braunkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
+        data_dict['import_gas_price'] = sequences[filename]['Gas_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Erdgas']*sequences[filename]['CO2_'+str(YEAR)])
+        data_dict['import_oil_price'] = sequences[filename]['Oil_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Oel']*sequences[filename]['CO2_'+str(YEAR)])
+        data_dict['import_hard_coal_price'] = sequences[filename]['Hard_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Steinkohle']*sequences[filename]['CO2_'+str(YEAR)])
+        data_dict['import_brown_coal_price'] = sequences[filename]['Brown_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Braunkohle']*sequences[filename]['CO2_'+str(YEAR)])
         data_dict['import_biomass_price'] = sequences[filename]['Biomass_'+ str(YEAR)]
         data_dict['import_synt_fuel_price'] = sequences[filename]['Synthetic_fuel_'+ str(YEAR)]
         data_dict['import_electricity_price_alt'] = sequences['Energy_price']['Electricity_'+str(YEAR)]
@@ -310,10 +310,10 @@ def CO2_price_addition(scalars,sequences,YEAR, filename):
         data_dict['grid_operating_fee_HS<2500h'] = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee_HS<2500h'] for i in sequences['Base_demand_profile']['base_load']]
         data_dict['grid_operating_fee_HS>2500h'] = [i+scalars['Electricity_grid']['electricity']['grid_operating_fee_HS>2500h'] for i in sequences['Base_demand_profile']['base_load']]
     else:
-        data_dict['import_gas_price'] = sequences[filename]['Gas_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Erdgas']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
-        data_dict['import_oil_price'] = sequences[filename]['Oil_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Oel']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])
-        data_dict['import_hard_coal_price'] = sequences[filename]['Hard_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Steinkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])+1000000000     #to make no availability of coal to the optimizer
-        data_dict['import_brown_coal_price'] = sequences[filename]['Brown_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Braunkohle']*scalars['System_configurations']['System']['CO2_Preis_'+str(YEAR)])+1000000000
+        data_dict['import_gas_price'] = sequences[filename]['Gas_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Erdgas']*sequences[filename]['CO2_'+str(YEAR)])
+        data_dict['import_oil_price'] = sequences[filename]['Oil_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Oel']*sequences[filename]['CO2_'+str(YEAR)])
+        data_dict['import_hard_coal_price'] = sequences[filename]['Hard_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Steinkohle']*sequences[filename]['CO2_'+str(YEAR)])+1000000000     #to make no availability of coal to the optimizer
+        data_dict['import_brown_coal_price'] = sequences[filename]['Brown_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Braunkohle']*sequences[filename]['CO2_'+str(YEAR)])+1000000000
         data_dict['import_electricity_price'] = sequences[filename]['Electricity_raw_'+str(YEAR)]
         data_dict['import_biomass_price'] = sequences[filename]['Biomass_'+ str(YEAR)]
         data_dict['import_synt_fuel_price'] = sequences[filename]['Synthetic_fuel_'+ str(YEAR)]

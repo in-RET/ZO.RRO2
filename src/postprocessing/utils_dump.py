@@ -589,7 +589,7 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
         sheets_created = False
 
         # extract reference structure from the ref scenario
-        ref_scenario = 'ref'#max(scenarios)
+        ref_scenario ='ref'
         reference_bus_structure = all_bus_sequences[ref_scenario]
         reference_component_structure = all_component_sequences[ref_scenario]
         
@@ -745,5 +745,62 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
 
     print(f"Sankey excel saved to {output_path}")
     
-
+def calc_CO2_emission (year,cleaned_sequences):
+    """
+    This function calculates the costs for importing the energy based on price timeseries and flow values.
+    
+    Parameters
+    ----------
+    year : int
+       The year for which the calculation is performed.
+    cleaned_sequences : dict
+        Dictionary with flow values from components to buses.
+    
+    Returns
+    -------
+    co2_emissions : dict
+        Dictionary containing total CO₂ emissions for each scenario.
+    """
+    
+    co2_emissions = {}
+    scalars = read_input_files(folder_name='data/scalars', sub_folder_name=None)
+    
+    # Mapping for CO₂ factors lookup
+    co2_factors = {
+        'Import_Electricity': scalars['System_configurations_2024']['System'][f'Emission_Strom_{year}'],
+        'Import_Gas': scalars['System_configurations_2024']['System']['Emission_Erdgas'],
+        'Import_Oil': scalars['System_configurations_2024']['System']['Emission_Oel'],
+        'Import_brown_coal': scalars['System_configurations_2024']['System']['Emission_Braunkohle'],
+        'Import_hard_coal': scalars['System_configurations_2024']['System']['Emission_Steinkohle'],
+    }
+    
+    for scenario, components_data in cleaned_sequences.items():
+        total_CO2_emission = 0
+        scenario_co2_emissions = {}
+    
+        # Iterate through components
+        for component, bus_data in components_data.items():
+            if component in co2_factors:
+                co2_factor = co2_factors[component]  
+    
+                if isinstance(bus_data, dict):
+                    for bus_name, df in bus_data.items():
+                        if isinstance(df, pd.DataFrame) and 'flow' in df.columns:
+                            flow_series = df['flow'].to_numpy()
+                        elif isinstance(df, pd.Series):
+                            flow_series = df.to_numpy()
+                        else:
+                            continue
+    
+                        # Calculate CO₂ emissions
+                        co2_emission = (flow_series.sum()* co2_factor)/1000     #'conversion in tonnes'
+    
+                        # Store results
+                        scenario_co2_emissions[component] = co2_emission
+                        total_CO2_emission += co2_emission
+    
+        scenario_co2_emissions["total_CO2_emission"] = total_CO2_emission  # Store total CO₂ emissions
+        co2_emissions[scenario] = scenario_co2_emissions
+    
+    return co2_emissions
     
