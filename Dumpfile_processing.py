@@ -21,11 +21,11 @@ from openpyxl.utils import get_column_letter
 
 
 # Define the scenarios you want to compare
-scenarios = ["001","002","003"]#["001","002","003", "004", "005", "006","007","008","009","010","011","012", "013","ref"]#
+scenarios = ["014","015","ref"]#["001","002","003", "004", "005", "006","007","008","009","010","011","012", "013","ref"]#
 year = 2030
-variation = "BS0001"
-model_name = "BS_regionalization"
-#model_name = "Basic_example_zorro_1"
+variation = "BS0002"
+#model_name = "BS_regionalization"
+model_name = "Basic_example_zorro_1"
 permutation = str(year)+'_'+variation
 
 sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
@@ -42,6 +42,7 @@ if model_name== 'BS_regionalization':
 else:
     CSV_PATH = os.path.join(CSV_DIR, "Scenario_comparison.csv")
     COSTS_PATH = os.path.join(CSV_DIR, "Costs_and_emission.csv")
+    FIG_PATH = os.path.abspath(os.path.join(workdir, "figures", permutation))
     Sankey_excel_path = os.path.join(CSV_DIR, "Sankey_sequences_all_scenarios.xlsx")
 os.makedirs(CSV_DIR, exist_ok=True)
 
@@ -175,7 +176,7 @@ if model_name != 'BS_regionalization':
                 plt.ylabel('Speicherfüllstand in \%')
                 plt.xlabel('Zeit')
                 plt.title('Speicherverläufe_'+component +'_'+ scenario)
-                #plt.savefig(os.path.join(results_path, name+'_Speicherverläufe.png'))
+                plt.savefig(os.path.join(FIG_PATH, scenario, 'Speicherverläufe_'+component+'.png'))
 
 else:
     
