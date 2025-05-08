@@ -16,3 +16,7 @@ CO2_Grenze_2040;kg_CO2;6000000000
 CO2_Grenze_2030;kg_CO2;9000000000
 Menge_Steinkohle;MW;5,707762557
 Menge_Braunkohle;MW;42,17402334
+Holzpotential_nord;MWh;415000
+Holzpotential_mittel;MWh;377000
+Holzpotential_ost;MWh;1298000
+Holzpotential_s;MWh;1601000

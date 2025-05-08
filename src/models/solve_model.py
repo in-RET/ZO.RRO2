@@ -93,25 +93,24 @@ def solveModels(
         
         logging.info("Export overview - CSV file")
         if model_name == 'BS_regionalization':
-            export_csv_region(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
+            #export_csv_region(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
             grid_energy_map(energysystem.results["main"],permutation, model_name, scenario_num)
+        
         else:
             csv=None
-            #csv=export_csv(energysystem.results["main"], YEAR, permutation, model_name, scenario_num, sim_data)
-                
-        logging.info("Plotting different plots")
-        #so_gehts_bar_plot(csv, permutation, scenario_num)
-        profile = ['Wind', 'PV_Rooftop','PV_Openfield', 'loadprofile']
-        
-        for i in range (len(profile)):
-            profile_type = profile[i]
-            if profile_type =='loadprofile':
-                sector = ['electricity', 'gas', 'oil', 'dist_heating', 'biomass']
-                for j in range(len(sector)):
-                    heat_maps(sim_data,YEAR,permutation,scenario_num, profile_type= profile_type,sector=sector[j])
-            else:
-                sector = None
-                heat_maps(sim_data,YEAR,permutation, scenario_num, profile_type= profile_type,sector=None)
+            logging.info("Plotting different plots")
+            #so_gehts_bar_plot(csv, permutation, scenario_num)
+            profile = ['Wind', 'PV_Rooftop','PV_Openfield', 'loadprofile']
+            
+            for i in range (len(profile)):
+                profile_type = profile[i]
+                if profile_type =='loadprofile':
+                    sector = ['electricity', 'gas', 'oil', 'dist_heating', 'biomass']
+                    for j in range(len(sector)):
+                        heat_maps(sim_data,YEAR,permutation,scenario_num, profile_type= profile_type,sector=sector[j])
+                else:
+                    sector = None
+                    heat_maps(sim_data,YEAR,permutation, scenario_num, profile_type= profile_type,sector=None)
         logging.info("Creating simulation doc...")    
         create_simulation_doc(permutation,scenario_num, hypothese, sim_remarks,csv)
         

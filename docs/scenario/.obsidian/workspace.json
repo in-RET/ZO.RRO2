@@ -28,8 +28,8 @@
               "type": "markdown",
               "state": {
                 "file": "Model tracking overview.md",
-                "mode": "preview",
-                "source": true
+                "mode": "source",
+                "source": false
               },
               "icon": "lucide-file",
               "title": "Model tracking overview"
@@ -204,14 +204,15 @@
   },
   "active": "a81a3d3d00b0dd56",
   "lastOpenFiles": [
+    "2030_BS0002_015.md",
+    "2030_BS0001_001.md",
+    "Model tracking overview.md",
     "2030_BS0002_014.md",
     "2030_BS0001_014.md",
     "2030_BS0001_004.md",
     "2030_BS0001_005.md",
-    "Model tracking overview.md",
     "2030_BS0001_003.md",
     "2030_BS0001_002.md",
-    "2030_BS0001_001.md",
     "CHECKLIST.md",
     "2030_BS0001_ref.md",
     "Journal.md",

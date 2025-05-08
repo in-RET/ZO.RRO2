@@ -94,7 +94,7 @@ def extract_value(component_name, value):
     else:
         return None
 
-def calculate_investment_costs(epc_costs, all_component_scalars):
+def calculate_investment_costs(epc_costs, all_component_scalars, region= True):
     """
     This calculates the investment and the operating costs for each components
     Parameters
@@ -158,43 +158,77 @@ def calculate_investment_costs(epc_costs, all_component_scalars):
         "Preheater- Electric boiler":("electrical_heater","District heating"),
         
     }
-
+    
+    def match_base_component(component_with_region):
+        """Extracts base component name by removing region suffix."""
+        for base_name in component_mapping_info:
+            if component_with_region.startswith(base_name):
+                return base_name
+        return None
 
     for scenario, components in all_component_scalars.items():
         investment_costs[scenario] = {}
         total_scenario_capital_cost = 0
         total_scenario_operating_cost = 0
         total_scenario_cost=0
-
-        for component, (epc_category, value_type) in component_mapping_info.items():
-            investment_costs[scenario][component] = {}
-            investk = epc_costs.get(epc_category, {}).get("investk", 0)
-            operatk = epc_costs.get(epc_category, {}).get("betriebsk", 0)
-
-            # Check if component exists in all_components, otherwise set value to 0
-            if component in components:
-                value = components[component].get(value_type, 0)  # Get electricity or dist_heating value
-            else:
-                value = 0  # Fail-safe: Missing component defaults to zero
-            if component == "Pumped_hydro_storage_Goldistal":
-                total_component_investment = (value * operatk)# Compute cost
-                component_capital_cost = 0
-                component_operating_cost = (value * operatk)
-                #investment_costs[scenario][component] = total_component_investment
-                investment_costs[scenario][component]['capital costs'] = component_capital_cost
-                investment_costs[scenario][component]['operating costs'] = component_operating_cost
+        
+        if region:
+            for full_component_name in components:
+                base_name = match_base_component(full_component_name)
+                if not base_name:
+                    continue
                 
-            else:
-                total_component_investment = (value * investk)  + (value * operatk)# Compute cost
-                #investment_costs[scenario][component] = total_component_investment
-                component_capital_cost = (value * investk)
-                component_operating_cost = (value * operatk)
-                investment_costs[scenario][component]['capital costs'] = component_capital_cost
-                investment_costs[scenario][component]['operating costs'] = component_operating_cost
+                epc_category, value_type = component_mapping_info[base_name]
+                value= components[full_component_name].get(value_type, 0)
+                investk = epc_costs.get(epc_category, {}).get("investk", 0)
+                operatk = epc_costs.get(epc_category, {}).get("betriebsk", 0)
+                
+                component_capital_cost = value * investk
+                component_operating_cost = value * operatk
+    
+                if base_name == "Pumped_hydro_storage_Goldistal":
+                    component_capital_cost = 0  # No capital cost
+                    total_component_cost = component_operating_cost
+                else:
+                    total_component_cost = component_capital_cost + component_operating_cost
+    
+                investment_costs[scenario][full_component_name] = {
+                    "capital costs": component_capital_cost,
+                    "operating costs": component_operating_cost
+                }
+                total_scenario_cost += total_component_cost
+                total_scenario_capital_cost += component_capital_cost
+                total_scenario_operating_cost += component_operating_cost
+        else:
+            for component, (epc_category, value_type) in component_mapping_info.items():
+                investment_costs[scenario][component] = {}
+                investk = epc_costs.get(epc_category, {}).get("investk", 0)
+                operatk = epc_costs.get(epc_category, {}).get("betriebsk", 0)
+    
+                # Check if component exists in all_components, otherwise set value to 0
+                if component in components:
+                    value = components[component].get(value_type, 0)  # Get electricity or dist_heating value
+                else:
+                    value = 0  # Fail-safe: Missing component defaults to zero
+                if component == "Pumped_hydro_storage_Goldistal":
+                    total_component_investment = (value * operatk)# Compute cost
+                    component_capital_cost = 0
+                    component_operating_cost = (value * operatk)
+                    #investment_costs[scenario][component] = total_component_investment
+                    investment_costs[scenario][component]['capital costs'] = component_capital_cost
+                    investment_costs[scenario][component]['operating costs'] = component_operating_cost
+                    
+                else:
+                    total_component_investment = (value * investk)  + (value * operatk)# Compute cost
+                    #investment_costs[scenario][component] = total_component_investment
+                    component_capital_cost = (value * investk)
+                    component_operating_cost = (value * operatk)
+                    investment_costs[scenario][component]['capital costs'] = component_capital_cost
+                    investment_costs[scenario][component]['operating costs'] = component_operating_cost
             
-            total_scenario_cost += total_component_investment
-            total_scenario_capital_cost += component_capital_cost
-            total_scenario_operating_cost += component_operating_cost
+                total_scenario_cost += total_component_investment
+                total_scenario_capital_cost += component_capital_cost
+                total_scenario_operating_cost += component_operating_cost
         investment_costs[scenario]['total_cost'] = total_scenario_cost
         investment_costs[scenario]['total_capital_cost'] = total_scenario_capital_cost
         investment_costs[scenario]['total_operating_cost'] = total_scenario_operating_cost
@@ -476,7 +510,7 @@ def grid_operating_fee(data,grid_fees):
         result[scenario] = scenario_results  # Store results for the scenario
     return result
 
-def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, permutation, scenarios, output_path):
+def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, permutation, scenarios, output_path, region = False):
     """
     Save the sum of flows classified by bus name and component name to an Excel file. 
     Created for easy linking with Sankey diagram.
@@ -577,9 +611,13 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
                         pass
                 adjusted_width = (max_length + 2)
                 current_sheet.column_dimensions[column].width = adjusted_width
-                
-    def map_name(original_name, name_mapping):
-        return name_mapping.get(original_name, original_name)
+    def map_name(original_name, name_mapping):   
+        if '_' in original_name and region:
+            base, suffix = original_name.split('_', 1)
+            mapped_base = name_mapping.get(base, base)
+            return f"{mapped_base}_{suffix}"
+        else:
+            return name_mapping.get(original_name, original_name)
 
 
     with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
@@ -589,7 +627,11 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
         sheets_created = False
 
         # extract reference structure from the ref scenario
-        ref_scenario ='ref'
+        if region:
+            ref_scenario ='001'
+        else:
+            ref_scenario = 'ref'
+        
         reference_bus_structure = all_bus_sequences[ref_scenario]
         reference_component_structure = all_component_sequences[ref_scenario]
         
@@ -694,22 +736,23 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
                 df_model_info.to_excel(writer, sheet_name=sheet_name, index=False, header=False, startrow=0)
                 separated_df.to_excel(writer, sheet_name=sheet_name, index=False, startrow=20)
                 
-                workbook = writer.book
-                scenario_sheet = workbook[sheet_name]
-                scenario_sheet['A7'] = "Import Strom flow"
-                scenario_sheet['B7'] = import_strom
-                scenario_sheet['A8'] = "Total PV Flow"
-                scenario_sheet['B8'] = total_pv
-                scenario_sheet['A9'] = "Total Wind Flow"
-                scenario_sheet['B9'] = total_wind
-                scenario_sheet['A10'] = "Total Pumpspeicher Eingangsflow"
-                scenario_sheet['B10'] = total_pumpspeicher_ein
-                scenario_sheet['A11'] = "Total Pumpspeicher Ausgangsflow"
-                scenario_sheet['B11'] = total_pumpspeicher_aus
-                scenario_sheet['A12'] = "Umweltwaermemenge_Luft_waermepumpe"
-                scenario_sheet['B12'] =  WP_heat_flow - elec_WP_flow 
-                sheets_created = True
-
+                if not region:
+                    workbook = writer.book
+                    scenario_sheet = workbook[sheet_name]
+                    scenario_sheet['A7'] = "Import Strom flow"
+                    scenario_sheet['B7'] = import_strom
+                    scenario_sheet['A8'] = "Total PV Flow"
+                    scenario_sheet['B8'] = total_pv
+                    scenario_sheet['A9'] = "Total Wind Flow"
+                    scenario_sheet['B9'] = total_wind
+                    scenario_sheet['A10'] = "Total Pumpspeicher Eingangsflow"
+                    scenario_sheet['B10'] = total_pumpspeicher_ein
+                    scenario_sheet['A11'] = "Total Pumpspeicher Ausgangsflow"
+                    scenario_sheet['B11'] = total_pumpspeicher_aus
+                    scenario_sheet['A12'] = "Umweltwaermemenge_Luft_waermepumpe"
+                    scenario_sheet['B12'] =  WP_heat_flow - elec_WP_flow 
+                    sheets_created = True
+            
     # remove dummy sheet
     workbook = load_workbook(output_path)
     if 'Dummy_Sheet' in workbook.sheetnames and sheets_created:
@@ -745,6 +788,8 @@ def sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, 
 
     print(f"Sankey excel saved to {output_path}")
     
+
+    
 def calc_CO2_emission (year,cleaned_sequences):
     """
     This function calculates the costs for importing the energy based on price timeseries and flow values.
@@ -773,15 +818,22 @@ def calc_CO2_emission (year,cleaned_sequences):
         'Import_brown_coal': scalars['System_configurations_2024']['System']['Emission_Braunkohle'],
         'Import_hard_coal': scalars['System_configurations_2024']['System']['Emission_Steinkohle'],
     }
-    
+    region_suffixes = ['_n', '_s', '_e', '_m']
     for scenario, components_data in cleaned_sequences.items():
         total_CO2_emission = 0
         scenario_co2_emissions = {}
     
         # Iterate through components
         for component, bus_data in components_data.items():
-            if component in co2_factors:
-                co2_factor = co2_factors[component]  
+            
+            if component.startswith("Import_"):
+                base_component = next((component[:-len(suffix)] for suffix in region_suffixes if component.endswith(suffix)), component)
+                # Split only if the last part is a known suffix
+            else:
+                base_component = component
+                
+            if base_component in co2_factors:
+                co2_factor = co2_factors[base_component]  
     
                 if isinstance(bus_data, dict):
                     for bus_name, df in bus_data.items():

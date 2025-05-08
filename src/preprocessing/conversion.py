@@ -265,7 +265,7 @@ def load_profile_scaling(scalars, sequences, YEAR,  region = True):
             elif s == 'material_usage_biomasse':
                 demand_profile_dict[s][r] = ((load_profile_nom['Base_demand_profile']['base_load']*(float(scalars['Demand_Industry_' + r + '_b']['Stoffl. Nutzung_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Stoffl. Nutzung_' + str(YEAR)]['Materialnutzung Biomasse'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Materialnutzung Biomasse'])))
                                              )*1000000
-    if region == True: 
+    if region: 
         return (demand_profile_dict)
     else:
         demand = pd.DataFrame()

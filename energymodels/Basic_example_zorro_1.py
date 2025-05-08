@@ -1073,7 +1073,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                 b_abwaerme: solph.Flow()},
         outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
                                                                   maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential'][model_ID]))},
-        conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]/100},    
+        conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
     # #------------------------------------------------------------------------------
@@ -1092,7 +1092,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
         label="PtL",
-        inputs={b_H2: solph.Flow()},
+        inputs={b_H2: solph.Flow(),
+                b_el: solph.Flow()},
         outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['power_to_liquid_system']['epc'], 
                                                                               maximum=scalars['Parameter_power_to_liquid_system']['potential'][model_ID]))},
         conversion_factors={b_oil_fuel: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]/100}
