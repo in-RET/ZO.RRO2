@@ -43,3 +43,9 @@ for filename, df in scalars.items():
 
         # Store in result dict
         filtered_data_dict[filename] = structured_df
+
+for filename, df in filtered_data_dict.items():
+    cols_to_drop = df.columns[df.columns.str.contains('potential')]
+    df.drop(cols_to_drop, axis=1, inplace=True)
+    print(filename +"        " +str(df.isnull().values.any()))
+        

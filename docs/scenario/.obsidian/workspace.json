@@ -36,6 +36,18 @@
             }
           },
           {
+            "id": "522d4415d072cd82",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.8.10"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.8.10"
+            }
+          },
+          {
             "id": "aa61ed08f4c90b00",
             "type": "leaf",
             "state": {
@@ -64,7 +76,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -202,7 +214,7 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "a81a3d3d00b0dd56",
+  "active": "522d4415d072cd82",
   "lastOpenFiles": [
     "2030_BS0001_002.md",
     "Model tracking overview.md",

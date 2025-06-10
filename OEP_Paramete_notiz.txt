@@ -1,0 +1,30 @@
+Parameter files with NaN values
+
+Parameter_biogas_combined_heat_and_power_plant        	False		--->
+Parameter_biogas_upgrading_plant       			False
+Parameter_biomass_combined_heat_and_power_plant        	False
+Parameter_biomass_heating_plant        			False
+Parameter_biomass_power_plant        			True		---> Werte von Zorro 1, fehlt für zwischen Jahre
+Parameter_biomass_to_liquid_system        		True		---> Column name-- korrigiert
+Parameter_biomethane_injection_plant        		True		---> ""
+Parameter_combined_heat_and_power_generating_unit       False
+Parameter_electrical_heater        			True		--->""
+Parameter_electrolysis        				True		--->""
+Parameter_field_photovoltaic_power_plant        	True		---> Efficiency missing, to make it same standard 100% is defined
+Parameter_fuel_cells        				True		--->""
+Parameter_heat_pump_air_Abwärme        			True		--->""
+Parameter_heat_pump_air_Umgebungswärme        		True		--->""
+Parameter_heat_pump_ground_Flusswärme        		True		--->""
+Parameter_hydrogen_feed_in        			True		--->"Werte von Zorro 1"
+Parameter_methanation        				True		--->""
+Parameter_onshore_wind_power_plant        		True		---> Efficiency defined as 100
+Parameter_power_to_liquid_system        		True		--->""
+Parameter_rooftop_photovoltaic_power_plant        	True		---> Efficiency 100
+Parameter_run_river_power_plant        			True		---> Efficiency 100
+Parameter_solar_thermal_power_plant        		True		---> Efficiency 100
+Parameter_storage_electricity        			False
+Parameter_storage_electricity_pumped_hydro_storage_power_technology        False
+Parameter_storage_gas        				False
+Parameter_storage_heat_district_heating        		False
+Parameter_storage_heat_seasonal        			False
+Parameter_storage_hydrogen        			False
