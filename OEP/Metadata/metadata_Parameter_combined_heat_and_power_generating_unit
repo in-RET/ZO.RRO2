@@ -1,0 +1,167 @@
+{
+  "name": "Parameter_combined_heat_and_power_generating_unit",
+  "title": "Sector-coupling_Parameter_combined_heat_and_power_generating_unit",
+  "description": "Techno-economic parameters for sector coupling technologies; data based on literature data.The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
+  "resources": [
+    {
+      "name": "Parameter_combined_heat_and_power_generating_unit",
+      "schema": {
+        "fields": [
+          {
+            "name": "investment_costs",
+            "description": "Description of investment_costs",
+            "type": "number"
+          },
+          {
+            "name": "operating_costs",
+            "description": "Description of operating_costs",
+            "type": "number"
+          },
+          {
+            "name": "lifetime",
+            "description": "Description of lifetime",
+            "type": "number"
+          },
+          {
+            "name": "efficiency_el",
+            "description": "Description of efficiency_el",
+            "type": "number"
+          },
+          {
+            "name": "efficiency_th",
+            "description": "Description of efficiency_th",
+            "type": "number"
+          }
+        ]
+      }
+    }
+  ],
+  "keywords": [
+    "ptx",
+    "electrolysis",
+    "synthetic_fuels",
+    "sector-coupling",
+    "Thuringia",
+    "oemof",
+    "ZO.RRO II",
+    "climate neutrality",
+    "HSN in.RET"
+  ],
+  "publicationDate": "2025-06-11",
+  "license": {
+    "id": "CC-BY-4.0",
+    "name": "Creative Commons Attribution 4.0"
+  },
+  "context": {
+    "contact": "Hochschule Nordhausen - Institut f\u00fcr Regenerative Energietechnik",
+    "grantNo": "",
+    "homepage": "https://hs-nordhausen.de/",
+    "sourceCode": "https://github.com/in-RET",
+    "documentation": "https://hs-nordhausen.de"
+  },
+  "contributors": [
+    {
+      "title": "Am\u00e8lie Oberdorfer",
+      "organization": "Hochschule Nordhausen - Institut f\u00fcr regenerative Energietechnik",
+      "roles": [
+        "Data curation"
+      ],
+      "date": "2024-12-31",
+      "object": "",
+      "comment": ""
+    },
+    {
+      "title": "Andreas Lubojanski",
+      "organization": "Hochschule Nordhausen - Institut f\u00fcr regenerative Energietechnik",
+      "roles": [
+        "Software"
+      ],
+      "date": "2025-09-01",
+      "object": "",
+      "comment": ""
+    },
+    {
+      "title": "Christoph Schmidt",
+      "organization": "Hochschule Nordhausen - Institut f\u00fcr regenerative Energietechnik",
+      "roles": [
+        "Data curation"
+      ],
+      "date": "2025-09-01",
+      "object": "",
+      "comment": "0000-0002-4269-3779"
+    },
+    {
+      "title": "Rohith Krishnan Bala Krishnan",
+      "organization": "Hochschule Nordhausen - Institut f\u00fcr regenerative Energietechnik",
+      "roles": [
+        "Software"
+      ],
+      "date": "2025-09-01",
+      "object": "",
+      "comment": ""
+    },
+    {
+      "title": "Theresa Reinhardt",
+      "organization": "Hochschule Nordhausen - Institut f\u00fcr regenerative Energietechnik",
+      "roles": [
+        "Software"
+      ],
+      "date": "2025-09-01",
+      "object": "",
+      "comment": "0009-0004-8449-3443"
+    },
+    {
+      "title": "Viktor Wesselak",
+      "organization": "Hochschule Nordhausen - Institut f\u00fcr regenerative Energietechnik",
+      "roles": [],
+      "date": "2025-09-01",
+      "object": "",
+      "comment": ""
+    },
+    {
+      "title": "Stefan Kirsch",
+      "organization": "Th\u00fcringer Kompetenzzentrum Forschungsdatenmanagement, Ernst-Abbe-Hochschule Jena",
+      "roles": [
+        "Data curation"
+      ],
+      "date": "2025-09-01",
+      "object": "",
+      "comment": ""
+    },
+    {
+      "title": "Kevin Lindt",
+      "organization": "Th\u00fcringer Kompetenzzentrum Forschungsdatenmanagement, Technische Universit\u00e4t Ilmenau",
+      "roles": [
+        "Data curation"
+      ],
+      "date": "2025-09-01",
+      "object": "",
+      "comment": ""
+    },
+    {
+      "title": "Ann-Kathrin Weidlich",
+      "organization": "",
+      "roles": [],
+      "date": "2025-09-01",
+      "object": "",
+      "comment": ""
+    },
+    {
+      "title": "Anne Schierenbeck",
+      "organization": "",
+      "roles": [],
+      "date": "2025-09-01",
+      "object": "",
+      "comment": ""
+    }
+  ],
+  "version": "1.0.0",
+  "metaMetadata": {
+    "metadataVersion": "OEP-1.5.0",
+    "metadataLicense": {
+      "id": "CC0-1.0",
+      "name": "CC0 1.0",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  }
+}

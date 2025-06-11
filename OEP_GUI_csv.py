@@ -42,72 +42,183 @@ for filename, df in scalars.items():
         structured_df = pd.DataFrame.from_dict(data, orient='index')
         structured_df.index.name = 'year'
         structured_df = structured_df.sort_index()
+        
 
         # Store in result dict
         filtered_data_dict[filename] = structured_df
 
+#%% Categorize the files
+
+category_keywords = {
+    "Sources": ["photovoltaic", "solar", "wind", "river"],
+    "Storages": ["storage"],
+    #"PTX": ["ptx", "biomass", "biogas", "biomethane", "combined_heat", "methanation", "hydrogen", "fuel", ]
+}
+
+def categorize_file(filename):
+    filename_lower = filename.lower()
+    for category, keywords in category_keywords.items():
+        if any(keyword in filename_lower for keyword in keywords):
+            return category
+    return "Sector-coupling"
 
 categories = {
     "Sources": {
-        "files": ["solar_data.csv", "wind_data.csv"],
-        "description": "Datasets related to renewable energy sources (solar, wind).",
-        "keywords": ["renewables", "solar", "wind"],
+        "description": "Techno-economic parameters for renewable sources; data based on literature data."+
+                        "The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
+        "keywords": ["renewables", "solar", "wind", "Thuringia", "oemof", "ZO.RRO II", "climate neutrality", "HSN in.RET"],
         "license": {"id": "CC-BY-4.0", "name": "Creative Commons Attribution 4.0"}
     },
     "Storages": {
-        "files": ["battery_storage.csv", "hydrogen_storage.csv"],
-        "description": "Datasets about energy storage technologies.",
-        "keywords": ["battery", "hydrogen", "storage"],
-        "license": {"id": "ODbL-1.0", "name": "Open Database License"}
+        "description": "Techno-economic parameters for storages; data based on literature data."+
+                        "The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
+        "keywords": ["battery", "hydrogen", "storage", "Thuringia", "oemof", "ZO.RRO II", "climate neutrality", "HSN in.RET"],
+        "license": {"id": "CC-BY-4.0", "name": "Creative Commons Attribution 4.0"}
     },
-    "PTX": {
-        "files": ["power_to_x.csv", "electrolysis_data.csv"],
-        "description": "Power-to-X (PTX) conversion process datasets.",
-        "keywords": ["ptx", "electrolysis", "synthetic_fuels"],
-        "license": {"id": "MIT", "name": "MIT License"}
+    "Sector-coupling": {
+        "description": "Techno-economic parameters for sector coupling technologies; data based on literature data."+
+                        "The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
+        "keywords": ["ptx", "electrolysis", "synthetic_fuels", "sector-coupling", "Thuringia", "oemof", "ZO.RRO II", "climate neutrality", "HSN in.RET"],
+        "license": {"id": "CC-BY-4.0", "name": "Creative Commons Attribution 4.0"}
     }
 }
 
 
-def generate_oep_metadata(df, filename, category_info):
-    """Generate OEP metadata for a DataFrame."""
-    # Infer column types
-    def get_field_type(dtype):
-        if "float" in str(dtype) or "int" in str(dtype):
-            return "number"
-        elif "datetime" in str(dtype):
-            return "datetime"
-        else:
-            return "string"
-
-    # Current date for publicationDate
-    current_date = datetime.now().strftime("%Y-%m-%d")
-
+metadata_dict = {}
+for filename, df in filtered_data_dict.items():
+    cols_to_drop = df.columns[df.columns.str.contains('potential')]
+    df.drop(cols_to_drop, axis=1, inplace=True)
+    df.to_csv((os.path.join('OEP','CSV', filename + ".csv")), sep= ";", decimal = ',')
+    print(filename +"        " +str(df.isnull().values.any()))
+    
+dummy = {}
+for filename, df in filtered_data_dict.items():
+    category = categorize_file(filename)
+    dummy[filename]= categorize_file(filename)
     metadata = {
         "name": filename.replace(".csv", ""),
-        "title": f"{category_info.get('title_prefix', '')}{filename}",
-        "description": category_info["description"],
-        "language": ["en"],
-        "keywords": category_info["keywords"],
-        "publicationDate": datetime.now().strftime("%Y-%m-%d"),
-        "license": category_info["license"],
+        "title": f"{category}_{filename}",
+        "description": categories[category]["description"],
         "resources": [{
-            "profile": "tabular-data-resource",
             "name": filename,
-            "path": f"https://example.com/data/{filename}",  # Update path
-            "format": "csv",
-            "encoding": "UTF-8",
             "schema": {
                 "fields": [
                     {
                         "name": col,
-                        "description": f"Description of {col}",  # Edit manually
-                        "type": get_field_type(df[col].dtype)
+                        "description": f"Description of {col}",
+                        "type": "number" if "float" in str(df[col].dtype) or "int" in str(df[col].dtype) else "string"
                     }
                     for col in df.columns
                 ]
             }
         }],
+        "keywords": categories[category]["keywords"],
+        "publicationDate": datetime.now().strftime("%Y-%m-%d"),
+        "license": categories[category]["license"],
+        "context": {  
+            "contact": "Hochschule Nordhausen - Institut für Regenerative Energietechnik",  
+            "grantNo": "",  
+            "homepage": "https://hs-nordhausen.de/",  
+            "sourceCode": "https://github.com/in-RET",  
+            "documentation": "https://hs-nordhausen.de"  
+            },  
+        "contributors": [  
+        {  
+          "title": "Amèlie Oberdorfer",  
+          "organization": "Hochschule Nordhausen - Institut für regenerative Energietechnik",  
+          "roles": [  
+            "Data curation"  
+          ],  
+          "date": "2024-12-31",  
+          "object": "",  
+          "comment": ""  
+        },  
+        {  
+          "title": "Andreas Lubojanski",  
+          "organization": "Hochschule Nordhausen - Institut für regenerative Energietechnik",  
+          "roles": [  
+            "Software"  
+          ],  
+          "date": "2025-09-01",  
+          "object": "",  
+          "comment": ""  
+        },  
+        {  
+          "title": "Christoph Schmidt",  
+          "organization": "Hochschule Nordhausen - Institut für regenerative Energietechnik",  
+          "roles": [  
+            "Data curation"  
+          ],  
+          "date": "2025-09-01",  
+          "object": "",  
+          "comment": "0000-0002-4269-3779"  
+        },  
+        {  
+          "title": "Rohith Krishnan Bala Krishnan",  
+          "organization": "Hochschule Nordhausen - Institut für regenerative Energietechnik",  
+          "roles": [  
+            "Software"  
+          ],  
+          "date": "2025-09-01",  
+          "object": "",  
+          "comment": ""  
+        },  
+        {  
+          "title": "Theresa Reinhardt",  
+          "organization": "Hochschule Nordhausen - Institut für regenerative Energietechnik",  
+          "roles": [  
+            "Software"  
+          ],  
+          "date": "2025-09-01",  
+          "object": "",  
+          "comment": "0009-0004-8449-3443"  
+        },  
+        {  
+          "title": "Viktor Wesselak",  
+          "organization": "Hochschule Nordhausen - Institut für regenerative Energietechnik",  
+          "roles": [],  
+          "date": "2025-09-01",  
+          "object": "",  
+          "comment": ""  
+        },  
+        {  
+          "title": "Stefan Kirsch",  
+          "organization": "Thüringer Kompetenzzentrum Forschungsdatenmanagement, Ernst-Abbe-Hochschule Jena",  
+          "roles": [  
+            "Data curation"  
+          ],  
+          "date": "2025-09-01",  
+          "object": "",  
+          "comment": ""  
+        },  
+        {  
+          "title": "Kevin Lindt",  
+          "organization": "Thüringer Kompetenzzentrum Forschungsdatenmanagement, Technische Universität Ilmenau",  
+          "roles": [  
+            "Data curation"  
+          ],  
+          "date": "2025-09-01",  
+          "object": "",  
+          "comment": ""  
+        },  
+        {  
+          "title": "Ann-Kathrin Weidlich",  
+          "organization": "",  
+          "roles": [],  
+          "date": "2025-09-01",  
+          "object": "",  
+          "comment": ""  
+        },  
+        {  
+          "title": "Anne Schierenbeck",  
+          "organization": "",  
+          "roles": [],  
+          "date": "2025-09-01",  
+          "object": "",  
+          "comment": ""  
+        }  
+      ],  
+        
         "version": "1.0.0",
         "metaMetadata": {
             "metadataVersion": "OEP-1.5.0",
@@ -118,28 +229,9 @@ def generate_oep_metadata(df, filename, category_info):
             }
         }
     }
-    return metadata
-
-metadata_dict = {}
-for filename, df in filtered_data_dict.items():
-    cols_to_drop = df.columns[df.columns.str.contains('potential')]
-    df.drop(cols_to_drop, axis=1, inplace=True)
-    print(filename +"        " +str(df.isnull().values.any()))
-    
-    #metadata_dict[filename] = generate_oep_metadata(df, filename)  
     
 
-# for filename, metadata in metadata_dict.items():
-#     json_filename = f"metadata_{filename.replace('.csv', '.json')}"
-#     with open(os.path.join('OEP', 'Metadata',json_filename), "w") as f:
-#         json.dump(metadata, f, indent=2)
-#     print(f"Generated: {json_filename}")
-    
-for category, info in categories.items():
-    for filename in info["files"]:
-        if filename in filtered_data_dict:
-            metadata = generate_oep_metadata(filtered_data_dict[filename], filename, info)
-            json_filename = f"metadata_{filename.replace('.csv', '.json')}"
-            with open(os.path.join('OEP', 'Metadata',json_filename), "w") as f:
-                json.dump(metadata, f, indent=2)
-            print(f"Generated: metadata_{filename.replace('.csv', '.json')}")
+    json_filename = f"metadata_{filename.replace('.csv', '.json')}"
+    with open(os.path.join('OEP', 'Metadata',json_filename), "w") as f:
+        json.dump(metadata, f, indent=2)
+        print(f"Generated: metadata_{filename.replace('.csv', '.json')}")
