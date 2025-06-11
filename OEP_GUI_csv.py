@@ -126,20 +126,20 @@ for filename, df in filtered_data_dict.items():
     df.drop(cols_to_drop, axis=1, inplace=True)
     print(filename +"        " +str(df.isnull().values.any()))
     
-    metadata_dict[filename] = generate_oep_metadata(df, filename)  
+    #metadata_dict[filename] = generate_oep_metadata(df, filename)  
     
 
-for filename, metadata in metadata_dict.items():
-    json_filename = f"metadata_{filename.replace('.csv', '.json')}"
-    with open(os.path.join('OEP', 'MEtadata',json_filename), "w") as f:
-        json.dump(metadata, f, indent=2)
-    print(f"Generated: {json_filename}")
+# for filename, metadata in metadata_dict.items():
+#     json_filename = f"metadata_{filename.replace('.csv', '.json')}"
+#     with open(os.path.join('OEP', 'Metadata',json_filename), "w") as f:
+#         json.dump(metadata, f, indent=2)
+#     print(f"Generated: {json_filename}")
     
 for category, info in categories.items():
     for filename in info["files"]:
         if filename in filtered_data_dict:
             metadata = generate_oep_metadata(filtered_data_dict[filename], filename, info)
             json_filename = f"metadata_{filename.replace('.csv', '.json')}"
-            with open(os.path.join('OEP', 'MEtadata',json_filename), "w") as f:
+            with open(os.path.join('OEP', 'Metadata',json_filename), "w") as f:
                 json.dump(metadata, f, indent=2)
             print(f"Generated: metadata_{filename.replace('.csv', '.json')}")
