@@ -1,10 +1,10 @@
 {
-  "name": "Parameter_onshore_wind_power_plant",
-  "title": "Sources_Parameter_onshore_wind_power_plant",
-  "description": "Techno-economic parameters for renewable sources; data based on literature data.The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
+  "name": "Parameter_heat_pump_ground_Flussw\u00e4rme",
+  "title": "Sector-coupling_Parameter_heat_pump_ground_Flussw\u00e4rme",
+  "description": "Techno-economic parameters for sector coupling technologies; data based on literature data.The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
   "resources": [
     {
-      "name": "Parameter_onshore_wind_power_plant",
+      "name": "Parameter_heat_pump_ground_Flussw\u00e4rme",
       "schema": {
         "fields": [
           {
@@ -32,16 +32,17 @@
     }
   ],
   "keywords": [
-    "renewables",
-    "solar",
-    "wind",
+    "ptx",
+    "electrolysis",
+    "synthetic_fuels",
+    "sector-coupling",
     "Thuringia",
     "oemof",
     "ZO.RRO II",
     "climate neutrality",
     "HSN in.RET"
   ],
-  "publicationDate": "2025-06-11",
+  "publicationDate": "2025-06-16",
   "license": {
     "id": "CC-BY-4.0",
     "name": "Creative Commons Attribution 4.0"

@@ -1,10 +1,10 @@
 {
-  "name": "Parameter_biomass_heating_plant",
-  "title": "Sector-coupling_Parameter_biomass_heating_plant",
+  "name": "Parameter_biogas_combined_heat_and_power_plant",
+  "title": "Sector-coupling_Parameter_biogas_combined_heat_and_power_plant",
   "description": "Techno-economic parameters for sector coupling technologies; data based on literature data.The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
   "resources": [
     {
-      "name": "Parameter_biomass_heating_plant",
+      "name": "Parameter_biogas_combined_heat_and_power_plant",
       "schema": {
         "fields": [
           {
@@ -47,7 +47,7 @@
     "climate neutrality",
     "HSN in.RET"
   ],
-  "publicationDate": "2025-06-11",
+  "publicationDate": "2025-06-16",
   "license": {
     "id": "CC-BY-4.0",
     "name": "Creative Commons Attribution 4.0"

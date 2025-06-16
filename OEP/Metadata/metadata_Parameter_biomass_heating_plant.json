@@ -1,10 +1,10 @@
 {
-  "name": "Parameter_electrolysis",
-  "title": "Sector-coupling_Parameter_electrolysis",
+  "name": "Parameter_biomass_heating_plant",
+  "title": "Sector-coupling_Parameter_biomass_heating_plant",
   "description": "Techno-economic parameters for sector coupling technologies; data based on literature data.The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
   "resources": [
     {
-      "name": "Parameter_electrolysis",
+      "name": "Parameter_biomass_heating_plant",
       "schema": {
         "fields": [
           {
@@ -23,8 +23,13 @@
             "type": "number"
           },
           {
-            "name": "efficiency",
-            "description": "Description of efficiency",
+            "name": "efficiency_el",
+            "description": "Description of efficiency_el",
+            "type": "number"
+          },
+          {
+            "name": "efficiency_th",
+            "description": "Description of efficiency_th",
             "type": "number"
           }
         ]
@@ -42,7 +47,7 @@
     "climate neutrality",
     "HSN in.RET"
   ],
-  "publicationDate": "2025-06-11",
+  "publicationDate": "2025-06-16",
   "license": {
     "id": "CC-BY-4.0",
     "name": "Creative Commons Attribution 4.0"

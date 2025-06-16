@@ -1,10 +1,10 @@
 {
-  "name": "Parameter_biogas_upgrading_plant",
-  "title": "Sector-coupling_Parameter_biogas_upgrading_plant",
-  "description": "Techno-economic parameters for sector coupling technologies; data based on literature data.The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
+  "name": "Parameter_storage_electricity",
+  "title": "Storages_Parameter_storage_electricity",
+  "description": "Techno-economic parameters for storages; data based on literature data.The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
   "resources": [
     {
-      "name": "Parameter_biogas_upgrading_plant",
+      "name": "Parameter_storage_electricity",
       "schema": {
         "fields": [
           {
@@ -23,8 +23,13 @@
             "type": "number"
           },
           {
-            "name": "efficiency",
-            "description": "Description of efficiency",
+            "name": "efficiency_in",
+            "description": "Description of efficiency_in",
+            "type": "number"
+          },
+          {
+            "name": "efficiency_out",
+            "description": "Description of efficiency_out",
             "type": "number"
           }
         ]
@@ -32,17 +37,16 @@
     }
   ],
   "keywords": [
-    "ptx",
-    "electrolysis",
-    "synthetic_fuels",
-    "sector-coupling",
+    "battery",
+    "hydrogen",
+    "storage",
     "Thuringia",
     "oemof",
     "ZO.RRO II",
     "climate neutrality",
     "HSN in.RET"
   ],
-  "publicationDate": "2025-06-11",
+  "publicationDate": "2025-06-16",
   "license": {
     "id": "CC-BY-4.0",
     "name": "Creative Commons Attribution 4.0"

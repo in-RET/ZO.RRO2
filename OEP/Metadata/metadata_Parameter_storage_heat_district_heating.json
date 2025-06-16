@@ -1,10 +1,10 @@
 {
-  "name": "Parameter_storage_electricity",
-  "title": "Storages_Parameter_storage_electricity",
+  "name": "Parameter_storage_heat_district_heating",
+  "title": "Storages_Parameter_storage_heat_district_heating",
   "description": "Techno-economic parameters for storages; data based on literature data.The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
   "resources": [
     {
-      "name": "Parameter_storage_electricity",
+      "name": "Parameter_storage_heat_district_heating",
       "schema": {
         "fields": [
           {
@@ -46,7 +46,7 @@
     "climate neutrality",
     "HSN in.RET"
   ],
-  "publicationDate": "2025-06-11",
+  "publicationDate": "2025-06-16",
   "license": {
     "id": "CC-BY-4.0",
     "name": "Creative Commons Attribution 4.0"

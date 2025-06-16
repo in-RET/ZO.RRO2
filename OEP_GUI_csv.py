@@ -231,7 +231,7 @@ for filename, df in filtered_data_dict.items():
     }
     
 
-    json_filename = f"metadata_{filename.replace('.csv', '.json')}"
+    json_filename = f"metadata_{filename}.json"
     with open(os.path.join('OEP', 'Metadata',json_filename), "w") as f:
         json.dump(metadata, f, indent=2)
         print(f"Generated: metadata_{filename.replace('.csv', '.json')}")

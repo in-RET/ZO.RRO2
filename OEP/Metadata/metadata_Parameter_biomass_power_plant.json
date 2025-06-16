@@ -1,10 +1,10 @@
 {
-  "name": "Parameter_storage_electricity_pumped_hydro_storage_power_technology",
-  "title": "Storages_Parameter_storage_electricity_pumped_hydro_storage_power_technology",
-  "description": "Techno-economic parameters for storages; data based on literature data.The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
+  "name": "Parameter_biomass_power_plant",
+  "title": "Sector-coupling_Parameter_biomass_power_plant",
+  "description": "Techno-economic parameters for sector coupling technologies; data based on literature data.The data was collected in the ZO.RRO II project by Nordhausen University of Applied Sciences.",
   "resources": [
     {
-      "name": "Parameter_storage_electricity_pumped_hydro_storage_power_technology",
+      "name": "Parameter_biomass_power_plant",
       "schema": {
         "fields": [
           {
@@ -23,13 +23,13 @@
             "type": "number"
           },
           {
-            "name": "efficiency_in",
-            "description": "Description of efficiency_in",
+            "name": "efficiency_el",
+            "description": "Description of efficiency_el",
             "type": "number"
           },
           {
-            "name": "efficiency_out",
-            "description": "Description of efficiency_out",
+            "name": "efficiency_th",
+            "description": "Description of efficiency_th",
             "type": "number"
           }
         ]
@@ -37,16 +37,17 @@
     }
   ],
   "keywords": [
-    "battery",
-    "hydrogen",
-    "storage",
+    "ptx",
+    "electrolysis",
+    "synthetic_fuels",
+    "sector-coupling",
     "Thuringia",
     "oemof",
     "ZO.RRO II",
     "climate neutrality",
     "HSN in.RET"
   ],
-  "publicationDate": "2025-06-11",
+  "publicationDate": "2025-06-16",
   "license": {
     "id": "CC-BY-4.0",
     "name": "Creative Commons Attribution 4.0"
