@@ -47,6 +47,18 @@ for filename, df in scalars.items():
         # Store in result dict
         filtered_data_dict[filename] = structured_df
 
+filtered_timeseries_dict = {}
+for filename,df in sequences.items():
+    avg_df = pd.DataFrame()
+    for y in year_suffixes:
+        def_col = [f'north{y}', f'east{y}', f'swest{y}', f'middle{y}']
+        if filename.startswith('Electricity'):
+            if all(col in df.columns for col in def_col):
+            # Calculate the average electricity value for this year
+                avg_df[f'electricity{y}'] = (df[f'north{y}'] + df[f'east{y}'] +df[f'swest{y}'] + df[f'middle{y}']) / 4
+            else:
+                print(f"Missing columns for year {y} in file {filename}")
+            filtered_timeseries_dict[filename] = avg_df
 #%% Categorize the files
 
 category_keywords = {
