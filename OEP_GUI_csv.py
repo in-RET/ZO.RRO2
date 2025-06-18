@@ -51,14 +51,33 @@ filtered_timeseries_dict = {}
 for filename,df in sequences.items():
     avg_df = pd.DataFrame()
     for y in year_suffixes:
-        def_col = [f'north{y}', f'east{y}', f'swest{y}', f'middle{y}']
+        
         if filename.startswith('Electricity'):
-            if all(col in df.columns for col in def_col):
-            # Calculate the average electricity value for this year
-                avg_df[f'electricity{y}'] = (df[f'north{y}'] + df[f'east{y}'] +df[f'swest{y}'] + df[f'middle{y}']) / 4
-            else:
-                print(f"Missing columns for year {y} in file {filename}")
-            filtered_timeseries_dict[filename] = avg_df
+            avg_df[f'electricity_demand{y}'] = (df[f'north{y}'] + df[f'east{y}'] +df[f'swest{y}'] + df[f'middle{y}']) / 4
+        elif filename.startswith('Cooling') or filename.startswith('Domestic'):
+            avg_df['demand'] = (df['north'] + df['east'] +df['swest'] + df['middle']) / 4
+        elif filename.startswith('Base_demand'):
+            avg_df['demand'] = df['base_load']
+        elif filename.startswith('feed_in_profile'):
+            avg_df['PV_rooftop'] = (df['PV_rooftop_north'] + df['PV_rooftop_east'] +df['PV_rooftop_swest'] + df['PV_rooftop_middle']) / 4
+            avg_df['PV_openfield'] = (df['PV_openfield_north'] + df['PV_openfield_east'] +df['PV_openfield_swest'] + df['PV_openfield_middle']) / 4
+            avg_df['Wind'] = (df['Wind_north'] + df['Wind_east'] +df['Wind_swest'] + df['Wind_middle']) / 4
+            avg_df['Solarthermal'] = df['Solarthermal']
+            avg_df['Hydro_power'] = df['Hydro_power']
+        elif filename.startswith('Heat'):
+            avg_df['Household_space_heating_demand'] = (df['Household_north'] + df['Household_east'] +df['Household_swest'] + df['Household_middle']) / 4
+            avg_df['HA4_thuringia'] = (df['HA4_north'] + df['HA4_east'] +df['HA4_swest'] + df['HA4_middle']) / 4
+            avg_df['Household_heat_plus_DHW_demand'] = (df['Heat+TWW_north'] + df['Heat+TWW_east'] +df['Heat+TWW_swest'] + df['Heat+TWW_middle']) / 4
+        elif filename.startswith('Mobility'):
+            avg_df = df
+        elif filename.startswith('other'):
+            avg_df = df
+            filename = 'Standard_load_profile'
+        
+        filtered_timeseries_dict[filename] = avg_df
+
+filtered_timeseries_dict.pop("Energy_price")
+filtered_timeseries_dict.pop("Energy_price_brainpool_2024")
 #%% Categorize the files
 
 category_keywords = {
@@ -102,6 +121,10 @@ for filename, df in filtered_data_dict.items():
     df.drop(cols_to_drop, axis=1, inplace=True)
     df.to_csv((os.path.join('OEP','CSV', filename + ".csv")), sep= ";", decimal = ',')
     print(filename +"        " +str(df.isnull().values.any()))
+
+for filename, df in filtered_timeseries_dict.items():
+    df.to_csv((os.path.join('OEP','CSV', filename + ".csv")), sep= ";", decimal = ',')
+    
     
 dummy = {}
 for filename, df in filtered_data_dict.items():
