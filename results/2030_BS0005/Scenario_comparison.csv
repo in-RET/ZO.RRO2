@@ -1,0 +1,57 @@
+Component;Scenario 016
+AW;0,0
+Battery;0,0
+BioTransformer;0,0
+Biogas- BHKW;136,71884119191688
+Biogas_feedin_existing;0,0
+Biogas_feedin_new;0,0
+Biomasse_elec;0,0
+Biomasse_elec_heat;4,463901686280019
+Biomasse_heat;0,0
+BtL;0,0
+Electric boiler;892,4202930636208
+Electrolysis;308,0
+Fuelcell;0,0
+Gas_storage;0,0
+GuD;444,5
+H2_storage;0,0
+Heat storage_dist_heat;26762,74935668742
+Heat storage_seasonal;0,0
+Heatpump_air;55,0
+Heatpump_recovery_heat;0,0
+Heatpump_water;0,0
+Hydro power plant;31,0
+Hös<->HS;0,0
+Import_Electricity;0,0
+Import_Gas;0,0
+Import_Hydrogen;0,0
+Import_Oil;0,0
+Import_Synthetic_fuel;0,0
+Import_Wood;0,0
+Import_brown_coal;0,0
+Import_hard_coal;60,83523835108777
+Import_solid_fuel;0,0
+Li-Ion_Battery;0,0
+Methanisation;0,0
+Natrium_Battery;188,6052749096031
+PV_open_east;1100,5739717899453
+PV_open_middle;2020,8176592242226
+PV_open_north;1852,9651331377213
+PV_open_swest;1489,1183707788716
+PV_rooftop_east;0,0
+PV_rooftop_middle;0,0
+PV_rooftop_north;0,0
+PV_rooftop_swest;0,0
+Preheater- Electric boiler;0,0
+Preheater- WP;0,0
+PtL;0,0
+Pumped_hydro_storage;9360,0
+Pumped_hydro_storage_Goldistal;1052,0
+Pumped_hydro_technology;390,0
+Red-OX_Battery;0,0
+ST;0,0
+UW;0,0
+Wind_east;1820,0
+Wind_middle;1640,0
+Wind_north;1210,0
+Wind_swest;900,0

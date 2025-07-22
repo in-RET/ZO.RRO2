@@ -9,8 +9,8 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
 
     sim_data, result,csv = solveModels(
-        variations=["BS0001"],
-        scenario_num = "003",
+        variations=["BS0005"],
+        scenario_num = "R16",
         years=[2030],# 2040, 2050],
         model_name="BS_regionalization",
         solver="gurobi",
@@ -18,10 +18,11 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "Influence regionalisation to the Thuringen model, minimum potential, and import wood limitations.",
-        sim_remarks = "- The old techno-economical parameters are used but the technologies are split according to different regions \n"+
-                        "- Grid infrastructure is build precisely to understand the grid exchange.\n"+
-                        "- The minimum potential is defined for certain technologies (Wind, PV Open field, PV Rooftop, Hydro power, Pumped hydro storage) \n"+
+        hypothese = "Influence of new techno-economical parameter",
+        sim_remarks = "- The techno-economical parameters are updated. \n"+
+                        "- Loss rate defined for seasonal heat storage\n"+
+                        "- Pumped hydro storage split into storage and technology \n"+
+                        "- Weather dependent COP's are added to the heatpumps \n"+
                         "- Other parameters remain the same [[2030_BS0001_003]] "
                         
     )

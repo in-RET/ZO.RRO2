@@ -8,7 +8,7 @@ Created on Mon Oct 14 16:08:46 2024
 import matplotlib.colors as mcolors
 import matplotlib
 #from src.preprocessing.location import Location
-from src .preprocessing.conversion import investment_parameter
+from src .preprocessing.conversion import investment_parameter,COP_calculation
 from src.preprocessing.files import read_input_files
 from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
 from src.preprocessing.location import Location
@@ -16,7 +16,7 @@ import numpy as np
 import matplotlib.image as mpimg
 from oemof.tools import economics
 from oemof import network, solph
-import pandas as pd
+#import pandas as pd
 import os
 workdir = os.getcwd()
 try:
@@ -36,7 +36,7 @@ energysystem = solph.EnergySystem()
 energysystem.restore(my_path, os.path.join(workdir,
                                            'dumps', '2030_BS0001', 'Basic_example_zorro_1_2030_BS0001_005.dump'))
 YEAR = 2030
-model_ID = 'BS0001'
+model_ID = 'BS0005'
 # model_name '_' years '_' variations '.dump'
 # img_path = os.path.abspath(os.path.join(os.getcwd(),
 # 'figures','Thuringia_karte_mit_Landkreisen_dull.png'))
@@ -56,37 +56,39 @@ middle = Location(os.path.join(Weather_dir,'Erfurt_Binderslebn-hour.csv'), os.pa
 north = Location(os.path.join(Weather_dir,'Nordhausen-hour.csv'), os.path.join(Weather_dir,'Nordhausen-min.dat'))
 swest= Location(os.path.join(Weather_dir,'Hildburghausen-hour.csv'), os.path.join(Weather_dir,'Hildburghausen-min.dat'))
 east = Location(os.path.join(Weather_dir,'Gera-Leumnitz-hour.csv'), os.path.join(Weather_dir,'Gera-Leumnitz-min.dat'))
-
+Ta_avg = ((north.weather_data_hour[' Ta'] + east.weather_data_hour[' Ta'] + middle.weather_data_hour[' Ta'] + swest.weather_data_hour[' Ta'])/4)
+fixed_losses_absolute_seasonal_storage = 1656.2*(85 - Ta_avg )+ 74.7 *(10-11)
 Planing_region = [middle, north, swest, east]
 """ Simulate Wind feed-in profile for the desired location """
 for L in Planing_region:
     L.Wind_feed_in_profile(YEAR)
     L.PV_feed_in_profile(YEAR)
 
+COP = COP_calculation(scalars, Ta_avg, model_ID, YEAR)
     #%%
-AC_power_nom_1_n = north.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for openfield
-AC_power_nom_1_e = east.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for rooftop
-AC_power_nom_1_w = swest.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for openfield
-AC_power_nom_1_m = middle.PV_feed_in_profile_openfield['AC_Power']
-# Sort the data to create the duration curve (highest values first)
-sorted_n = np.sort(AC_power_nom_1_n)[::-1]
-sorted_e = np.sort(AC_power_nom_1_e)[::-1]
-sorted_w = np.sort(AC_power_nom_1_w)[::-1]
-sorted_m = np.sort(AC_power_nom_1_m)[::-1]
+# AC_power_nom_1_n = north.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for openfield
+# AC_power_nom_1_e = east.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for rooftop
+# AC_power_nom_1_w = swest.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for openfield
+# AC_power_nom_1_m = middle.PV_feed_in_profile_openfield['AC_Power']
+# # Sort the data to create the duration curve (highest values first)
+# sorted_n = np.sort(AC_power_nom_1_n)[::-1]
+# sorted_e = np.sort(AC_power_nom_1_e)[::-1]
+# sorted_w = np.sort(AC_power_nom_1_w)[::-1]
+# sorted_m = np.sort(AC_power_nom_1_m)[::-1]
 
-# Plotting the duration curves for both Openfield and Rooftop
-plt.figure(figsize=(10, 6))
-plt.plot(AC_power_nom_1_n, label='north', color='blue')
-plt.plot(AC_power_nom_1_e, label='east', color='green')
-plt.plot(AC_power_nom_1_w, label='w', color='orange')
-plt.plot(AC_power_nom_1_m, label='m', color='red')
+# # Plotting the duration curves for both Openfield and Rooftop
+# plt.figure(figsize=(10, 6))
+# plt.plot(AC_power_nom_1_n, label='north', color='blue')
+# plt.plot(AC_power_nom_1_e, label='east', color='green')
+# plt.plot(AC_power_nom_1_w, label='w', color='orange')
+# plt.plot(AC_power_nom_1_m, label='m', color='red')
 
-# Adding titles and labels
-plt.title("Year Duration Curve", fontsize=16)
-plt.xlabel("Hours of the Year", fontsize=14)
-plt.ylabel("Normalized Power Output (kW)", fontsize=14)
-plt.legend()
-plt.grid(True)
+# # Adding titles and labels
+# plt.title("Year Duration Curve", fontsize=16)
+# plt.xlabel("Hours of the Year", fontsize=14)
+# plt.ylabel("Normalized Power Output (kW)", fontsize=14)
+# plt.legend()
+# plt.grid(True)
 #%%
 
 

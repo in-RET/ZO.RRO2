@@ -21,9 +21,9 @@ from openpyxl.utils import get_column_letter
 
 
 # Define the scenarios you want to compare
-scenarios = ["014","015","ref"]#["001","002","003", "004", "005", "006","007","008","009","010","011","012", "013","ref"]#
+scenarios = ["016","ref"]#["001","002","003", "004", "005", "006","007","008","009","010","011","012", "013","ref"]#
 year = 2030
-variation = "BS0002"
+variation = "BS0005"
 #model_name = "BS_regionalization"
 model_name = "Basic_example_zorro_1"
 permutation = str(year)+'_'+variation
