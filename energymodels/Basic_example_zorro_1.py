@@ -822,9 +822,13 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Link(
         label='Pumped_hydro_technology',
         inputs= {b_pumps: solph.Flow(),
-                 b_el: solph.Flow()},
-        outputs= {b_el: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['storage_electricity_pumped_hydro_storage_power_technology(Technology)']['epc'])),
-                  b_pumps: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['storage_electricity_pumped_hydro_storage_power_technology(Technology)']['epc']))},
+                 b_hös: solph.Flow()},
+        outputs= {b_hös: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['storage_electricity_pumped_hydro_storage_power_technology(Technology)']['epc'],
+                                                                  minimum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['potential_min'][model_ID],
+                                                                  minimum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['potential_neu'][model_ID])),
+                  b_pumps: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['storage_electricity_pumped_hydro_storage_power_technology(Technology)']['epc'],
+                                                                    minimum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['potential_min'][model_ID],
+                                                                    minimum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['potential_neu'][model_ID]))},
         conversion_factors = {(b_pumps,b_el):scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['efficiency_out_' +str(YEAR)][model_ID]/100 ,
                               (b_el,b_pumps):scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['efficiency_in_' +str(YEAR)][model_ID]/100}
         ))
@@ -980,17 +984,17 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity_pumped_hydro_storage_power_technology(Becken)']['epc'],
-                                      minimum = (scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['potential_min'][model_ID]),#+scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_Hös_min'][model_ID]), # excluding goldistal
-                                      maximum = (scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['potential_max'][model_ID]))
+                                      minimum = (scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['capacity_min'][model_ID]),#+scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology']['potential_Hös_min'][model_ID]), # excluding goldistal
+                                      maximum = (scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['capacity_neu'][model_ID]))
         ))
     
     #------------------------------------------------------------------------------
-    # Pumped hydro storage (Goldistal)
+    # Pumped hydro storage (Bestand) HochSpannungnetz verbunden
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.GenericStorage(
-        label="Pumped_hydro_storage_Goldistal",
-        inputs={b_hös: solph.Flow()},
-        outputs={b_hös: solph.Flow()},
+        label="Pumped_hydro_storage_bestand",
+        inputs={b_el: solph.Flow()},
+        outputs={b_el: solph.Flow()},
         loss_rate=0,
         balanced=bool(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['balanced'][model_ID]),
         inflow_conversion_factor = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['efficiency_in_'+str(YEAR)][model_ID]/100,
@@ -999,8 +1003,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         invest_relation_input_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['inverse_c_rate'][model_ID]),
         invest_relation_output_capacity = 1/(scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['inverse_c_rate'][model_ID]),
         investment = solph.Investment(ep_costs=epc_costs['storage_electricity_pumped_hydro_storage_power_technology(Becken)']['epc'],
-                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['potential_Hös_min'][model_ID],
-                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['potential_Hös_min'][model_ID])
+                                      minimum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['capacity_bestand'][model_ID],
+                                      maximum = scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['capacity_bestand'][model_ID])
         ))
     
     #------------------------------------------------------------------------------
