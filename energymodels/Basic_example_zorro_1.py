@@ -20,8 +20,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
-    #demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
-    demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
+    demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
+    #demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
     epc_costs = investment_parameter(scalars, YEAR, model_ID)
     import_price = CO2_price_addition(scalars,sequences, YEAR,'Energy_price_brainpool_2024')
     feed_in_profile_new = False
@@ -825,10 +825,10 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                  b_hös: solph.Flow()},
         outputs= {b_hös: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['storage_electricity_pumped_hydro_storage_power_technology(Technology)']['epc'],
                                                                   minimum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['potential_min'][model_ID],
-                                                                  minimum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['potential_neu'][model_ID])),
+                                                                  maximum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['potential_neu'][model_ID])),
                   b_pumps: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['storage_electricity_pumped_hydro_storage_power_technology(Technology)']['epc'],
                                                                     minimum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['potential_min'][model_ID],
-                                                                    minimum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['potential_neu'][model_ID]))},
+                                                                    maximum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['potential_neu'][model_ID]))},
         conversion_factors = {(b_pumps,b_el):scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['efficiency_out_' +str(YEAR)][model_ID]/100 ,
                               (b_el,b_pumps):scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Technology)']['efficiency_in_' +str(YEAR)][model_ID]/100}
         ))

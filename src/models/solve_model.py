@@ -59,13 +59,16 @@ def solveModels(
         model = solph.Model(energysystem)
         
         logging.info("Applying model constraints")
-        if Anteilig_erneuerbar:
-            Bilanziell_erneuerbar(model, sim_data, model_name)
-        
-        CO2_limit(model, limit = sim_data['Parameter']['System_configurations']['System']['CO2_Grenze_'+str(YEAR)])
-        BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_biogas_upgrading_plant']['potential'][model_ID])
-        BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['Parameter_biomethane_injection_plant']['potential'][model_ID])
-        Biomasse_limit(model, limit = sim_data['Parameter']['Parameter_biomass_heating_plant']['potential'][model_ID])
+        #if Anteilig_erneuerbar:
+         #   if YEAR <= 2030:
+          #      Bilanziell_erneuerbar(model, sim_data, model_name, factor = 0.55)
+           # else:
+            #    Bilanziell_erneuerbar(model, sim_data, model_name, factor =1)
+                
+        #CO2_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['CO2_Grenze_'+str(YEAR)])
+        #BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_biogas_upgrading_plant']['potential'][model_ID])
+        #BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['Parameter_biomethane_injection_plant']['potential'][model_ID])
+        #Biomasse_limit(model, limit = sim_data['Parameter']['Parameter_biomass_heating_plant']['potential'][model_ID])
         
         logging.info("Solve the model")
         model.solve(
@@ -81,11 +84,11 @@ def solveModels(
             results=solph.processing.results(model),
         )
 
-        df_costs = pd.DataFrame(result)
+        #df_costs = pd.DataFrame(result)
 
-        energysystem.results["main"] = solph.processing.results(model)
+        #energysystem.results["main"] = solph.processing.results(model)
         # energysystem.results['meta'] = solph.processing.meta_results(model) % TODO: Why is it bugging?
-        energysystem.results["costs"] = df_costs.to_dict()
+        #energysystem.results["costs"] = df_costs.to_dict()
 
         energysystem.dump(
             dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + "_" + scenario_num + ".dump"

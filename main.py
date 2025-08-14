@@ -18,11 +18,11 @@ if __name__ == "__main__":
         solver_output=False,
         print_graph=False,
         Anteilig_erneuerbar = True,
-        hypothese = "Influence of new techno-economical parameter",
+        hypothese = "Influence of new techno-economical parameter in regionalization scenario",
         sim_remarks = "- The techno-economical parameters are updated. \n"+
                         "- Loss rate defined for seasonal heat storage\n"+
                         "- Pumped hydro storage split into storage and technology \n"+
-                        "- Weather dependent COP's are added to the heatpumps \n"+
+                        "- Weather dependent COP's are added only to the Air heatpumps \n"+
                         "- Other parameters remain the same [[2030_BS0001_003]] "
                         
     )

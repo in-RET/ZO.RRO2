@@ -8,7 +8,7 @@ Created on Mon Oct 14 16:08:46 2024
 import matplotlib.colors as mcolors
 import matplotlib
 #from src.preprocessing.location import Location
-from src .preprocessing.conversion import investment_parameter,COP_calculation
+from src .preprocessing.conversion import investment_parameter,COP_calculation, load_profile_scaling
 from src.preprocessing.files import read_input_files
 from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
 from src.preprocessing.location import Location
@@ -45,7 +45,7 @@ model_ID = 'BS0005'
 sequences = read_input_files(
     folder_name='data/sequences', sub_folder_name=None)
 scalars = read_input_files(folder_name='data/scalars', sub_folder_name=None)
-#demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
+demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
 #demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
 epc_costs = investment_parameter(scalars, YEAR, model_ID)
 results = energysystem.results["main"]

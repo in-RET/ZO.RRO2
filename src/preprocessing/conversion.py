@@ -266,27 +266,29 @@ def load_profile_scaling(scalars, sequences, YEAR,  region = True):
             elif s == 'material_usage_biomasse':
                 demand_profile_dict[s][r] = ((load_profile_nom['Base_demand_profile']['base_load']*(float(scalars['Demand_Industry_' + r + '_b']['Stoffl. Nutzung_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Stoffl. Nutzung_' + str(YEAR)]['Materialnutzung Biomasse'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Materialnutzung Biomasse'])))
                                              )*1000000
+                
+    demand = pd.DataFrame()
+    demand['electricity'] = demand_profile_dict['electricity']['north']+demand_profile_dict['electricity']['east']+demand_profile_dict['electricity']['middle']+demand_profile_dict['electricity']['swest']
+                                             
+    demand['gas'] =demand_profile_dict['gas']['north']+demand_profile_dict['gas']['east']+demand_profile_dict['gas']['middle']+demand_profile_dict['gas']['swest']
+
+    demand['biomass'] =demand_profile_dict['biomass']['north']+demand_profile_dict['biomass']['east']+demand_profile_dict['biomass']['middle']+demand_profile_dict['biomass']['swest']
+
+    demand['oil'] =demand_profile_dict['oil']['north']+demand_profile_dict['oil']['east']+demand_profile_dict['oil']['middle']+demand_profile_dict['oil']['swest']
+
+    demand['dist_heating'] =demand_profile_dict['dist_heating']['north']+demand_profile_dict['dist_heating']['east']+demand_profile_dict['dist_heating']['middle']+demand_profile_dict['dist_heating']['swest']
+
+    demand['H2'] = demand_profile_dict['H2']['north']+demand_profile_dict['H2']['east']+demand_profile_dict['H2']['middle']+demand_profile_dict['H2']['swest']
+
+    demand['fuel'] = demand_profile_dict['fuel']['north']+demand_profile_dict['fuel']['east']+demand_profile_dict['fuel']['middle']+demand_profile_dict['fuel']['swest']
+
+    demand['material_usage_gas'] = demand_profile_dict['material_usage_gas']['north']+demand_profile_dict['material_usage_gas']['east']+demand_profile_dict['material_usage_gas']['middle']+demand_profile_dict['material_usage_gas']['swest']
+    demand['material_usage_oil'] = demand_profile_dict['material_usage_oil']['north']+demand_profile_dict['material_usage_oil']['east']+demand_profile_dict['material_usage_oil']['middle']+demand_profile_dict['material_usage_oil']['swest']
+    
     if region: 
-        return (demand_profile_dict)
+        return demand_profile_dict
     else:
-        demand = pd.DataFrame()
-        demand['electricity'] = demand_profile_dict['electricity']['north']+demand_profile_dict['electricity']['east']+demand_profile_dict['electricity']['middle']+demand_profile_dict['electricity']['swest']
-                                                 
-        demand['gas'] =demand_profile_dict['gas']['north']+demand_profile_dict['gas']['east']+demand_profile_dict['gas']['middle']+demand_profile_dict['gas']['swest']
-
-        demand['biomass'] =demand_profile_dict['biomass']['north']+demand_profile_dict['biomass']['east']+demand_profile_dict['biomass']['middle']+demand_profile_dict['biomass']['swest']
-
-        demand['oil'] =demand_profile_dict['oil']['north']+demand_profile_dict['oil']['east']+demand_profile_dict['oil']['middle']+demand_profile_dict['oil']['swest']
-
-        demand['dist_heating'] =demand_profile_dict['dist_heating']['north']+demand_profile_dict['dist_heating']['east']+demand_profile_dict['dist_heating']['middle']+demand_profile_dict['dist_heating']['swest']
-
-        demand['H2'] = demand_profile_dict['H2']['north']+demand_profile_dict['H2']['east']+demand_profile_dict['H2']['middle']+demand_profile_dict['H2']['swest']
-
-        demand['fuel'] = demand_profile_dict['fuel']['north']+demand_profile_dict['fuel']['east']+demand_profile_dict['fuel']['middle']+demand_profile_dict['fuel']['swest']
-
-        demand['material_usage_gas'] = demand_profile_dict['material_usage_gas']['north']+demand_profile_dict['material_usage_gas']['east']+demand_profile_dict['material_usage_gas']['middle']+demand_profile_dict['material_usage_gas']['swest']
-        demand['material_usage_oil'] = demand_profile_dict['material_usage_oil']['north']+demand_profile_dict['material_usage_oil']['east']+demand_profile_dict['material_usage_oil']['middle']+demand_profile_dict['material_usage_oil']['swest']
-        return (demand)
+        return demand
 
 def CO2_price_addition(scalars,sequences,YEAR, filename):
     data_dict = {}
