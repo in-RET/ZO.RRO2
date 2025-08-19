@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0005"],
-        scenario_num = "R16",
+        scenario_num = "test",
         years=[2030],# 2040, 2050],
         model_name="BS_regionalization",
         solver="gurobi",

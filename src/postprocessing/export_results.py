@@ -425,6 +425,7 @@ def grid_energy_map(results, permutation, model_name, scenario_num):
     em_e_m = b_el_e['sequences'][('Electricity_e', 'East<->Middle'), 'flow'].sum()/1000
     em_m_s = b_el_m['sequences'][('Electricity_m', 'Middle<->Swest'), 'flow'].sum()/1000
     em_s_m = b_el_s['sequences'][('Electricity_s', 'Middle<->Swest'), 'flow'].sum()/1000
+    
     fig, ax = plt.subplots(figsize=(19.1, 10.5))
     img_path = os.path.abspath(os.path.join(os.getcwd(), 
                          'figures','Thuringia_karte_mit_Landkreisen_dull.png'))

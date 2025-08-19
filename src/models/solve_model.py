@@ -5,6 +5,7 @@ import pandas as pd
 from oemof import solph
 
 from energymodels.BS_regionalization import BS_regionalization
+#from energymodels.BS_region_test import BS_test_middle as BS_regionalization
 from energymodels.Basic_example_zorro_1 import Basisszenario_1 as BS_1
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
@@ -43,7 +44,7 @@ def solveModels(
 
         logging.info(f"Solve %s", permutation)
         logging.info("Building the energy system")
-        if model_name =='BS_regionalization':
+        if model_name.startswith('BS_regionalization'):
             energysystem,sim_data = BS_regionalization(permutation)
         else:
             energysystem,sim_data = BS_1(permutation)
@@ -59,16 +60,16 @@ def solveModels(
         model = solph.Model(energysystem)
         
         logging.info("Applying model constraints")
-        #if Anteilig_erneuerbar:
-         #   if YEAR <= 2030:
-          #      Bilanziell_erneuerbar(model, sim_data, model_name, factor = 0.55)
-           # else:
-            #    Bilanziell_erneuerbar(model, sim_data, model_name, factor =1)
+        if Anteilig_erneuerbar:
+           if YEAR <= 2030:
+               Bilanziell_erneuerbar(model, sim_data, model_name, factor = 0.55)
+           else:
+               Bilanziell_erneuerbar(model, sim_data, model_name, factor =1)
                 
-        #CO2_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['CO2_Grenze_'+str(YEAR)])
-        #BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_biogas_upgrading_plant']['potential'][model_ID])
-        #BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['Parameter_biomethane_injection_plant']['potential'][model_ID])
-        #Biomasse_limit(model, limit = sim_data['Parameter']['Parameter_biomass_heating_plant']['potential'][model_ID])
+        CO2_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['CO2_Grenze_'+str(YEAR)])
+        BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_biogas_upgrading_plant']['potential'][model_ID])
+        BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['Parameter_biomethane_injection_plant']['potential'][model_ID])
+        Biomasse_limit(model, limit = sim_data['Parameter']['Parameter_biomass_heating_plant']['potential'][model_ID])
         
         logging.info("Solve the model")
         model.solve(
@@ -84,11 +85,11 @@ def solveModels(
             results=solph.processing.results(model),
         )
 
-        #df_costs = pd.DataFrame(result)
+        df_costs = pd.DataFrame(result)
 
-        #energysystem.results["main"] = solph.processing.results(model)
-        # energysystem.results['meta'] = solph.processing.meta_results(model) % TODO: Why is it bugging?
-        #energysystem.results["costs"] = df_costs.to_dict()
+        energysystem.results["main"] = solph.processing.results(model)
+        #energysystem.results['meta'] = solph.processing.meta_results(model) % TODO: Why is it bugging?
+        energysystem.results["costs"] = df_costs.to_dict()
 
         energysystem.dump(
             dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + "_" + scenario_num + ".dump"
@@ -96,7 +97,7 @@ def solveModels(
         
         logging.info("Export overview - CSV file")
         if model_name == 'BS_regionalization':
-            #export_csv_region(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
+            export_csv_region(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
             grid_energy_map(energysystem.results["main"],permutation, model_name, scenario_num)
         
         else:

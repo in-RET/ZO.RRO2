@@ -6,11 +6,12 @@ Created on Mon Feb 17 10:35:21 2025
 """
 
 import pandas as pd
+from oemof import solph
 import os
 from src.preprocessing.files import read_input_files
 from src.preprocessing.conversion import investment_parameter, CO2_price_addition, load_profile_scaling
 from src.postprocessing.utils_dump import get_dump_file_path, load_results_from_dump, interpret_results, calculate_investment_costs,clean_sequence_data, calc_energyimport_cost
-from src.postprocessing.utils_dump import calc_energyexport_cost, sankey_excel_output, extract_value, grid_operating_fee, calc_CO2_emission
+from src.postprocessing.utils_dump import calc_energyexport_cost, sankey_excel_output, extract_value, grid_operating_fee, calc_CO2_emission, grid_energy_map
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 workdir = os.getcwd()
 my_path = os.path.abspath(os.path.dirname(__file__))
@@ -21,11 +22,11 @@ from openpyxl.utils import get_column_letter
 
 
 # Define the scenarios you want to compare
-scenarios = ["016","ref"]#["001","002","003", "004", "005", "006","007","008","009","010","011","012", "013","ref"]#
+scenarios = ["R16","ref"]#["001","002","003", "004", "005", "006","007","008","009","010","011","012", "013","ref"]#
 year = 2030
 variation = "BS0005"
-#model_name = "BS_regionalization"
-model_name = "Basic_example_zorro_1"
+model_name = "BS_regionalization"
+#model_name = "Basic_example_zorro_1"
 permutation = str(year)+'_'+variation
 
 sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
@@ -270,6 +271,7 @@ else:
     cleaned_sequences_component = clean_sequence_data(all_component_sequences, data_source='component')
     cleaned_sequences_bus = clean_sequence_data(all_bus_sequences, data_source= 'bus')
     CO2_emission = calc_CO2_emission(year, cleaned_sequences_component)
-    
+    grid_energy_map(results, permutation, model_name, scenario_num)
 #%%
+    
     
