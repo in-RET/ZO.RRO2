@@ -19,6 +19,10 @@ import matplotlib.pyplot as plt
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import get_column_letter
+import matplotlib.image as mpimg
+import matplotlib.patches as mpatches
+from matplotlib import gridspec
+
 
 
 # Define the scenarios you want to compare
@@ -273,5 +277,175 @@ else:
     CO2_emission = calc_CO2_emission(year, cleaned_sequences_component)
     grid_energy_map(results, permutation, model_name, scenario_num)
 #%%
+    b_el_n = solph.views.node(results, 'Electricity_n')
+    b_el_s = solph.views.node(results, 'Electricity_s')
+    b_el_e = solph.views.node(results, 'Electricity_e')
+    b_el_m = solph.views.node(results, 'Electricity_m')
+    hs_north_flow = b_el_n['sequences'][('HS<->North', 'Electricity_n'), 'flow']/1000 #in GWh 
+    north_hs_flow = b_el_n['sequences'][('Electricity_n', 'HS<->North'), 'flow']/1000 
+    hs_middle_flow = b_el_m['sequences'][('HS<->Middle', 'Electricity_m'), 'flow']/1000 
+    middle_hs_flow = b_el_m['sequences'][('Electricity_m', 'HS<->Middle'), 'flow']/1000 
+    hs_east_flow = b_el_e['sequences'][('HS<->East', 'Electricity_e'), 'flow']/1000 
+    east_hs_flow = b_el_e['sequences'][('Electricity_e', 'HS<->East'), 'flow']/1000 
+    hs_swest_flow = b_el_s['sequences'][('HS<->Swest', 'Electricity_s'), 'flow']/1000 
+    swest_hs_flow = b_el_s['sequences'][('Electricity_s', 'HS<->Swest'), 'flow']/1000 
+    middle_north_flow = b_el_m['sequences'][('Electricity_m', 'North<->Middle'), 'flow']/1000 
+    north_middle_flow = b_el_n['sequences'][('Electricity_n', 'North<->Middle'), 'flow']/1000 
+    middle_east_flow = b_el_m['sequences'][('Electricity_m', 'East<->Middle'), 'flow']/1000 
+    east_middle_flow = b_el_e['sequences'][('Electricity_e', 'East<->Middle'), 'flow']/1000 
+    middle_swest_flow = b_el_m['sequences'][('Electricity_m', 'Middle<->Swest'), 'flow']/1000 
+    swest_middle_flow = b_el_s['sequences'][('Electricity_s', 'Middle<->Swest'), 'flow']/1000 
     
+    fig = plt.figure(figsize=(22, 12)) 
+    gs = gridspec.GridSpec(3, 3, width_ratios=[2, 1, 1]) 
+    
+    ##### Grid map with arrows ######## 
+    
+    ax0 = fig.add_subplot(gs[:2, 0]) 
+    img_path = os.path.abspath(os.path.join(os.getcwd(), 'figures', 'Thuringia_karte_mit_Landkreisen_dull.png')) 
+    img = mpimg.imread(img_path) 
+    ax0.imshow(img) 
+    ax0.axis('off') 
+    x_1 = [120,130,400,410,250,260,690,700] 
+    y_1 = [440,500,340,400,100,160,440,500] 
+    z_1 = [60,-60,60,-60,60,-60,60,-60] 
+    #Coordinates for green arrows 
+    x_2 = [280,255,350,385,510,555] 
+    y_2 = [460,510,230,275,420,465] 
+    z_2 = [50,-50,50,-50,50,-50] 
+    w_2 = [-35,35,30,-30,40,-40] 
+    for x, y, z in zip(x_1, y_1, z_1): 
+        ax0.arrow(x, y, 0, z, head_width=22, width=8, length_includes_head=True, shape='right', color='red') 
+    
+    for x, y, w, z in zip(x_2, y_2, w_2, z_2): 
+        ax0.arrow(x, y, w, z, head_width=22, width=8, length_includes_head=True, shape='right', color='green') 
+    
+    ax0.text(200, 140, str(round(hs_north_flow.sum())), fontsize = 12) 
+    ax0.text(275,120, str(round(north_hs_flow.sum())), fontsize = 12) 
+    #Netzbezug: Middle 
+    ax0.text(340,385, str(round(hs_middle_flow.sum())), fontsize = 12) 
+    ax0.text(425,360, str(round(middle_hs_flow.sum())), fontsize = 12) 
+    #Netzbezug: East 
+    ax0.text(630,485, str(round(hs_east_flow.sum())), fontsize = 12) 
+    ax0.text(720,465, str(round(east_hs_flow.sum())), fontsize = 12) 
+    #Netzbezug: Swest 
+    ax0.text(70,485, str(round(hs_swest_flow.sum())), fontsize = 12) 
+    ax0.text(140,465, str(round(swest_hs_flow.sum())), fontsize = 12) 
+    #Netzaustausch: Middle <-> Swest 
+    ax0.text(200,500, str(round(middle_swest_flow.sum())), fontsize = 12) 
+    ax0.text(300,475, str(round(swest_middle_flow.sum())), fontsize = 12) 
+    #Netzaustausch: Middle <-> North 
+    ax0.text(370,230, str(round(middle_north_flow.sum())), fontsize = 12) 
+    ax0.text(320,280, str(round(north_middle_flow.sum())), fontsize = 12) 
+    #Netzaustausch: Middle <-> East 
+    ax0.text(500,475, str(round(middle_east_flow.sum())), fontsize = 12) 
+    ax0.text(550,425, str(round(east_middle_flow.sum())), fontsize = 12) 
+    ax0.text(790, 70, '*The values are in GWh', fontsize=10) 
+    red_patch = mpatches.Patch(color='red', label='Transformer Hös<->HS') 
+    green_patch = mpatches.Patch(color='green', label='Connection between regions') 
+    ax0.legend(handles=[red_patch, green_patch], loc='lower right') 
+    
+    # North region flow plot 
+    ax1 = fig.add_subplot(gs[0, 1]) 
+    ax1.plot(north_hs_flow.index, north_hs_flow.values*(-1), label='North → HS', color='blue') 
+    ax1.plot(hs_north_flow.index, hs_north_flow.values, label='HS → North', color='orange') 
+    ax1.set_title('North Flows (GWh)') 
+    ax1.legend() 
+    ax1.tick_params(axis='x', labelrotation=45) 
+    ax1.grid(True) 
+    
+    # Middle region flow plot 
+    ax2 = fig.add_subplot(gs[0, 2]) 
+    ax2.plot(middle_hs_flow.index, middle_hs_flow.values*(-1), label='Middle → HS', color='blue') 
+    ax2.plot(hs_middle_flow.index, hs_middle_flow.values, label='HS → Middle', color='orange') 
+    ax2.set_title('Middle Flows (GWh)') 
+    ax2.legend() 
+    ax2.tick_params(axis='x', labelrotation=45) 
+    ax2.grid(True) 
+    
+    #Swest 
+    ax3 = fig.add_subplot(gs[1, 1]) 
+    ax3.plot(swest_hs_flow.index, swest_hs_flow.values*(-1), label='Swest → HS', color='blue') 
+    ax3.plot(hs_swest_flow.index, hs_swest_flow.values, label='HS → Swest', color='orange') 
+    ax3.set_title('Swest Flows (GWh)') 
+    ax3.legend() 
+    ax3.tick_params(axis='x', labelrotation=45) 
+    ax3.grid(True) 
+    
+    #East 
+    ax4 = fig.add_subplot(gs[1, 2]) 
+    ax4.plot(east_hs_flow.index, east_hs_flow.values*(-1), label='East → HS', color='blue') 
+    ax4.plot(hs_east_flow.index, hs_east_flow.values, label='HS → East', color='orange') 
+    ax4.set_title('East Flows (GWh)') 
+    ax4.legend() 
+    ax4.tick_params(axis='x', labelrotation=45) 
+    ax4.grid(True) 
+    
+    #Leitung north- middle 
+    ax5 = fig.add_subplot(gs[2, 1]) 
+    ax5.plot(north_middle_flow.index, north_middle_flow.values*(-1), label='North → Middle', color='blue') 
+    ax5.plot(middle_north_flow.index, middle_north_flow.values, label='Middle → North', color='orange') 
+    ax5.set_title('North <-> Middle (GWh)') 
+    ax5.legend() 
+    ax5.tick_params(axis='x', labelrotation=45) 
+    ax5.grid(True) 
+    
+    ax6 = fig.add_subplot(gs[2, 2]) 
+    ax6.plot(east_middle_flow.index, east_middle_flow.values*(-1), label='East → Middle', color='blue') 
+    ax6.plot(middle_east_flow.index, middle_east_flow.values, label='Middle → East', color='orange') 
+    ax6.set_title('East <-> Middle (GWh)') 
+    ax6.legend() 
+    ax6.tick_params(axis='x', labelrotation=45) 
+    ax6.grid(True) 
+    
+    ax7 = fig.add_subplot(gs[2,0]) 
+    ax7.plot(middle_swest_flow.index, middle_swest_flow.values*(-1), label='Middle → Swest', color='blue') 
+    ax7.plot(swest_middle_flow.index, swest_middle_flow.values, label='Swest → Middle', color='orange') 
+    ax7.set_title('Middle <-> Swest (GWh)') 
+    ax7.legend() 
+    ax7.tick_params(axis='x', labelrotation=45) 
+    ax7.grid(True) 
+    
+    # Table for Overview of maximum value and predefined value 
+    flows_sum = { 
+        'North <-> HS' :(north_hs_flow + hs_north_flow)*1000, 
+        'Middle <-> HS': (middle_hs_flow + hs_middle_flow)*1000, 
+        'East <-> HS': (east_hs_flow + hs_east_flow)*1000, 
+        'Swest <-> HS':(swest_hs_flow + hs_swest_flow)*1000, 
+        'North <-> Middle':(north_middle_flow + middle_north_flow)*1000, 
+        'East <-> Middle':(east_middle_flow + middle_east_flow)*1000, 
+        'Swest <-> Middle':(swest_middle_flow + middle_swest_flow)*1000 } 
+    
+    flow_max = { region: flows_sum[region].max() for region in flows_sum} 
+    max_def = { 
+        'North <-> HS' :scalars['Electricity_grid']['electricity']['max_power_north'], 
+        'Middle <-> HS': scalars['Electricity_grid']['electricity']['max_power_middle'], 
+        'East <-> HS': scalars['Electricity_grid']['electricity']['max_power_east'], 
+        'Swest <-> HS':scalars['Electricity_grid']['electricity']['max_power_swest'], 
+        'North <-> Middle':scalars['Electricity_grid']['electricity']['connection_north_middle'], 
+        'East <-> Middle':scalars['Electricity_grid']['electricity']['connection_east_middle'], 
+        'Swest <-> Middle':scalars['Electricity_grid']['electricity']['connection_middle_swest'] 
+        } 
+    names =['North <-> HS','Middle <-> HS','East <-> HS','Swest <-> HS','North <-> Middle','East <-> Middle','Swest <-> Middle'] 
+    table_data = [[f"{max_def[reg]:.1f}", f"{flow_max[reg]:.1f}"] for reg in names] 
+    column_labels = ['Limit (MW)', 'Max (MW)'] 
+    
+    ax8 = fig.add_subplot(gs[1, 2]) 
+    table = ax8.table( 
+        cellText=table_data,
+        rowLabels=names, 
+        colLabels=column_labels, 
+        loc='upper left', 
+        colLoc='center', 
+        rowLoc='center', 
+        cellLoc='center', 
+        bbox=[-0.5, 0.4, 0.48, 0.5] # Adjust as needed 
+        ) 
+    
+    table.auto_set_font_size(False) 
+    table.set_fontsize(9) 
+    table.scale(1, 1.3) 
+    plt.tight_layout() 
+    #plt.savefig(os.path.join(os.getcwd(), 'figures', permutation, model_name + "_" + scenario_num + '_grid_and_subplots.png'), dpi=500) 
+    plt.show()
     
