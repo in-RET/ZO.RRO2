@@ -392,8 +392,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         label='UW', 
         outputs={b_uw: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
                                           custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
-                                          investment=solph.Investment(ep_costs= 0,
-                                                                      maximum = scalars['System_configurations_2024']['System']['Potential_Umweltwärme'])
+                                          nominal_value = scalars['System_configurations_2024']['System']['Potential_Umweltwärme']
         )}))
     
     #------------------------------------------------------------------------------
@@ -404,7 +403,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         label='AW', 
         outputs={b_abwaerme: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
                                           custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
-                                          nominal_value = 0) # Not defined for now
+                                          nominal_value = scalars['System_configurations_2024']['System']['Potential_Abwärme']) 
                   }))
     
     """ Imports """
