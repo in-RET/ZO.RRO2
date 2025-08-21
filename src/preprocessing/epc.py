@@ -61,12 +61,25 @@ def annuity(capex, n, wacc, u=None, cost_decrease=0):
         or (u < 1)
         ):
         raise ValueError("Input arguments for 'annuity' out of bounds!")
-
-    return (
-        capex
-        * (wacc * (1 + wacc) ** n)
-        / ((1 + wacc) ** n - 1)
-        * (
-            1 - (u - n) / (u * (1 + wacc) ** n)
-            )
-    )
+        
+    if u>n: # 
+        return (
+            capex
+            * (wacc * (1 + wacc) ** n)
+            / ((1 + wacc) ** n - 1)
+            * (
+                1 - (u - n) / (u * (1 + wacc) ** n)
+                )
+        )
+    else:
+        n = u
+        
+        return (
+            capex
+            * (wacc * (1 + wacc) ** n)
+            / ((1 + wacc) ** n - 1)
+            * (
+                1 - (u - n) / (u * (1 + wacc) ** n)
+                )
+        )
+        
