@@ -73,7 +73,7 @@ def investment_parameter(data,simulation_year, Model_ID):
     return(my_dict)
 
 
-def load_profile_scaling(scalars, sequences, YEAR,  region = True):
+def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
     profile = []                             # Sorting only the timeseies from the list of all files in the sequences folder
     for i in sequences: 
         if i.endswith('profile'):
@@ -285,7 +285,21 @@ def load_profile_scaling(scalars, sequences, YEAR,  region = True):
     demand['material_usage_gas'] = demand_profile_dict['material_usage_gas']['north']+demand_profile_dict['material_usage_gas']['east']+demand_profile_dict['material_usage_gas']['middle']+demand_profile_dict['material_usage_gas']['swest']
     demand['material_usage_oil'] = demand_profile_dict['material_usage_oil']['north']+demand_profile_dict['material_usage_oil']['east']+demand_profile_dict['material_usage_oil']['middle']+demand_profile_dict['material_usage_oil']['swest']
     
-    if region: 
+    print('Demand Electricity: ', demand['electricity'].sum())
+    print('Demand Gas: ', demand['gas'].sum())
+    
+    print('Demand Biomasse: ', demand['biomass'].sum())
+    print('Demand Oil: ', demand['oil'].sum())
+    
+    print('Demand Heat: ', demand['dist_heating'].sum())
+    print('Demand H2: ', demand['H2'].sum())
+    
+    print('Demand Fuel: ', demand['fuel'].sum())
+    print('Demand Matrialbedarf Gas: ', demand['material_usage_gas'].sum())
+    print('Demand Matrialbedarf Oil: ', demand['material_usage_oil'].sum())
+    
+    if model_ID.startswith('BS_regionalization'):
+        print('Region')
         return demand_profile_dict
     else:
         return demand
@@ -319,10 +333,10 @@ def CO2_price_addition(scalars,sequences,YEAR, filename):
         data_dict['import_brown_coal_price'] = sequences[filename]['Brown_coal_'+str(YEAR)] + (scalars['System_configurations']['System']['Emission_Braunkohle']*sequences[filename]['CO2_'+str(YEAR)])+1000000000
         data_dict['import_biomass_price'] = sequences[filename]['Biomass_'+ str(YEAR)]
         data_dict['import_synt_fuel_price'] = sequences[filename]['Synthetic_fuel_'+ str(YEAR)]
-        data_dict['import_electricity_price_alt'] = sequences['Energy_price']['Electricity_'+str(YEAR)]
-        data_dict['import_electricity_price_2019'] = sequences['Energy_price']['Electricity_brain_'+str(YEAR)]
+        # data_dict['import_electricity_price_alt'] = sequences['Energy_price']['Electricity_'+str(YEAR)]
+        # data_dict['import_electricity_price_2019'] = sequences['Energy_price']['Electricity_brain_'+str(YEAR)]
         data_dict['import_electricity_price'] = sequences[filename]['Electricity_'+str(YEAR)]
-        data_dict['export_electricity_price_2019'] = [i *(-1) for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]]
+        # data_dict['export_electricity_price_2019'] = [i *(-1) for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]]
         data_dict['export_electricity_price'] = [i *(-1) for i in sequences[filename]['Electricity_'+str(YEAR)]]
         data_dict['export_hydrogen_price'] = [i*(-1) for i in sequences[filename]['Hydrogen_' + str(YEAR)]]
         data_dict['import_hydrogen_price'] = [i+scalars['Hydrogen_grid']['hydrogen']['grid_operating_fee'] for i in sequences[filename]['Hydrogen_' + str(YEAR)]]
