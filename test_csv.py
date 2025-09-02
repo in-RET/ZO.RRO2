@@ -90,49 +90,5 @@ COP = COP_calculation(scalars, Ta_avg, model_ID, YEAR)
 # plt.legend()
 # plt.grid(True)
 #%%
-electricity_demand = demand['electricity']['middle']
 
-# Calculate peak demand and timing
-peak_demand = electricity_demand.max()
-peak_demand_time = electricity_demand.idxmax()
-print(f"Middle region peak demand: {peak_demand:.2f} MW at {peak_demand_time}")
 
-wind_potential = sequences['feed_in_profile']['Wind_middle'] * scalars['Parameter_onshore_wind_power_plant']['potential_middle_max'][model_ID]
-pv_rooftop_potential = sequences['feed_in_profile']['PV_rooftop_middle'] * scalars['Parameter_rooftop_photovoltaic_power_plant']['potential_middle_max'][model_ID]
-pv_openfield_potential = sequences['feed_in_profile']['PV_openfield_middle'] * scalars['Parameter_field_photovoltaic_power_plant']['potential_middle_max'][model_ID]
-
-# Total renewable potential
-total_renewable_potential = wind_potential + pv_rooftop_potential + pv_openfield_potential
-
-min_renewable = total_renewable_potential.min()
-min_renewable_time = total_renewable_potential.idxmin()
-print(f"Middle region minimum renewable generation: {min_renewable:.2f} MW at {min_renewable_time}")
-
-residual_load = electricity_demand #- total_renewable_potential
-
-# Find worst-case deficit
-max_deficit = residual_load.max()
-max_deficit_time = residual_load.idxmax()
-print(f"Maximum supply deficit: {max_deficit:.2f} MW at {max_deficit_time}")
-residual_load.plot(title="Middle Region Residual Load (Demand - Renewables)")
-plt.axhline(0, color='red', linestyle='--')
-plt.show()
-
-dispatchable_sources = {
-    'Gas plants': scalars['Parameter_combined_heat_and_power_generating_unit']['potential_total'][model_ID],
-    'Hydro': scalars['Parameter_run_river_power_plant']['potential_total'][model_ID],
-    'Battery discharge': scalars['Parameter_storage_electricity']['potential_total'][model_ID] / scalars['Parameter_storage_electricity']['inverse_c_rate'][model_ID],
-    'Pumped hydro': scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['capacity_neu'][model_ID]
-}
-
-total_dispatchable = sum(dispatchable_sources.values())/4
-print("\nDispatchable capacity:")
-for name, cap in dispatchable_sources.items():
-    print(f"{name}: {cap:.2f} MW")
-print(f"Total dispatchable: {total_dispatchable:.2f} MW")
-
-# Compare with maximum deficit
-print(f"\nMaximum deficit requires: {max_deficit:.2f} MW")
-print(f"Dispatchable capacity available: {total_dispatchable:.2f} MW")
-if max_deficit > total_dispatchable:
-    print("⚠️ Infeasibility detected: Dispatchable capacity insufficient for peak deficit")
