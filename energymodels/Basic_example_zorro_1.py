@@ -245,13 +245,21 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         #------------------------------------------------------------------------------
         # Wind power plants
         #------------------------------------------------------------------------------
+        
+        windpotential_gesamt = (scalars['Parameter_onshore_wind_power_plant']['potential_north_max_'+ str(YEAR)][model_ID]+
+                                scalars['Parameter_onshore_wind_power_plant']['potential_east_max_'+ str(YEAR)][model_ID]+
+                                scalars['Parameter_onshore_wind_power_plant']['potential_middle_max_'+ str(YEAR)][model_ID]+
+                                scalars['Parameter_onshore_wind_power_plant']['potential_swest_max_'+ str(YEAR)][model_ID])
+        
         energysystem.add(solph.components.Source(
             label='Wind_north', 
             outputs={b_el: solph.Flow(fix=sequences['feed_in_profile']['Wind_north'],
                                             custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
                                             investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                         #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_north_min'][model_ID],
-                                                                        maximum=scalars['Parameter_onshore_wind_power_plant']['potential_north_max_'+ str(YEAR)][model_ID])
+                                                                        maximum=scalars['Parameter_onshore_wind_power_plant']['potential_north_max_'+ str(YEAR)][model_ID]
+                                                                        # maximum = windpotential_gesamt*1
+                                                                        )
             )}))
         
         energysystem.add(solph.components.Source(
