@@ -258,7 +258,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                             investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                         #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_north_min'][model_ID],
                                                                         maximum=scalars['Parameter_onshore_wind_power_plant']['potential_north_max_'+ str(YEAR)][model_ID]
-                                                                        # maximum = windpotential_gesamt*1
+                                                                        # maximum = windpotential_gesamt*0
                                                                         )
             )}))
         
@@ -400,8 +400,11 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Source(
         label='UW', 
         outputs={b_uw: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
-                                          custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
-                                          nominal_value = scalars['System_configurations_2024']['System']['Potential_Umweltwärme']
+                                  custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
+                                  # nominal_value = scalars['System_configurations_2024']['System']['Potential_Umweltwärme'],
+                                  investment=solph.Investment(ep_costs=0, 
+                                                              maximum=scalars['System_configurations_2024']['System']['Potential_Umweltwärme']
+                                                            )
         )}))
     
     #------------------------------------------------------------------------------
@@ -412,8 +415,21 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         label='AW', 
         outputs={b_abwaerme: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
                                           custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
-                                          nominal_value = scalars['System_configurations_2024']['System']['Potential_Abwärme']) 
+                                          # nominal_value = scalars['System_configurations_2024']['System']['Potential_Abwärme']) 
+                                          investment=solph.Investment(ep_costs=0, 
+                                                                      maximum=scalars['System_configurations_2024']['System']['Potential_Abwärme']
+                                                                      )
+                                          )
                   }))
+    
+    energysystem.add(solph.components.Sink(
+        label='excess_uw', 
+        inputs={b_uw: solph.Flow()}))
+    
+    
+    energysystem.add(solph.components.Sink(
+        label='excess_abwaerme', 
+        inputs={b_abwaerme: solph.Flow()}))
     
     """ Imports """
     #------------------------------------------------------------------------------
@@ -657,11 +673,11 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
         label='Biomasse_elec',
-        inputs={b_bioWood: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+        inputs={b_bioWood: solph.Flow(#fix=sequences['Base_demand_profile']['base_load'],
                                             #nominal_value = 1
-                                            investment = solph.Investment(ep_costs=0)
+                                            # investment = solph.Investment(ep_costs=0)
                                             )},
-        outputs={b_el: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+        outputs={b_el: solph.Flow(#fix=sequences['Base_demand_profile']['base_load'],
                                   investment=solph.Investment(ep_costs=epc_costs['biomass_power_plant']['epc']),
                                   custom_attributes={'emission_factor': scalars['Parameter_biomass_power_plant']['EE_factor'][model_ID]}),
                  
@@ -676,11 +692,11 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
         label='Biomasse_heat',
-        inputs={b_bioWood: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+        inputs={b_bioWood: solph.Flow(#fix=sequences['Base_demand_profile']['base_load'],
                                            #nominal_value = 1
-                                           investment = solph.Investment(ep_costs=0)
+                                           # investment = solph.Investment(ep_costs=0)
                                             )},
-        outputs={b_dist_heat: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+        outputs={b_dist_heat: solph.Flow(#fix=sequences['Base_demand_profile']['base_load'],
                                     investment=solph.Investment(ep_costs=epc_costs['biomass_heating_plant']['epc']),
                                     custom_attributes={'emission_factor': scalars['Parameter_biomass_heating_plant']['EE_factor'][model_ID]})},
         conversion_factors={b_dist_heat: scalars['Parameter_biomass_heating_plant']['efficiency_th_' +str(YEAR)][model_ID]/100}
@@ -692,18 +708,18 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
         label='Biomasse_elec_heat',
-        inputs={b_bioWood: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+        inputs={b_bioWood: solph.Flow(#fix=sequences['Base_demand_profile']['base_load'],
                                             #nominal_value = 1
-                                            investment = solph.Investment(ep_costs=0)
+                                            # investment = solph.Investment(ep_costs=0)
                                             )},
-        outputs={b_el: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],
+        outputs={b_el: solph.Flow(#fix=sequences['Base_demand_profile']['base_load'],
                                   investment=solph.Investment(ep_costs=epc_costs['biomass_combined_heat_and_power_plant']['epc']),
                                   custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]}),
                  
                   b_dist_heat: solph.Flow(custom_attributes={'emission_factor': scalars['Parameter_biomass_combined_heat_and_power_plant']['EE_factor'][model_ID]},
-                                            fix=sequences['Base_demand_profile']['base_load'],
+                                            # fix=sequences['Base_demand_profile']['base_load'],
                                             #nominal_value= 1
-                                            investment = solph.Investment(ep_costs=0)
+                                            # investment = solph.Investment(ep_costs=0)
                                             )
                   },
         conversion_factors={b_el: scalars['Parameter_biomass_combined_heat_and_power_plant']['efficiency_el_' +str(YEAR)][model_ID]/100,
@@ -1207,7 +1223,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_distheat', 
-        inputs={b_dist_heat: solph.Flow(variable_costs = 10000000
+        inputs={b_dist_heat: solph.Flow(#variable_costs = 10000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Wasserstoff

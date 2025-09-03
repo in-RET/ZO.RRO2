@@ -1,6 +1,6 @@
 index;Einheit;System;;
 Anzahl_Zeitschritte;h;8760;;
-Zinssatz;%;10,5;;
+Zinssatz;%;8;;
 Emission_Erdgas;kg_CO2/MWh;202;;
 Emission_Oel;kg_CO2/MWh;266;;
 Emission_Steinkohle;kg_CO2/MWh;338;;

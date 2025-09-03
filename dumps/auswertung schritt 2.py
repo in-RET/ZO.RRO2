@@ -1228,30 +1228,30 @@ fig, ax = plt.subplots(figsize=(19.1, 10.5))
 
 x = np.array(["kein Wind", "10", "20", "30", "40", "50", "60", "70", "80", "90", "viel Wind"])
 
-y = np.array([(res_dis_heat['var1']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest']),
+y = np.array([(res_Elec['var1']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest']),
               
-              (res_dis_heat['var2']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest']),
+              (res_Elec['var2']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest']),
               
-              (res_dis_heat['var3']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest']),
+              (res_Elec['var3']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest']),
               
-              (res_dis_heat['var4']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest']),
+              (res_Elec['var4']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest']),
               
-              (res_dis_heat['var5']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest']),
+              (res_Elec['var5']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest']),
               
-              (res_dis_heat['var6']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest']),
+              (res_Elec['var6']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest']),
               
-              (res_dis_heat['var7']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest']),
+              (res_Elec['var7']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest']),
               
-              (res_dis_heat['var8']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest']),
+              (res_Elec['var8']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest']),
               
-              (res_dis_heat['var9']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest']),
+              (res_Elec['var9']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest']),
               
-              (res_dis_heat['var10']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest']),
+              (res_Elec['var10']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest']),
               
-              (res_dis_heat['var11']["scalars"][('Biomasse_elec_heat', 'District heating'), 'invest'])
+              (res_Elec['var11']["scalars"][('Biomasse_elec_heat', 'Electricity'), 'invest'])
               ])
 
-plt.ylabel('Leistung in MW th')
+plt.ylabel('Leistung in MW el')
 plt.bar(x, y, label='Biomasse_elec_heat')
 plt.legend(fontsize = 20)
 plt.show()
@@ -1261,7 +1261,7 @@ df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
 with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
-    pd.DataFrame(combined).to_excel(writer, sheet_name='Biomasse_elec_heat', index=False)
+    pd.DataFrame(combined).to_excel(writer, sheet_name='Biomasse_elec_heat MWel', index=False)
 
 #%%
 
@@ -1606,3 +1606,291 @@ plt.ylabel('Leistung in MW')
 plt.grid()
 plt.show()
 
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_Elec['var11']['sequences'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+plt.legend(res_Elec['var11']['sequences'].keys(), 
+           loc='upper center', prop={'size': 8},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+# fig.subplots_adjust(top=0.8)
+plt.title('')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_dis_heat['var11']['sequences'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+plt.legend(res_dis_heat['var11']['sequences'].keys(), 
+           loc='upper center', prop={'size': 8},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+# fig.subplots_adjust(top=0.8)
+plt.title('')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+
+text = ['PV_open_north',
+        'PV_open_east',
+        'PV_open_middle',
+        'PV_open_swest',
+        
+        'Wind_north',
+        # 'Wind_east',
+        # 'Wind_middle',
+        # 'Wind_swest'
+        
+        ]
+data = [
+        res_Elec['var11']["sequences"][('PV_open_north', 'Electricity'), 'flow'].sum(),
+        res_Elec['var11']["sequences"][('PV_open_east', 'Electricity'), 'flow'].sum(),
+        res_Elec['var11']["sequences"][('PV_open_middle', 'Electricity'), 'flow'].sum(),
+        res_Elec['var11']["sequences"][('PV_open_swest', 'Electricity'), 'flow'].sum(),
+        
+        res_Elec['var11']["sequences"][('Wind_north', 'Electricity'), 'flow'].sum(),
+        # res_Electricity["sequences"][('Wind_east', 'Electricity'), 'flow'].sum(),
+        # res_Electricity["sequences"][('Wind_middle', 'Electricity'), 'flow'].sum(),
+        # res_Electricity["sequences"][('Wind_swest', 'Electricity'), 'flow'].sum(),
+                 ]
+bars = plt.bar(text, data, color=['#2E74B5'] #"So gehts"-blau
+)
+xlocs, xlabs = plt.xticks()               
+for i, v in enumerate(data):
+    plt.text(xlocs[i] -0.25, v + 0.1, str(round(v)))
+    
+plt.xticks(
+            # xticks_pos,
+            # fontsize=fontsizenr,
+           ha='right',
+           rotation=45)
+
+plt.grid(axis = 'y')
+plt.show()
+plt.ylabel('MWh')
+
+#%%
+
+fig = plt.figure(figsize=(19.1, 10.5))
+plt.plot(date_time_index,
+         res_Heat_storage_dist_heat['var11']['sequences'][
+             ('Heat storage_dist_heat','None'),'storage_content'][:8760], 
+         label='District Heat Storage')
+
+plt.plot(date_time_index,
+          res_Heat_storage_seasonal['var11']['sequences'][
+              ('Heat storage_seasonal','None'),'storage_content'][:8760], 
+          label='Seasonal Heat Storage')
+# plt.ylim(-3,103)
+plt.grid()
+plt.legend()
+plt.ylabel('Speicherfüllstand in MWh')
+plt.xlabel('Zeit')
+
+
+#%%
+
+fig = plt.figure(figsize=(19.1, 10.5))
+plt.plot(date_time_index,
+         res_Gas_storage['var11']['sequences'][
+             ('Gas_storage','None'),'storage_content'][:8760], 
+         label='Gas_storage')
+
+plt.plot(date_time_index,
+          res_H2_storage['var11']['sequences'][
+              ('H2_storage','None'),'storage_content'][:8760], 
+          label='H2_storage')
+# plt.ylim(-3,103)
+plt.grid()
+plt.legend()
+plt.ylabel('Speicherfüllstand in MWh')
+plt.xlabel('Zeit')
+
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+
+x = np.array(["kein Wind", "10", "20", "30", "40", "50", "60", "70", "80", "90", "viel Wind"])
+
+y = np.array([(res_oil_fuel['var1']["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var2']["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var3']["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var4']["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var5']["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var6']["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var7']["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var8']["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var9']["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var10']["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var11']["scalars"][('BtL', 'Oil_fuel'), 'invest'])
+              ])
+
+plt.ylabel('Leistung in MW')
+plt.bar(x, y, label='BtL')
+plt.legend(fontsize = 20)
+plt.show()
+
+
+df1 = pd.DataFrame(x)
+df2 = pd.DataFrame(y)
+combined = pd.concat([df1, df2], axis=1)
+
+with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+    pd.DataFrame(combined).to_excel(writer, sheet_name='BtL', index=False)
+    
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+
+x = np.array(["kein Wind", "10", "20", "30", "40", "50", "60", "70", "80", "90", "viel Wind"])
+
+y = np.array([(res_Elec['var1']["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_Elec['var2']["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_Elec['var3']["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_Elec['var4']["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_Elec['var5']["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_Elec['var6']["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_Elec['var7']["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_Elec['var8']["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_Elec['var9']["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_Elec['var10']["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_Elec['var11']["scalars"][('Fuelcell', 'Electricity'), 'invest'])
+              ])
+
+plt.ylabel('Leistung in MW')
+plt.bar(x, y, label='Fuelcell')
+plt.legend(fontsize = 20)
+plt.show()
+
+df1 = pd.DataFrame(x)
+df2 = pd.DataFrame(y)
+combined = pd.concat([df1, df2], axis=1)
+
+with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+    pd.DataFrame(combined).to_excel(writer, sheet_name='Fuelcell', index=False)
+    
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+
+x = np.array(["kein Wind", "10", "20", "30", "40", "50", "60", "70", "80", "90", "viel Wind"])
+
+y = np.array([(res_oil_fuel['var1']["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var2']["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var3']["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var4']["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var5']["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var6']["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var7']["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var8']["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var9']["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var10']["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              (res_oil_fuel['var11']["scalars"][('PtL', 'Oil_fuel'), 'invest'])
+              ])
+
+plt.ylabel('Leistung in MW')
+plt.bar(x, y, label='PtL')
+plt.legend(fontsize = 20)
+plt.show()
+
+
+df1 = pd.DataFrame(x)
+df2 = pd.DataFrame(y)
+combined = pd.concat([df1, df2], axis=1)
+
+with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+    pd.DataFrame(combined).to_excel(writer, sheet_name='PtL', index=False)
+    
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+
+x = np.array(["kein Wind", "10", "20", "30", "40", "50", "60", "70", "80", "90", "viel Wind"])
+
+y = np.array([res_gas['var1']["scalars"][
+    ('Methanisation', 'Gas'), 'invest'].sum(),
+    
+    res_gas['var2']["scalars"][
+        ('Methanisation', 'Gas'), 'invest'].sum(),
+    
+    res_gas['var3']["scalars"][
+        ('Methanisation', 'Gas'), 'invest'].sum(),
+    
+    res_gas['var4']["scalars"][
+        ('Methanisation', 'Gas'), 'invest'].sum(),
+    
+    res_gas['var5']["scalars"][
+        ('Methanisation', 'Gas'), 'invest'].sum(),
+    
+    res_gas['var6']["scalars"][
+        ('Methanisation', 'Gas'), 'invest'].sum(),
+    
+    res_gas['var7']["scalars"][
+        ('Methanisation', 'Gas'), 'invest'].sum(),
+    
+    res_gas['var8']["scalars"][
+        ('Methanisation', 'Gas'), 'invest'].sum(),
+    
+    res_gas['var9']["scalars"][
+        ('Methanisation', 'Gas'), 'invest'].sum(),
+    
+    res_gas['var10']["scalars"][
+        ('Methanisation', 'Gas'), 'invest'].sum(),
+    
+    res_gas['var11']["scalars"][
+        ('Methanisation', 'Gas'), 'invest'].sum(),
+              
+              ])
+
+plt.ylabel('MW')
+plt.bar(x, y, label='Methanisation')
+plt.legend(fontsize = 20)
+plt.show()
+
+
+df1 = pd.DataFrame(x)
+df2 = pd.DataFrame(y)
+combined = pd.concat([df1, df2], axis=1)
+
+with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+    pd.DataFrame(combined).to_excel(writer, sheet_name='Methanisation', index=False)
