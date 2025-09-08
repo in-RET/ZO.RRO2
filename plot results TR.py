@@ -56,7 +56,7 @@ palette = seaborn.color_palette(cc.glasbey, n_colors=30)
 
 energysystem = solph.EnergySystem()
 energysystem.restore(dpath='dumps/'+ name+ '/', 
-                     filename='BS_2045_BS0006_Wind_P100.dump')
+                     filename='BS_2045_BS0006_Original.dump')
 
 results = energysystem.results["main"]
 
@@ -619,3 +619,70 @@ print(ee_erzeugung/sum_load)
 res_Electricity["scalars"][('PV_rooftop_east', 'Electricity'), 'invest'].sum()+
 res_Electricity["scalars"][('PV_rooftop_middle', 'Electricity'), 'invest'].sum()+
 res_Electricity["scalars"][('PV_rooftop_swest', 'Electricity'), 'invest'].sum())
+
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_Pumped_hydro_storage_bestand['sequences'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+plt.legend(res_Pumped_hydro_storage_bestand['sequences'].keys(), 
+           loc='upper center', prop={'size': 18},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+fig.subplots_adjust(top=0.8)
+plt.title('')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_Electricity['sequences'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+plt.legend(res_Electricity['sequences'].keys(), 
+           loc='upper center', prop={'size': 8},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+# fig.subplots_adjust(top=0.8)
+plt.title('')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_dis_heat['sequences'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+plt.legend(res_dis_heat['sequences'].keys(), 
+           loc='best', prop={'size': 8},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+# fig.subplots_adjust(top=0.8)
+plt.title('')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+
+x = np.array(["BtL", "Fuelcell", "PtL", "Methanisation"])
+
+y = np.array([(res_oil_fuel["scalars"][('BtL', 'Oil_fuel'), 'invest']),
+              
+              (res_Electricity["scalars"][('Fuelcell', 'Electricity'), 'invest']),
+              
+              (res_oil_fuel["scalars"][('PtL', 'Oil_fuel'), 'invest']),
+              
+              res_gas["scalars"][
+                  ('Methanisation', 'Gas'), 'invest'].sum()
+              ])
+
+plt.ylabel('Leistung in MW')
+plt.bar(x, y, label='')
+plt.legend(fontsize = 20)
+plt.show()

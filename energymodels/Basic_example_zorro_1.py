@@ -771,7 +771,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
             ep_costs=epc_costs['heat_pump_ground_Flusswärme']['epc'], 
             # maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential_total'][model_ID]
             ))},
-        conversion_factors={b_dist_heat: COP},
+        conversion_factors={b_el: 1/COP,
+                            b_uw: (COP-1)/COP},
         #conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
       
@@ -787,7 +788,12 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
             # maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential_total'][model_ID]
             ))},
         # conversion_factors={b_dist_heat: COP},
-        conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
+        conversion_factors={b_el: 1/scalars['Parameter_heat_pump_air_Abwärme'][
+            'efficiency_'+str(YEAR)][model_ID],
+                            b_abwaerme: (scalars['Parameter_heat_pump_air_Abwärme'][
+                                'efficiency_'+str(YEAR)][model_ID]-1)/scalars[
+                                    'Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]}
+        # conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
     #------------------------------------------------------------------------------
