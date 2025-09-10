@@ -69,7 +69,7 @@ def solveModels(
         CO2_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['CO2_Grenze_'+str(YEAR)])
         BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_biogas_upgrading_plant']['potential'][model_ID])
         BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['Biomasse_sub_tot'])
-        # Biomasse_limit(model, limit = sim_data['Parameter']['Parameter_biomass_heating_plant']['potential'][model_ID])
+        Biomasse_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['Holzpotential_tot'])
         
         logging.info("Solve the model")
         model.solve(

@@ -117,9 +117,11 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     # Pumpspeicher
     #------------------------------------------------------------------------------
     b_pumps = solph.buses.Bus(label="Pumped-Hydro")
+    
+    b_umgebungsluft = solph.buses.Bus(label="Umgebungsluftbus")
         
     # Hinzufügen der Busse zum Energiesystem-Modell 
-    energysystem.add(b_el, b_gas, b_oil_fuel, b_bio, b_bioWood, b_dist_heat, b_H2, b_solidf, b_abwaerme, b_uw, b_hös, b_preheat, b_pumps)
+    energysystem.add(b_el, b_gas, b_oil_fuel, b_bio, b_bioWood, b_dist_heat, b_H2, b_solidf, b_abwaerme, b_uw, b_hös, b_preheat, b_pumps, b_umgebungsluft)
 
 
     """
@@ -258,7 +260,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                             investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                         #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_north_min'][model_ID],
                                                                         maximum=scalars['Parameter_onshore_wind_power_plant']['potential_north_max_'+ str(YEAR)][model_ID]
-                                                                        # maximum = windpotential_gesamt*0
+                                                                        # maximum = windpotential_gesamt*1
                                                                         )
             )}))
         
@@ -399,8 +401,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
         label='UW', 
-        outputs={b_uw: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
-                                  custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
+        outputs={b_uw: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],                                   
                                   # nominal_value = scalars['System_configurations_2024']['System']['Potential_Umweltwärme'],
                                   investment=solph.Investment(ep_costs=0, 
                                                               maximum=scalars['System_configurations_2024']['System']['Potential_Umweltwärme']
@@ -408,13 +409,20 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         )}))
     
     #------------------------------------------------------------------------------
+    # Umgebungsluft
+    #------------------------------------------------------------------------------
+    
+    energysystem.add(solph.components.Source(
+        label='Umgebungsluft', 
+        outputs={b_umgebungsluft: solph.Flow()}))
+    
+    #------------------------------------------------------------------------------
     # Recovery heat
     #------------------------------------------------------------------------------
            
     energysystem.add(solph.components.Source(
         label='AW', 
-        outputs={b_abwaerme: solph.Flow(fix=sequences['Base_demand_profile']['base_load'], 
-                                          custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
+        outputs={b_abwaerme: solph.Flow(fix=sequences['Base_demand_profile']['base_load'],                                          
                                           # nominal_value = scalars['System_configurations_2024']['System']['Potential_Abwärme']) 
                                           investment=solph.Investment(ep_costs=0, 
                                                                       maximum=scalars['System_configurations_2024']['System']['Potential_Abwärme']
@@ -422,14 +430,14 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                           )
                   }))
     
-    energysystem.add(solph.components.Sink(
-        label='excess_uw', 
-        inputs={b_uw: solph.Flow()}))
+    # energysystem.add(solph.components.Sink(
+    #     label='excess_uw', 
+    #     inputs={b_uw: solph.Flow()}))
     
     
-    energysystem.add(solph.components.Sink(
-        label='excess_abwaerme', 
-        inputs={b_abwaerme: solph.Flow()}))
+    # energysystem.add(solph.components.Sink(
+    #     label='excess_abwaerme', 
+    #     inputs={b_abwaerme: solph.Flow()}))
     
     """ Imports """
     #------------------------------------------------------------------------------
@@ -474,8 +482,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                        #fix=sequences['Base_demand_profile']['base_load'],
                                        # nominal_value = 1,
                                        investment = solph.Investment(ep_costs=0),
-                                       summed_max= scalars['System_configurations_2024']['System']['Holzpotential_tot'],
-                                       # custom_attributes={'Biomasse_factor': 1},
+                                       # summed_max= scalars['System_configurations_2024']['System']['Holzpotential_tot'],
+                                       custom_attributes={'Biomasse_factor': 1},
                                        
         )}))
     
@@ -652,7 +660,14 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['power_to_liquid_system']['epc'], 
                                                                       # maximum=scalars['Parameter_power_to_liquid_system']['potential_total'][model_ID]
                                                                       ))},
-        conversion_factors={b_oil_fuel: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]/100}
+        # conversion_factors={b_oil_fuel: scalars['Parameter_power_to_liquid_system']['efficiency_'+str(YEAR)][model_ID]/100}
+        conversion_factors={b_H2: (
+            (scalars['Parameter_power_to_liquid_system']['efficiency_H2'][model_ID]/100)/
+                                   (scalars['Parameter_power_to_liquid_system']['efficiency_ges'][model_ID]/100)),
+                            b_el: (
+                                (scalars['Parameter_power_to_liquid_system']['efficiency_el'][model_ID]/100)/
+                                   (scalars['Parameter_power_to_liquid_system']['efficiency_ges'][model_ID]/100))
+                            }
         ))
     
     #------------------------------------------------------------------------------
@@ -751,13 +766,19 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
         label="Heatpump_air",
-        inputs={b_el: solph.Flow()},
+        inputs={b_el: solph.Flow(),
+                b_umgebungsluft: solph.Flow(custom_attributes={'emission_factor': scalars[
+                    'Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]}
+                    )
+                },
         outputs={b_dist_heat: solph.Flow(investment = solph.Investment(
-            ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
-            # maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential_total'][model_ID]
+            ep_costs=epc_costs['heat_pump_air_Umgebungswärme']['epc'], 
+            # maximum = scalars['Parameter_heat_pump_air_Umgebungswärme']['potential_total'][model_ID]
             ))},
-        conversion_factors={b_dist_heat: COP},
-        #conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Abwärme']['efficiency_'+str(YEAR)][model_ID]},    
+        conversion_factors={b_el: 1/COP,
+                            b_umgebungsluft: (COP-1)/COP},
+        # conversion_factors={b_dist_heat: COP},
+        #conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_air_Umgebungswärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
     
     #------------------------------------------------------------------------------
@@ -766,13 +787,18 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heatpump_water",
         inputs={b_el: solph.Flow(),
-                b_uw: solph.Flow()},
+                b_uw: solph.Flow(custom_attributes={'emission_factor': scalars[
+                    'Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]}
+                    )
+                },
         outputs={b_dist_heat: solph.Flow(investment = solph.Investment(
             ep_costs=epc_costs['heat_pump_ground_Flusswärme']['epc'], 
             # maximum=scalars['Parameter_heat_pump_ground_Flusswärme']['potential_total'][model_ID]
             ))},
-        conversion_factors={b_el: 1/COP,
-                            b_uw: (COP-1)/COP},
+        conversion_factors={b_el: 1/scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID],
+                            b_uw: (scalars['Parameter_heat_pump_ground_Flusswärme'][
+                                'efficiency_'+str(YEAR)][model_ID]-1)/scalars[
+                                    'Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},
         #conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]},    
         ))
       
@@ -782,7 +808,10 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heatpump_recovery_heat",
         inputs={b_el: solph.Flow(),
-                b_abwaerme: solph.Flow()},
+                b_abwaerme: solph.Flow(custom_attributes={'emission_factor': scalars[
+                    'Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]}
+                    )
+                },
         outputs={b_dist_heat: solph.Flow(investment = solph.Investment(
             ep_costs=epc_costs['heat_pump_air_Abwärme']['epc'], 
             # maximum = scalars['Parameter_heat_pump_air_Abwärme']['potential_total'][model_ID]

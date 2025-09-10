@@ -82,6 +82,9 @@ res_gas = solph.views.node(results, "Gas")
 res_oil_fuel = solph.views.node(results, "Oil_fuel")
 res_solid_fuel = solph.views.node(results, "Solidfuel")
 
+res_wood = solph.views.node(results, "BioWood")
+res_biomass = solph.views.node(results, "Biomass")
+
 
 #%%
 
@@ -686,3 +689,128 @@ plt.ylabel('Leistung in MW')
 plt.bar(x, y, label='')
 plt.legend(fontsize = 20)
 plt.show()
+
+
+#%%
+
+pfad = os.path.join(
+    my_path, "data/scalars/System_configurations_2024.csv"
+)
+system_confi = pd.read_csv(pfad, encoding="unicode_escape", sep=";", decimal=",", index_col=0)
+
+
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+
+x = np.array(["Import Wood", "Holzpotential",
+              "Import Biomasse Substrat", "Potential Biomasse Substrat"])
+
+y = np.array([res_wood["sequences"][('Import_Wood', 'BioWood'), 'flow'].sum(),
+              
+              system_confi.at['Holzpotential_tot', 'System'],
+              
+              res_biomass["sequences"][('Import_solid_fuel', 'Biomass'), 'flow'].sum(),
+                            
+              system_confi.at['Biomasse_sub_tot', 'System']
+              ])
+
+plt.ylabel('MWh')
+plt.bar(x, y, label='')
+plt.legend(fontsize = 20)
+plt.show()
+
+#%%
+
+print(res_dis_heat['sequences'][('District heating', 'excess_b_distheat'), 'flow'].sum())
+
+
+indexes = []
+for idx in res_dis_heat['sequences'].index:
+    if (res_dis_heat["sequences"][('District heating', 'excess_b_distheat'), 'flow'][idx] > 0 and 
+        res_dis_heat["sequences"][('Heat storage_dist_heat', 'District heating'), 'flow'][idx] > 0):
+        indexes.append(idx)
+print(indexes)
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_dis_heat['sequences']['2045-06-04 02:00:00':'2045-06-07 14:00:00'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+# res_Heat_storage_dist_heat['sequences'][
+#     ('Heat storage_dist_heat','None'),'storage_content'][
+#         '2045-06-04 02:00:00':'2045-06-07 14:00:00'].plot(ax=ax, kind='line',
+#                                          drawstyle='steps-post', 
+#                                          color=palette, linewidth=2.5)
+plt.legend(res_dis_heat['sequences'].keys(), 
+           loc='upper center', prop={'size': 8},
+           # bbox_to_anchor=(0.5, 1.25), ncol=2
+           )
+# fig.subplots_adjust(top=0.8)
+plt.title('')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+#%%
+
+fig, ax = plt.subplots(figsize=(8, 8))
+
+# Plot lines
+ax.plot(
+        (res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+            ('PV_open_north', 'Electricity'), 'flow']+
+        res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+            ('PV_open_east', 'Electricity'), 'flow']+
+        res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+            ('PV_open_middle', 'Electricity'), 'flow']+
+        res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+            ('PV_open_swest', 'Electricity'), 'flow']),
+        linewidth=2.5,
+        label='PV'
+        )
+
+ax.plot(        
+        (res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+            ('Wind_north', 'Electricity'), 'flow']+
+        res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+            ('Wind_east', 'Electricity'), 'flow']+
+        res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+            ('Wind_middle', 'Electricity'), 'flow']+
+        res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+            ('Wind_swest', 'Electricity'), 'flow']),
+        linewidth=2.5,
+        label='Wind'
+        )
+
+ax.plot(res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+    ('Biomasse_elec_heat', 'Electricity'), 'flow'],
+    linewidth=2.5,
+    label='Biomasse_elec_heat')
+
+ax.plot(res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+    ('GuD', 'Electricity'), 'flow'],
+    linewidth=2.5,
+        label='GuD')
+
+ax.plot(res_Elec_hoes["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+    ('Import_Electricity', 'Electricity_Hös'), 'flow'],
+    linewidth=2.5, 
+        label='Import_Electricity')
+
+ax.plot(res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+    ('Battery', 'Electricity'), 'flow'],
+    linewidth=2.5,
+        label='Battery')
+
+ax.plot(res_Electricity["sequences"]['2045-06-04 02:00:00':'2045-06-07 14:00:00'][
+            ('Electricity', 'Electricity_demand_total'), 'flow'],
+        color="red")
+
+ax.legend()
+
+#%%
+
+print('Kraftstoff: ', res_oil_fuel["sequences"][('PtL', 'Oil_fuel'), 'flow'][0])
+print('Wasserstoff: ', res_h2["sequences"][('Hydrogen', 'PtL'), 'flow'][0])
+print('Electricity: ', res_Electricity["sequences"][('Electricity', 'PtL'), 'flow'][0])

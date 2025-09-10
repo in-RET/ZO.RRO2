@@ -1894,3 +1894,63 @@ combined = pd.concat([df1, df2], axis=1)
 
 with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Methanisation', index=False)
+    
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_gas['var1']['sequences'].plot(ax=ax, kind='line',
+                                   drawstyle='steps-post', 
+                                   color=palette, linewidth=2.5)
+plt.legend(res_gas['var1']['sequences'].keys(), 
+           loc='upper center', prop={'size': 18},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+fig.subplots_adjust(top=0.8)
+plt.title('Gasbus')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_h2['var1']['sequences'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+plt.legend(res_h2['var1']['sequences'].keys(), 
+           loc='upper center', prop={'size': 18},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+fig.subplots_adjust(top=0.8)
+plt.title('Wasserstoffbus')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_Elec['var1']['sequences'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+plt.legend(res_Elec['var1']['sequences'].keys(), 
+           loc='upper center', prop={'size': 8},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+# fig.subplots_adjust(top=0.8)
+plt.title('')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_dis_heat['var1']['sequences'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+plt.legend(res_dis_heat['var1']['sequences'].keys(), 
+           loc='upper center', prop={'size': 8},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+# fig.subplots_adjust(top=0.8)
+plt.title('')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
