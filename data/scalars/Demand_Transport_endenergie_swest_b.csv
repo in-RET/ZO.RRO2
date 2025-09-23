@@ -1,14 +1,14 @@
-Index;Personenverkehr_2030;Gueterverkehr_2030;Personenverkehr_2040;Gueterverkehr_2040;Personenverkehr_2045;Gueterverkehr_2045
-PKW Verbrenner;0,911;0;0,67;0;0,264;0
-PKW Verbrenner CNG;0;0;0;0;0;0
-PKW - Batterie;0,025;0;0,19;0;0,527;0
-PKW - Wasserstoff;0;0;0;0;0;0
-Busse - Verbrenner;0,023;0;0,046;0;0,034;0
-Busse - Batterie;0,002;0;0,019;0;0,057;0
-Schiene - Verbrenner;0,024;0,035;0,043;0,033;0,039;0,018
-Schiene - Batterie;0,015;0,017;0,032;0,02;0,079;0,028
-Schiene - Wasserstoff;0;0;0;0;0;0
-LKW - Verbrenner;0;0,748;0;0,531;0;0,413
-LKW - Batterie;0;0,201;0;0,416;0;0,541
-LKW - Wasserstoff;0;0;0;0;0;0
-Summe;2,0831572;1,05033129;1,12195146;1,08999093;0,58742907;1,09129592
+Index;Personenverkehr_2030;Gueterverkehr_2030;Personenverkehr_2035;Gueterverkehr_2035;Personenverkehr_2040;Gueterverkehr_2040;Personenverkehr_2045;Gueterverkehr_2045
+PKW Verbrenner;0,911;0;0,7905;0;0,67;0;0,264;0
+PKW Verbrenner CNG;0;0;0;0;0;0;0;0
+PKW - Batterie;0,025;0;0,1075;0;0,19;0;0,527;0
+PKW - Wasserstoff;0;0;0;0;0;0;0;0
+Busse - Verbrenner;0,023;0;0,0345;0;0,046;0;0,034;0
+Busse - Batterie;0,002;0;0,0105;0;0,019;0;0,057;0
+Schiene - Verbrenner;0,024;0,035;0,0335;0,034;0,043;0,033;0,039;0,018
+Schiene - Batterie;0,015;0,017;0,0235;0,0185;0,032;0,02;0,079;0,028
+Schiene - Wasserstoff;0;0;0;0;0;0;0;0
+LKW - Verbrenner;0;0,748;0;0,6395;0;0,531;0;0,413
+LKW - Batterie;0;0,201;0;0,3085;0;0,416;0;0,541
+LKW - Wasserstoff;0;0;0;0;0;0;0;0
+Summe;2,0831572;1,05033129;1,60255433;1,07016111;1,12195146;1,08999093;0,58742907;1,09129592

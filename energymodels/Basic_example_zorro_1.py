@@ -260,7 +260,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                             investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                         #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_north_min'][model_ID],
                                                                         maximum=scalars['Parameter_onshore_wind_power_plant']['potential_north_max_'+ str(YEAR)][model_ID]
-                                                                        # maximum = windpotential_gesamt*1
+                                                                        # maximum = windpotential_gesamt*0
                                                                         )
             )}))
         
@@ -1216,6 +1216,9 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     # Hydrogen demand
     #------------------------------------------------------------------------------
+    
+    print(demand['H2'])
+    
     energysystem.add(solph.components.Sink(
         label='Hydrogen_demand_total', 
         inputs={b_H2: solph.Flow(fix=demand['H2'], 

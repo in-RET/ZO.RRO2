@@ -17,7 +17,7 @@ try:
 except ImportError:
     plt = None
 
-name = "2045_BS0006"
+name = "2035_BS0006"
 
 '''Plot default settings'''
 fontsizenr=20
@@ -56,7 +56,7 @@ palette = seaborn.color_palette(cc.glasbey, n_colors=30)
 
 energysystem = solph.EnergySystem()
 energysystem.restore(dpath='dumps/'+ name+ '/', 
-                     filename='BS_2045_BS0006_Original.dump')
+                     filename='BS_2035_BS0006_ohne_bilanziell.dump')
 
 results = energysystem.results["main"]
 
@@ -96,9 +96,9 @@ text = ['PV_open_north',
         'PV_open_swest',
         
         'Wind_north',
-        # 'Wind_east',
-        # 'Wind_middle',
-        # 'Wind_swest'
+        'Wind_east',
+        'Wind_middle',
+        'Wind_swest'
         
         ]
 data = [
@@ -108,9 +108,9 @@ data = [
         res_Electricity["scalars"][('PV_open_swest', 'Electricity'), 'invest'],
         
         res_Electricity["scalars"][('Wind_north', 'Electricity'), 'invest'],
-        # res_Electricity["scalars"][('Wind_east', 'Electricity'), 'invest'],
-        # res_Electricity["scalars"][('Wind_middle', 'Electricity'), 'invest'],
-        # res_Electricity["scalars"][('Wind_swest', 'Electricity'), 'invest'],
+        res_Electricity["scalars"][('Wind_east', 'Electricity'), 'invest'],
+        res_Electricity["scalars"][('Wind_middle', 'Electricity'), 'invest'],
+        res_Electricity["scalars"][('Wind_swest', 'Electricity'), 'invest'],
                  ]
 bars = plt.bar(text, data, color=['#2E74B5'] #"So gehts"-blau
 )
@@ -138,9 +138,9 @@ text = ['PV_open_north',
         'PV_open_swest',
         
         'Wind_north',
-        # 'Wind_east',
-        # 'Wind_middle',
-        # 'Wind_swest'
+        'Wind_east',
+        'Wind_middle',
+        'Wind_swest'
         
         ]
 data = [
@@ -150,9 +150,9 @@ data = [
         res_Electricity["sequences"][('PV_open_swest', 'Electricity'), 'flow'].sum(),
         
         res_Electricity["sequences"][('Wind_north', 'Electricity'), 'flow'].sum(),
-        # res_Electricity["sequences"][('Wind_east', 'Electricity'), 'flow'].sum(),
-        # res_Electricity["sequences"][('Wind_middle', 'Electricity'), 'flow'].sum(),
-        # res_Electricity["sequences"][('Wind_swest', 'Electricity'), 'flow'].sum(),
+        res_Electricity["sequences"][('Wind_east', 'Electricity'), 'flow'].sum(),
+        res_Electricity["sequences"][('Wind_middle', 'Electricity'), 'flow'].sum(),
+        res_Electricity["sequences"][('Wind_swest', 'Electricity'), 'flow'].sum(),
                  ]
 bars = plt.bar(text, data, color=['#2E74B5'] #"So gehts"-blau
 )
@@ -374,11 +374,6 @@ plt.ylabel('Leistung in MW')
 plt.grid()
 plt.show()
 
-#%%
-
-emissionen_erdgas = (sum(
-    res_gas['sequences'][('Import_Gas','Gas'),'flow'][:8760])
-    * 202)
 
 #%%
 
@@ -397,6 +392,14 @@ plt.grid()
 plt.legend()
 plt.ylabel('Speicherfüllstand in MWh')
 plt.xlabel('Zeit')
+
+#%%
+
+print('Ausspeicherwirkungsgrad Wasserstoff Speicher', 
+      res_H2_storage['sequences'][('H2_storage','Hydrogen'),'flow'][:8760].sum()/res_H2_storage['sequences'][
+          ('Hydrogen','H2_storage'),'flow'][:8760].sum()
+      )
+
 
 #%%
 
@@ -544,7 +547,7 @@ gesamtkosten = (df_costs["variable costs"]["sum variable costs"]
 
 import locale
 locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
-print(locale.format_string('%.2f', gesamtkosten, grouping=True))
+print('Gesamtkosten: ', locale.format_string('%.2f', gesamtkosten, grouping=True))
 
 #%%
 
@@ -588,9 +591,9 @@ res_Electricity["sequences"][('PV_open_middle', 'Electricity'), 'flow'].sum()+
 res_Electricity["sequences"][('PV_open_swest', 'Electricity'), 'flow'].sum()+
 
 res_Electricity["sequences"][('Wind_north', 'Electricity'), 'flow'].sum()+
-# res_Electricity["sequences"][('Wind_east', 'Electricity'), 'flow'].sum()+
-# res_Electricity["sequences"][('Wind_middle', 'Electricity'), 'flow'].sum()+
-# res_Electricity["sequences"][('Wind_swest', 'Electricity'), 'flow'].sum()+
+res_Electricity["sequences"][('Wind_east', 'Electricity'), 'flow'].sum()+
+res_Electricity["sequences"][('Wind_middle', 'Electricity'), 'flow'].sum()+
+res_Electricity["sequences"][('Wind_swest', 'Electricity'), 'flow'].sum()+
 
 res_dis_heat["sequences"][('Biogas- BHKW', 'District heating'), 'flow'].sum()+
 res_Electricity["sequences"][('Biogas- BHKW', 'Electricity'), 'flow'].sum()+
@@ -614,7 +617,7 @@ res_solid_fuel["sequences"][('BioTransformer', 'Solidfuel'), 'flow'].sum()+
 res_oil_fuel["sequences"][('BtL', 'Oil_fuel'), 'flow'].sum()
 )
 
-print(ee_erzeugung/sum_load)
+print('Bilanz: ', ee_erzeugung/sum_load)
 
 #%%
 
@@ -721,7 +724,8 @@ plt.show()
 
 #%%
 
-print(res_dis_heat['sequences'][('District heating', 'excess_b_distheat'), 'flow'].sum())
+print('Überschuss Fernwärme in MWh: ', 
+      res_dis_heat['sequences'][('District heating', 'excess_b_distheat'), 'flow'].sum())
 
 
 indexes = []
@@ -729,12 +733,12 @@ for idx in res_dis_heat['sequences'].index:
     if (res_dis_heat["sequences"][('District heating', 'excess_b_distheat'), 'flow'][idx] > 0 and 
         res_dis_heat["sequences"][('Heat storage_dist_heat', 'District heating'), 'flow'][idx] > 0):
         indexes.append(idx)
-print(indexes)
+# print(indexes)
 
 #%%
 
 fig, ax = plt.subplots(figsize=(19.1, 10.5))
-res_dis_heat['sequences']['2045-06-04 02:00:00':'2045-06-07 14:00:00'].plot(ax=ax, kind='line',
+res_dis_heat['sequences']['2035-06-04 02:00:00':'2035-06-07 14:00:00'].plot(ax=ax, kind='line',
                                  drawstyle='steps-post', 
                                  color=palette, linewidth=2.5)
 # res_Heat_storage_dist_heat['sequences'][
@@ -811,6 +815,42 @@ ax.legend()
 
 #%%
 
-print('Kraftstoff: ', res_oil_fuel["sequences"][('PtL', 'Oil_fuel'), 'flow'][0])
-print('Wasserstoff: ', res_h2["sequences"][('Hydrogen', 'PtL'), 'flow'][0])
-print('Electricity: ', res_Electricity["sequences"][('Electricity', 'PtL'), 'flow'][0])
+print('Kraftstoff: ', res_oil_fuel["sequences"][('PtL', 'Oil_fuel'), 'flow'][10])
+print('Wasserstoff: ', res_h2["sequences"][('Hydrogen', 'PtL'), 'flow'][10])
+print('Electricity: ', res_Electricity["sequences"][('Electricity', 'PtL'), 'flow'][10])
+
+#%%
+
+pfad = os.path.join(
+    my_path, "data/sequences/Energy_price_brainpool_2024.csv"
+)
+strompreis = pd.read_csv(pfad, encoding="unicode_escape", sep=";", decimal=",")
+
+fig, ax = plt.subplots(figsize=(8, 8))
+
+ax.plot(strompreis['Electricity_2035'],
+        color="red")
+
+#%%
+
+stromerloes = np.multiply(
+    np.array(res_Electricity["sequences"][('Electricity', 'Electrolysis'), 'flow'][:8759]),
+    np.array(strompreis['Electricity_2035'][:8759])
+    )
+
+stromerloes.sum()
+
+#%%
+
+pfad = os.path.join(
+    my_path, "data/scalars/System_configurations_2024.csv"
+)
+system_eig = pd.read_csv(pfad, encoding="unicode_escape", sep=";", decimal=",", index_col=0)
+
+(res_Elec_hoes["sequences"][
+    ('Import_Electricity', 'Electricity_Hös'), 'flow'].sum() * system_eig['System']['Emission_Strom_2035']+
+    res_gas['sequences'][('Import_Gas','Gas'),'flow'].sum() * system_eig['System']['Emission_Erdgas']
+    )
+
+    
+
