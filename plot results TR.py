@@ -56,7 +56,7 @@ palette = seaborn.color_palette(cc.glasbey, n_colors=30)
 
 energysystem = solph.EnergySystem()
 energysystem.restore(dpath='dumps/'+ name+ '/', 
-                     filename='BS_2035_BS0006_Strompreis_notNegativ.dump')
+                     filename='BS_2035_BS0006_Strompreis_notNegativ_noExportH2_nichtBilanziell.dump')
 
 results = energysystem.results["main"]
 
