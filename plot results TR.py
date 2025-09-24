@@ -56,7 +56,7 @@ palette = seaborn.color_palette(cc.glasbey, n_colors=30)
 
 energysystem = solph.EnergySystem()
 energysystem.restore(dpath='dumps/'+ name+ '/', 
-                     filename='BS_2035_BS0006_ohne_bilanziell.dump')
+                     filename='BS_2035_BS0006_Strompreis_notNegativ.dump')
 
 results = energysystem.results["main"]
 
@@ -853,4 +853,32 @@ system_eig = pd.read_csv(pfad, encoding="unicode_escape", sep=";", decimal=",", 
     )
 
     
+#%%
 
+# from src.postprocessing.utils_dump import sankey_excel_output
+# sankey_excel_output()
+
+# all_bus_sequences = {}
+# all_bus_scalars = {}
+# all_component_sequences = {}
+# all_component_scalars = {}
+# costs = {}           
+# for scenario_num in scenarios:
+#     dump_path = get_dump_file_path(year, variation, model_name, scenario_num)
+    
+#     if not os.path.exists(dump_path):
+#         print(f"Warning: Dump file not found for scenario {scenario_num}")
+#         continue
+    
+#     # Load results from the current dump file
+#     es, results = load_results_from_dump(dump_path)
+#     costs[scenario_num] = cost_calculation_from_es_and_results(es, results)
+    
+#     # Extract sequences and scalars for this scenario
+#     bus_sequences, bus_scalars, component_sequences, component_scalars = interpret_results(results)
+      
+#     # Store the extracted data by scenario number
+#     all_bus_sequences[scenario_num] = bus_sequences
+#     all_bus_scalars[scenario_num] = bus_scalars
+#     all_component_sequences[scenario_num] = component_sequences
+#     all_component_scalars[scenario_num] = component_scalars

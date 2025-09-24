@@ -26,6 +26,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     import_price = CO2_price_addition(scalars,sequences, YEAR,'Energy_price_brainpool_2024')
     feed_in_profile_new = False
     
+    strompreiszeitreihe = pd.Series([0 if x<0 else x for x in import_price['import_electricity_price']])
+    
     Weather_dir = os.path.abspath(os.path.join(workdir, 'data','weatherdata'))
     middle = Location(os.path.join(Weather_dir,'Erfurt_Binderslebn-hour.csv'), os.path.join(Weather_dir,'Erfurt_Binderslebn-min.dat'))
     north = Location(os.path.join(Weather_dir,'Nordhausen-hour.csv'), os.path.join(Weather_dir,'Nordhausen-min.dat'))
@@ -447,10 +449,12 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Source(
        label='Import_Electricity',
        outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
-                                 variable_costs = import_price['import_electricity_price']+ import_price['grid_operating_fee_HöS<2500h'],
+                                 variable_costs = strompreiszeitreihe + import_price['grid_operating_fee_HöS<2500h'],
                                  custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Strom_'+ str(YEAR)]},
                                  
            )}))
+    
+    # print('Preis Stromimport: ', import_price['import_electricity_price'])
    
     """Link between HöS & HS""" 
     energysystem.add(solph.components.Link(
@@ -535,6 +539,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                                      custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Oel']}
                                                
             )}))
+    
+    print(import_price['import_oil_price'])
     
     #------------------------------------------------------------------------------
     # Import Synthetic fuel
@@ -1135,8 +1141,10 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Sink(
         label='Export_Electricity', 
         inputs={b_el: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
-                                  variable_costs = import_price['export_electricity_price'],
+                                 variable_costs = [i*(-1) for i in strompreiszeitreihe],
         )}))
+    
+    # print('Preis Stromexport: ', import_price['export_electricity_price'])
 
     #------------------------------------------------------------------------------
     # Hydrogen export

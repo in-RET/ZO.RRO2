@@ -165,4 +165,3 @@ def Bilanziell_erneuerbar(om, sim_data, model_name, factor):
         Sum_load +=(sim_data['Loadprofiles']['electricity'].sum() + sim_data['Loadprofiles']['gas'].sum() + sim_data['Loadprofiles']['oil'].sum()+
                   sim_data['Loadprofiles']['fuel'].sum()+sim_data['Loadprofiles']['dist_heating'].sum()+sim_data['Loadprofiles']['H2'].sum())
     constraints.emission_limit(om, limit = -Sum_load*factor)
-    GuD_time(om, limit = 0, Starttime = 1777, Endtime= 7656)

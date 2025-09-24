@@ -10,7 +10,7 @@ from energymodels.Basic_example_zorro_1 import Basisszenario_1 as BS_1
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
 from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
-from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, BiogasNeuanlagen_limit,Biomasse_limit, Bilanziell_erneuerbar
+from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, BiogasNeuanlagen_limit,Biomasse_limit, Bilanziell_erneuerbar, GuD_time
 from docs.scenario.create_md_file import create_simulation_doc
 from src.postprocessing.so_gehts_plot import so_gehts_bar_plot
 from src.postprocessing.plots import heat_maps
@@ -65,11 +65,14 @@ def solveModels(
                Bilanziell_erneuerbar(model, sim_data, model_name, factor = 0.55)
            else:
                Bilanziell_erneuerbar(model, sim_data, model_name, factor =1)
+        else:
+            logging.info("NICHT Bilanziell erneuerbar")
                 
         CO2_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['CO2_Grenze_'+str(YEAR)])
         BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_biogas_upgrading_plant']['potential'][model_ID])
         BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['Biomasse_sub_tot'])
         Biomasse_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['Holzpotential_tot'])
+        GuD_time(model, limit = 0, Starttime = 1777, Endtime= 7656)
         
         logging.info("Solve the model")
         model.solve(
