@@ -1151,8 +1151,9 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='Export_Electricity', 
-        inputs={b_el_out: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
-                                 variable_costs = [i*(-1) for i in strompreiszeitreihe],
+        inputs={b_el_out: solph.Flow(
+            nominal_value= scalars['Electricity_grid']['electricity']['max_Rueckspeisung_2045'],
+            variable_costs = [i*(-1) for i in strompreiszeitreihe]
         )}))
     
     # print('Preis Stromexport: ', import_price['export_electricity_price'])
