@@ -10,8 +10,8 @@ if __name__ == "__main__":
 
     sim_data, result,csv = solveModels(
         variations=["BS0006"],
-        scenario_num = "Strompreis_notNegativ_noExportH2",
-        years=[2035],# 2040, 2050],
+        scenario_num = "Export_Elec_Limit",
+        years=[2045],# 2040, 2050],
         model_name='BS', #"BS_regionalization",
         solver="gurobi",
         gap=0.0,
