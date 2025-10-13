@@ -1178,6 +1178,14 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         inputs={b_el_out: solph.Flow(fix=demand['electricity'], 
                                  nominal_value=1,
         )}))
+    
+    if YEAR==2045:
+        energysystem.add(solph.components.Sink(
+            label='Electricity_demand_Rechenzentren', 
+            inputs={b_el_out: solph.Flow(fix=[80*1e6*0.045/8760] * 8760,
+                                         nominal_value=1,
+            )}))
+    
     #------------------------------------------------------------------------------
     # Biomass demand
     #------------------------------------------------------------------------------
