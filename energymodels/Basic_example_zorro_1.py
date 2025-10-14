@@ -452,7 +452,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
        label='Import_Electricity',
        outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
                                  variable_costs = strompreiszeitreihe + import_price['grid_operating_fee_HöS<2500h'],
-                                 custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Strom_'+ str(YEAR)]},
+                                 custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Strom_'+ str(YEAR)],
+                                                    'import_bilanz': -1},
                                  
            )}))
     
@@ -537,7 +538,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Source(
         label='Import_Gas',
         outputs={b_gas: solph.Flow(variable_costs = import_price['import_gas_price'],
-                                         custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Erdgas']},
+                                   custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Erdgas'],
+                                                      'import_bilanz': -1},
                                    
         )}))
     
@@ -547,11 +549,12 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Source(
         label='Import_Oil',
         outputs={b_oil_fuel: solph.Flow(variable_costs = import_price['import_oil_price'],
-                                                     custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Oel']}
+                                        custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Oel'],
+                                                           'import_bilanz': -1}
                                                
             )}))
     
-    print(import_price['import_oil_price'])
+    # print(import_price['import_oil_price'])
     
     #------------------------------------------------------------------------------
     # Import Synthetic fuel
@@ -559,6 +562,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Source(
         label='Import_Synthetic_fuel',
         outputs={b_oil_fuel: solph.Flow(variable_costs = import_price['import_synt_fuel_price'],
+                                        custom_attributes={'import_bilanz': -1}
             )}))
     
     #------------------------------------------------------------------------------
@@ -568,6 +572,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         label='Import_Hydrogen',
         outputs={b_H2: solph.Flow(nominal_value = scalars['Hydrogen_grid']['hydrogen']['max_power'],
                                   variable_costs = import_price['import_hydrogen_price'],
+                                  custom_attributes={'import_bilanz': -1}
             )}))
     
        
@@ -1152,8 +1157,9 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Sink(
         label='Export_Electricity', 
         inputs={b_el_out: solph.Flow(
-            nominal_value= scalars['Electricity_grid']['electricity']['max_Rueckspeisung_2045'],
-            variable_costs = [i*(-1) for i in strompreiszeitreihe]
+            nominal_value= scalars['Electricity_grid']['electricity']['max_Rueckspeisung_'+str(YEAR)],
+            variable_costs = [i*(-1) for i in strompreiszeitreihe],
+            custom_attributes={'export_bilanz': -1}
         )}))
     
     # print('Preis Stromexport: ', import_price['export_electricity_price'])
@@ -1164,7 +1170,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Sink(
         label='Export_Hydrogen', 
         inputs={b_H2: solph.Flow(nominal_value = scalars['Hydrogen_grid']['hydrogen']['max_power'],
-                                 variable_costs = import_price['export_hydrogen_price']
+                                 variable_costs = import_price['export_hydrogen_price'],
+                                 custom_attributes={'export_bilanz': -1}
                                   
         )}))
     

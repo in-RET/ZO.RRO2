@@ -24,6 +24,51 @@ def emission_factor(om, flows=None, limit=None):
                            keyword='emission_factor',
                            flows=flows,
                            limit=limit)
+    
+
+def calculate_keyword_limit_sum(om, keyword_limit, flows=None):
+    flows_limit = _check_and_set_flows(om, flows, keyword_limit)
+    limit_sum = sum(
+        om.flow[inflow, outflow, p, t]
+        * om.timeincrement[t]
+        * sequence(getattr(flows_limit[inflow, outflow], keyword_limit))[t]
+        for (inflow, outflow) in flows_limit
+        for p, t in om.TIMEINDEX
+    )
+    return limit_sum
+
+def import_export_bilanz(om, keyword, keyword_limit, flows=None):
+    flows_main = _check_and_set_flows(om, flows, keyword)
+    limit_name = "integral_limit_" + keyword
+
+    # Integral-Ausdruck für das Hauptkeyword
+    setattr(
+        om,
+        limit_name,
+        po.Expression(
+            expr=sum(
+                om.flow[inflow, outflow, p, t]
+                * om.timeincrement[t]
+                * sequence(getattr(flows_main[inflow, outflow], keyword))[t]
+                for (inflow, outflow) in flows_main
+                for p, t in om.TIMEINDEX
+            )
+        ),
+    )
+
+    # Limit berechnen (intern)
+    limit = calculate_keyword_limit_sum(om, keyword_limit, flows)
+
+    # Constraint mit dynamischer Schranke
+    setattr(
+        om,
+        limit_name + "_constraint",
+        po.Constraint(expr=(getattr(om, limit_name) <= limit)),
+    )
+
+    return om
+
+
 
 
 # def generic_integral_limit(om, keyword, flows=None, limit=None):
@@ -165,3 +210,44 @@ def Bilanziell_erneuerbar(om, sim_data, model_name, factor):
         Sum_load +=(sim_data['Loadprofiles']['electricity'].sum() + sim_data['Loadprofiles']['gas'].sum() + sim_data['Loadprofiles']['oil'].sum()+
                   sim_data['Loadprofiles']['fuel'].sum()+sim_data['Loadprofiles']['dist_heating'].sum()+sim_data['Loadprofiles']['H2'].sum())
     constraints.emission_limit(om, limit = -Sum_load*factor)
+    
+    
+def _check_and_set_flows(om, flows, keyword):
+    """Checks and sets flows if needed
+
+    Parameters
+    ----------
+    om : oemof.solph.Model
+        Model to which constraints are added.
+
+    flows : dict
+        Dictionary holding the flows that should be considered in constraint.
+        Keys are (source, target) objects of the Flow. If no dictionary is
+        given all flows containing the keyword attribute will be
+        used.
+
+    keyword : string
+        attribute to consider
+
+    Returns
+    -------
+    flows : dict
+        the flows to be considered
+    """
+    if flows is None:
+        flows = {}
+        for i, o in om.flows:
+            if hasattr(om.flows[i, o], keyword):
+                flows[(i, o)] = om.flows[i, o]
+
+    else:
+        for i, o in flows:
+            if not hasattr(flows[i, o], keyword):
+                raise AttributeError(
+                    (
+                        "Flow with source: {0} and target: {1} "
+                        "has no attribute {2}."
+                    ).format(i.label, o.label, keyword)
+                )
+
+    return flows

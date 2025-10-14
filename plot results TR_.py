@@ -56,7 +56,7 @@ palette = seaborn.color_palette(cc.glasbey, n_colors=30)
 
 energysystem = solph.EnergySystem()
 energysystem.restore(dpath='dumps/'+ name+ '/', 
-                     filename='BS_2045_BS0006_inkl_Netzverluste.dump')
+                     filename='BS_2045_BS0006_BtL_Test.dump')
 
 results = energysystem.results["main"]
 
@@ -231,11 +231,19 @@ plt.xlabel('Zeit')
 
 fig, ax = plt.subplots(figsize=(19.1, 10.5))
 
-x = np.array(["Import_Electricity", "Export_Electricity"
+x = np.array(["Import", "Export"
               ])
 
-y = np.array([res_Elec_hoes["sequences"][
-    ('Import_Electricity', 'Electricity_Hös'), 'flow'].sum(),
+y = np.array([(res_Elec_hoes["sequences"][
+    ('Import_Electricity', 'Electricity_Hös'), 'flow'].sum()+
+    res_h2["sequences"][
+        ('Import_Hydrogen', 'Hydrogen'), 'flow'].sum()+
+    res_oil_fuel["sequences"][
+        ('Import_Synthetic_fuel', 'Oil_fuel'), 'flow'].sum()+
+    res_oil_fuel["sequences"][
+        ('Import_Oil', 'Oil_fuel'), 'flow'].sum()+
+    res_gas["sequences"][
+        ('Import_Gas', 'Gas'), 'flow'].sum()),
     
     res_Electricity_out["sequences"][
         ('ElectricityOut', 'Export_Electricity'), 'flow'].sum(),

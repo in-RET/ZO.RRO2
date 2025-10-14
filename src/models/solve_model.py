@@ -10,7 +10,7 @@ from energymodels.Basic_example_zorro_1 import Basisszenario_1 as BS_1
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
 from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
-from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, BiogasNeuanlagen_limit,Biomasse_limit, Bilanziell_erneuerbar, GuD_time
+from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, BiogasNeuanlagen_limit,Biomasse_limit, Bilanziell_erneuerbar, GuD_time, import_export_bilanz
 from docs.scenario.create_md_file import create_simulation_doc
 from src.postprocessing.so_gehts_plot import so_gehts_bar_plot
 from src.postprocessing.plots import heat_maps
@@ -64,7 +64,8 @@ def solveModels(
            if YEAR <= 2030:
                Bilanziell_erneuerbar(model, sim_data, model_name, factor = 0.55)
            else:
-               Bilanziell_erneuerbar(model, sim_data, model_name, factor =1)
+               # Bilanziell_erneuerbar(model, sim_data, model_name, factor =1)
+               import_export_bilanz(model, "import_bilanz", "export_bilanz")
         else:
             logging.info("NICHT Bilanziell erneuerbar")
                 
