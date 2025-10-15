@@ -940,7 +940,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.GenericStorage(
         label='Battery',
         inputs={b_el_in: solph.Flow()},
-        outputs={b_el_out: solph.Flow()},
+        outputs={b_el_in: solph.Flow()},
         loss_rate=0,
         inflow_conversion_factor=scalars['Parameter_storage_electricity']['efficiency_in_'+str(YEAR)][model_ID]/100,
         outflow_conversion_factor=scalars['Parameter_storage_electricity']['efficiency_out_'+str(YEAR)][model_ID]/100,
@@ -959,7 +959,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.GenericStorage(
         label='Li-Ion_Battery',
         inputs={b_el_in: solph.Flow()},
-        outputs={b_el_out: solph.Flow()},
+        outputs={b_el_in: solph.Flow()},
         loss_rate=0,
         inflow_conversion_factor=scalars['Parameter_storage_electricity_Li-Ion']['efficiency_in_'+str(YEAR)][model_ID]/100,
         outflow_conversion_factor=scalars['Parameter_storage_electricity_Li-Ion']['efficiency_out_'+str(YEAR)][model_ID]/100,
@@ -978,7 +978,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.GenericStorage(
         label='Natrium_Battery',
         inputs={b_el_in: solph.Flow()},
-        outputs={b_el_out: solph.Flow()},
+        outputs={b_el_in: solph.Flow()},
         loss_rate=0,
         inflow_conversion_factor=scalars['Parameter_storage_electricity_Natrium']['efficiency_in_'+str(YEAR)][model_ID]/100,
         outflow_conversion_factor=scalars['Parameter_storage_electricity_Natrium']['efficiency_out_'+str(YEAR)][model_ID]/100,
@@ -997,7 +997,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.GenericStorage(
         label='Red-OX_Battery',
         inputs={b_el_in: solph.Flow()},
-        outputs={b_el_out: solph.Flow()},
+        outputs={b_el_in: solph.Flow()},
         loss_rate=0,
         inflow_conversion_factor=scalars['Parameter_storage_electricity_Red-OX']['efficiency_in_'+str(YEAR)][model_ID]/100,
         outflow_conversion_factor=scalars['Parameter_storage_electricity_Red-OX']['efficiency_out_'+str(YEAR)][model_ID]/100,
@@ -1095,7 +1095,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                           minimum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['potential_bestand'][model_ID],
                                           maximum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['potential_bestand'][model_ID])
             )},
-        outputs={b_el_out: solph.Flow(
+        outputs={b_el_in: solph.Flow(
             investment = solph.Investment(ep_costs= epc_costs['storage_electricity_pumped_hydro_storage_power_technology(Technology)']['epc'],
                               minimum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['potential_bestand'][model_ID],
                               maximum= scalars['Parameter_storage_electricity_pumped_hydro_storage_power_technology(Becken)']['potential_bestand'][model_ID])

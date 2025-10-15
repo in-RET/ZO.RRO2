@@ -56,7 +56,7 @@ palette = seaborn.color_palette(cc.glasbey, n_colors=30)
 
 energysystem = solph.EnergySystem()
 energysystem.restore(dpath='dumps/'+ name+ '/', 
-                     filename='BS_2045_BS0006_BtL_Test.dump')
+                     filename='BS_2045_BS0006_Original.dump')
 
 results = energysystem.results["main"]
 
@@ -669,6 +669,21 @@ plt.legend(res_Electricity_in['sequences'].keys(),
            bbox_to_anchor=(0.5, 1.25), ncol=2)
 # fig.subplots_adjust(top=0.8)
 plt.title('Strombus')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_gas['sequences'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+plt.legend(res_gas['sequences'].keys(), 
+           loc='upper center', prop={'size': 8},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+# fig.subplots_adjust(top=0.8)
+plt.title('Gasbus')
 plt.ylabel('Leistung in MW')
 plt.grid()
 plt.show()
