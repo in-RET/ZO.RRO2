@@ -7,8 +7,9 @@ Created on Mon Oct 14 16:08:46 2024
 
 import matplotlib.colors as mcolors
 import matplotlib
+import pandas as pd
 #from src.preprocessing.location import Location
-from src .preprocessing.conversion import investment_parameter,COP_calculation, load_profile_scaling
+from src .preprocessing.conversion import investment_parameter,COP_calculation, load_profile_scaling, create_user_level_demands
 from src.preprocessing.files import read_input_files
 from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
 from src.preprocessing.location import Location
@@ -45,8 +46,9 @@ model_ID = 'BS0005'
 sequences = read_input_files(
     folder_name='data/sequences', sub_folder_name=None)
 scalars = read_input_files(folder_name='data/scalars', sub_folder_name=None)
-demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
+#demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
 #demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
+user_demand = create_user_level_demands(scalars, sequences, YEAR, region = True)
 epc_costs = investment_parameter(scalars, YEAR, model_ID)
 results = energysystem.results["main"]
 year = [2030, 2040, 2050]
@@ -65,6 +67,19 @@ for L in Planing_region:
     L.PV_feed_in_profile(YEAR)
 
 COP = COP_calculation(scalars, Ta_avg, model_ID, YEAR)
+
+
+summary_data = []
+for sector, regions in user_demand.items():
+    for region, series in regions.items():
+        summary_data.append({
+            'Sector': sector,
+            'Region': region,
+            'Sum': series.sum()/1000000
+        })
+
+summary_df = pd.DataFrame(summary_data)
+print(summary_df)
     #%%
 # AC_power_nom_1_n = north.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for openfield
 # AC_power_nom_1_e = east.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for rooftop
