@@ -12,12 +12,12 @@ if __name__ == "__main__":
         variations=["BS0006"],
         scenario_num = "test_sim",
         years=[2030],# 2040, 2050],
-        model_name='BS_regionalization',
+        model_name='Basic_example_zorro_1_utility_energy',
         solver="gurobi",
         gap=0.0,
         solver_output=False,
         print_graph=False,
-        Anteilig_erneuerbar = True,
+        Anteilig_erneuerbar = False,
         hypothese = "Regionalisation of the new Basis scenario",
         sim_remarks = "- The techno-economical parameters are updated. \n"+
                         "- All changes made in BAsic exapmple by TR is updated in this scenario"

@@ -390,19 +390,19 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heat
         #------------------------------------------------------- ###### Haushalte #######
         if demand_type == 'space_heating_household':
             technologies = {
-                'PtH_Heizstab': (
+                'PtH Heizstab': (
                     load_profile_nom['Heat_demand_profile']['Heat+TWW_' + r] *
                     (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Heizstab'])/100))
                 ) * 1000000,
                 
-                'PtH_Luftwaermepumpe': (
+                'PtH Luftwaermepumpe': (
                     load_profile_nom['Heat_demand_profile']['Heat+TWW_' + r] *
                     (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Luftwaermepumpe'])/100))
                 ) * 1000000,
                 
-                'PtH_Erdwaermepumpe': (
+                'PtH Erdwaermepumpe': (
                     load_profile_nom['Heat_demand_profile']['Heat+TWW_' + r] *
                     (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Erdwaermepumpe'])/100))
@@ -420,13 +420,13 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heat
                      (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Festbrennstoffkessel'])/100))
                 ) * 1000000,
                 
-                'Heizkessel_Gas': (
+                'Heizkessel Gas': (
                     load_profile_nom['Heat_demand_profile']['Heat+TWW_' + r] *
                     (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Heizkessel Gas'])/100))
                 ) * 1000000,
                 
-                'Heizkessel_Oel': (
+                'Heizkessel Oel': (
                     load_profile_nom['Heat_demand_profile']['Heat+TWW_' + r] *
                     (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Household_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Heizkessel Oel'])/100))
@@ -466,19 +466,19 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heat
         #------------------------------------------------------- ###### Industry #######
         elif demand_type == 'space_heating_industry':
             technologies = {
-                'PtH_Heizstab': (
+                'PtH Heizstab': (
                     load_profile_nom['Heat_demand_profile']['HA4_' + r] *
                     (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Heizstab'])/100))
                 ) * 1000000,
                 
-                'PtH_Luftwaermepumpe': (
+                'PtH Luftwaermepumpe': (
                     load_profile_nom['Heat_demand_profile']['HA4_' + r] *
                     (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Luftwaermepumpe'])/100))
                 ) * 1000000,
                 
-                'PtH_Erdwaermepumpe': (
+                'PtH Erdwaermepumpe': (
                     load_profile_nom['Heat_demand_profile']['HA4_' + r] *
                     (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['PtH Erdwaermepumpe'])/100))
@@ -502,19 +502,19 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heat
                      (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Festbrennstoffkessel_1'])/100))
                 ) * 1000000,
                 
-                'Heizkessel_Gas': (
+                'Heizkessel Gas': (
                     load_profile_nom['Heat_demand_profile']['HA4_' + r] *
                     (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Heizkessel Gas'])/100))
                 ) * 1000000,
                 
-                'Heizkessel_Gas_1': (
+                'Heizkessel Gas_1': (
                     load_profile_nom['Heat_demand_profile']['HA4_' + r] *
                     (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Heizkessel Gas_1'])/100))
                 ) * 1000000,
                 
-                'Heizkessel_Wasserstoff': (
+                'Heizkessel Wasserstoff': (
                     load_profile_nom['Heat_demand_profile']['HA4_' + r] *
                     (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Summe']) *
                      (float(scalars['Demand_Industry_' + r + '_b']['Raumwaerme_' + str(YEAR)]['Heizkessel Wasserstoff'])/100))
@@ -853,6 +853,7 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heat
             technology_data[r][tech_name] = {
                 'series': tech_series,
                 'max_value': tech_series.max(),
+                'min_value': tech_series.min(),
                 'max_time': tech_series.idxmax(),
                 'total_value': tech_series.sum()
             }
@@ -863,6 +864,7 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heat
             sector_sum[r] = {
                 'series': sector_sum_series,
                 'max_value': sector_sum_series.max(),
+                'min_value': tech_series.min(),
                 'max_time': sector_sum_series.idxmax(),
                 'total_value': sector_sum_series.sum()
             }
@@ -870,6 +872,7 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heat
             sector_sum[r] = {
                 'series': pd.Series(0, index=sequences[list(sequences.keys())[0]].index),
                 'max_value': 0,
+                'min_value': 0,
                 'max_time': None,
                 'total_value': 0
             }
@@ -894,6 +897,7 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heat
                 summed_technology_breakdown[tech_name] = {
                     'series': summed_series,
                     'max_value': summed_series.max(),
+                    'min_value': summed_series.min(),
                     'max_time': summed_series.idxmax(),
                     'total_value': summed_series.sum()
                 }
@@ -904,6 +908,7 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heat
         summed_sector_sum = {
             'series': summed_sector_series,
             'max_value': summed_sector_series.max(),
+            'min_value': summed_series.min(),
             'max_time': summed_sector_series.idxmax(),
             'total_value': summed_sector_series.sum()
         }

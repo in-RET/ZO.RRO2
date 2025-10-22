@@ -5,7 +5,7 @@ import pandas as pd
 from oemof import solph
 
 from energymodels.BS_regionalization import BS_regionalization
-#from energymodels.BS_region_test import BS_test_middle as BS_regionalization
+from energymodels.Basic_example_zorro_1_utility_energy import Basisszenario_1_Nutz 
 from energymodels.Basic_example_zorro_1 import Basisszenario_1 as BS_1
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
@@ -46,6 +46,8 @@ def solveModels(
         logging.info("Building the energy system")
         if model_name.startswith('BS_regionalization'):
             energysystem,sim_data = BS_regionalization(permutation, model_name)
+        elif model_name.endswith('utility_energy'):
+            energysystem,sim_data = Basisszenario_1_Nutz(permutation)
         else:
             energysystem,sim_data = BS_1(permutation)
         if print_graph:
