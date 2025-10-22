@@ -10,9 +10,11 @@ workdir= os.getcwd()
 import pandas as pd
 from oemof import network, solph
 from src.preprocessing.files import read_input_files
-from src.preprocessing.conversion import investment_parameter, CO2_price_addition, load_profile_scaling, COP_calculation
+from src.preprocessing.conversion import investment_parameter, CO2_price_addition, load_profile_scaling, COP_calculation, Utility_demand_breakdown
 from src.preprocessing.zorro_1_load_profile import zorro_1_loadprofile_scaling 
 from src.preprocessing.location import Location
+import locale
+locale.setlocale(locale.LC_ALL, '')
 
 def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     YEAR, model_ID = PERMUATION.split("_")
@@ -20,8 +22,15 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
-    demand = load_profile_scaling(scalars,sequences, YEAR, model_ID, region=False)
-    #demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
+    demands = ['space_heating_household', 'space_heating_industry', 'space_heating_ghd',
+               'process_heating_industry', 'process_heating_ghd',
+               'cooling_household', 'cooling_industry', 'cooling_ghd',
+               'electrical_household', 'electrical_ghd', 'electrical_industry',
+               'mobility_person', 'mobility_goods', 'material_usage_industry'
+               ]
+    demand = {}
+    for d in demands:
+        demand[d] = Utility_demand_breakdown(scalars, sequences, YEAR, demand_type= d, region= False)
     epc_costs = investment_parameter(scalars, YEAR, model_ID)
     import_price = CO2_price_addition(scalars,sequences, YEAR,'Energy_price_brainpool_2024')
     feed_in_profile_new = False
@@ -1165,102 +1174,728 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     # Güter Verkehr
     #------------------------------------------------------------------------------   
-    b_gutV= solph.buses.Bus(label="Güter Verkehr")
+    b_gutV= solph.buses.Bus(label="Mobility_goods")
     #------------------------------------------------------------------------------
     # Personen Verkehr
     #------------------------------------------------------------------------------   
-    b_perV= solph.buses.Bus(label="Personen Verkehr")
+    b_perV= solph.buses.Bus(label="Mobility_people")
     #------------------------------------------------------------------------------
     # Prozesswärme Industrie
     #------------------------------------------------------------------------------   
-    b_PW_ind= solph.buses.Bus(label="Prozesswärme Industrie")
+    b_PW_ind= solph.buses.Bus(label="Processheat_industry")
     #------------------------------------------------------------------------------
     # Prozesswärme GHD
     #------------------------------------------------------------------------------   
-    b_PW_GHD= solph.buses.Bus(label="Prozesswärme GHD")
+    b_PW_GHD= solph.buses.Bus(label="Processheat_GHD")
     #------------------------------------------------------------------------------
     # Strom Haushalte
     #------------------------------------------------------------------------------   
-    b_el_haus= solph.buses.Bus(label="Strom Haushalte")
+    b_el_haus= solph.buses.Bus(label="Electricity_household")
     #------------------------------------------------------------------------------
     # Strom Industrie
     #------------------------------------------------------------------------------   
-    b_el_ind= solph.buses.Bus(label="Strom Industrie")
+    b_el_ind= solph.buses.Bus(label="Electricity_industry")
     #------------------------------------------------------------------------------
     # Strom GHD
     #------------------------------------------------------------------------------   
-    b_el_GHD= solph.buses.Bus(label="Strom GHD")
+    b_el_GHD= solph.buses.Bus(label="Electricity_GHD")
     #------------------------------------------------------------------------------
     # Raumwärme Haushalte
     #------------------------------------------------------------------------------   
-    b_heat_haus= solph.buses.Bus(label="Raumwärme Haushalte")
+    b_heat_haus= solph.buses.Bus(label="Spaceheating_household")
     #------------------------------------------------------------------------------
     # Raumwärme Industrie
     #------------------------------------------------------------------------------   
-    b_heat_ind= solph.buses.Bus(label="Raumwärme Industrie")
+    b_heat_ind= solph.buses.Bus(label="Spaceheating_industry")
     #------------------------------------------------------------------------------
     # Raumwärme GHD
     #------------------------------------------------------------------------------   
-    b_heat_GHD= solph.buses.Bus(label="Raumwärme GHD")
+    b_heat_GHD= solph.buses.Bus(label="Spaceheatin_GHD")
     #------------------------------------------------------------------------------
     # Raumkälte Haushalte
     #------------------------------------------------------------------------------   
-    b_cool_haus= solph.buses.Bus(label="Raumkälte Haushalte")
+    b_cool_haus= solph.buses.Bus(label="Spacecooling_household")
     #------------------------------------------------------------------------------
     # Raumkälte Industrie
     #------------------------------------------------------------------------------   
-    b_cool_ind= solph.buses.Bus(label="Raumkälte Industrie")
+    b_cool_ind= solph.buses.Bus(label="Spacecooling_industry")
     #------------------------------------------------------------------------------
     # Raumkälte GHD
     #------------------------------------------------------------------------------   
-    b_cool_GHD= solph.buses.Bus(label="Raumkälte Industrie")
+    b_cool_GHD= solph.buses.Bus(label="Spacecooling_GHD")
+    #------------------------------------------------------------------------------
+    # Stoff. Nutzung
+    #------------------------------------------------------------------------------   
+    b_stoff_ind= solph.buses.Bus(label="Material_usage_industry")
     
+    """ Demand blocks"""
     
+    #------------------------------------------------------------------------------
+    # Demand Mobility-Personen
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_mobility_P', 
+        inputs={b_perV: solph.Flow(fix = demand['mobility_personen']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Mobility-Goods
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_mobility_G', 
+        inputs={b_gutV: solph.Flow(fix = demand['mobility_goods']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Spaceheating Household
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_spaceheating_household', 
+        inputs={b_heat_haus: solph.Flow(fix = demand['space_heating_household']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Spaceheating- Industry
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_spaceheating_industry', 
+        inputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Spaceheating- GHD
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_spaceheating_GHD', 
+        inputs={b_heat_GHD: solph.Flow(fix = demand['space_heating_ghd']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Processheating- Industry
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_processheating_industry', 
+        inputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Processheating- GHD
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_processheating_GHD', 
+        inputs={b_PW_GHD: solph.Flow(fix = demand['process_heating_ghd']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Spacecooling- Household
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_spacecooling_household', 
+        inputs={b_cool_haus: solph.Flow(fix = demand['cooling_household']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Spacecooling- Industry
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_spacecooling_industry', 
+        inputs={b_cool_ind: solph.Flow(fix = demand['cooling_industry']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Spacecooling- GHD
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_spacecooling_GHD', 
+        inputs={b_cool_GHD: solph.Flow(fix = demand['cooling_ghd']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Electricity- Industry
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_electricity_industry', 
+        inputs={b_el_ind: solph.Flow(fix = demand['electrical_industry']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Electricity- Household
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_electriciy_household', 
+        inputs={b_el_haus: solph.Flow(fix = demand['electrical_household']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Electricity- GHD
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_electricity_GHD', 
+        inputs={b_el_GHD: solph.Flow(fix = demand['electrical_ghd']['demand_data']['series']
+        )}))
+    #------------------------------------------------------------------------------
+    # Demand Material usage -Industry
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='demand_material_usage_industry', 
+        inputs={b_stoff_ind: solph.Flow(fix = demand['material_usage_industry']['demand_data']['series']
+        )}))
+    
+    """ Converter Nutzenergie"""
+    ########################----------------------------- Verkehr --------------------------###############################
+    #------------------------------------------------------------------------------
+    # Auto
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="PKW_Batterie",
+        inputs={b_el: solph.Flow()},
+        outputs={b_perV: solph.Flow(
+                    nominal_value= demand['mobility_person']['technology_data']['PKW - Batterie']['max_value']
+                    )},
+        conversion_factors={b_perV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['PKW - Batterie'])},
+         ))
+    
+    energysystem.add(solph.components.Converter(
+        label="PKW_H2",
+        inputs={b_H2: solph.Flow()},
+        outputs={b_perV: solph.Flow(
+                    nominal_value= demand['mobility_person']['technology_data']['PKW - H2']['max_value']
+                    )},
+        conversion_factors={b_perV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['PKW - H2'])},
+         ))
+    
+    energysystem.add(solph.components.Converter(
+        label="PKW_Verbrenner",
+        inputs={b_oil_fuel: solph.Flow()},
+        outputs={b_perV: solph.Flow(
+                    nominal_value= demand['mobility_person']['technology_data']['PKW - Verbrenner']['max_value']
+                    )},
+        conversion_factors={b_perV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['PKW - Verbrenner'])},
+         ))
+    
+    energysystem.add(solph.components.Converter(
+        label="PKW_Verbrenner CNG",
+        inputs={b_gas: solph.Flow()},
+        outputs={b_perV: solph.Flow(
+                    nominal_value= demand['mobility_person']['technology_data']['PKW - Verbrenner CNG']['max_value']
+                    )},
+        conversion_factors={b_perV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['PKW - Verbrenner CNG'])},
+         ))
+    #------------------------------------------------------------------------------
+    # Busse
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Busse_Batterie",
+        inputs={b_el: solph.Flow()},
+        outputs={b_perV: solph.Flow(
+                    nominal_value= demand['mobility_person']['technology_data']['Busse - Batterie']['max_value']
+                    )},
+        conversion_factors={b_perV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['Busse - Batterie'])},
+         ))
+    
+    energysystem.add(solph.components.Converter(
+        label="Busse_Verbrenner",
+        inputs={b_oil_fuel: solph.Flow()},
+        outputs={b_perV: solph.Flow(
+                    nominal_value= demand['mobility_person']['technology_data']['Busse - Verbrenner']['max_value']
+                    )},
+        conversion_factors={b_perV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['Busse - Verbrenner'])},
+         ))
+    #------------------------------------------------------------------------------
+    # Schiene
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Schiene_Batterie",
+        inputs={b_el: solph.Flow()},
+        outputs={b_perV: solph.Flow(
+                    nominal_value= demand['mobility_person']['technology_data']['Schiene - Elektrisch']['max_value']
+                    )},
+        conversion_factors={b_perV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['Schiene - Elektrisch'])},
+         ))
+    
+    energysystem.add(solph.components.Converter(
+        label="Schiene_Verbrenner",
+        inputs={b_oil_fuel: solph.Flow()},
+        outputs={b_perV: solph.Flow(
+                    nominal_value= demand['mobility_person']['technology_data']['Schiene - Verbrenner']['max_value']
+                    )},
+        conversion_factors={b_perV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['Schiene - Verbrenner'])},
+         ))
+    
+    #------------------------------------------------------------------------------
+    # LKW
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="LKW_Batterie",
+        inputs={b_el: solph.Flow()},
+        outputs={b_gutV: solph.Flow(
+                    nominal_value= demand['mobility_goods']['technology_data']['LKW - Batterie']['max_value']
+                    )},
+        conversion_factors={b_gutV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['LKW - Batterie'])},
+         ))
+    
+    energysystem.add(solph.components.Converter(
+        label="LKW_Verbrenner",
+        inputs={b_oil_fuel: solph.Flow()},
+        outputs={b_gutV: solph.Flow(
+                    nominal_value= demand['mobility_goods']['technology_data']['LKW - Verbrenner']['max_value']
+                    )},
+        conversion_factors={b_gutV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['LKW - Verbrenner'])},
+         ))
+    
+    energysystem.add(solph.components.Converter(
+        label="LKW_H2",
+        inputs={b_H2: solph.Flow()},
+        outputs={b_gutV: solph.Flow(
+                    nominal_value= demand['mobility_goods']['technology_data']['LKW - H2']['max_value']
+                    )},
+        conversion_factors={b_gutV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['LKW - H2'])},
+         ))
+    
+    #------------------------------------------------------------------------------
+    # Schiene - Güter
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Schiene_Batterie_G",
+        inputs={b_el: solph.Flow()},
+        outputs={b_gutV: solph.Flow(
+                    nominal_value= demand['mobility_goods']['technology_data']['Schiene - Elektrisch_g']['max_value']
+                    )},
+        conversion_factors={b_gutV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['Schiene - Elektrisch_g'])},
+         ))
+    
+    energysystem.add(solph.components.Converter(
+        label="Schiene_Verbrenner_G",
+        inputs={b_oil_fuel: solph.Flow()},
+        outputs={b_gutV: solph.Flow(
+                    nominal_value= demand['mobility_goods']['technology_data']['Schiene - Verbrenner_g']['max_value']
+                    )},
+        conversion_factors={b_gutV: locale.atof(scalars['Demand_transport_nutzenergie_east_b']['EER']['Schiene - Verbrenner_g'])},
+         ))
+    
+    ########################----------------------------- Strom --------------------------###############################
+    #------------------------------------------------------------------------------
+    # Strom (Elektrogeräte) für GHD/Haushalte/Industrie
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Elektogeräte",
+        inputs={b_el: solph.Flow()},
+        outputs={b_el_GHD: solph.Flow(
+                    nominal_value= demand['electrical_ghd']['technology_data']['Elekrogeraete']['max_value']
+                    ),
+                b_el_haus: solph.Flow(
+                            nominal_value= demand['electrical_household']['technology_data']['Elekrogeraete']['max_value']
+                            ),
+                b_el_ind: solph.Flow(
+                    nominal_value= demand['electrical_industry']['technology_data']['Elekrogeraete']['max_value']
+                    ),
+            },
+        conversion_factors={b_el: 3,
+                            b_el_GHD: locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['Elektrogeraete']),
+                            b_el_haus:locale.atof(scalars['Demand_Household_east_b']['EER_'+ str(YEAR)]['Elektrogeraete']),
+                            b_el_ind: locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Elektrogeraete'])
+                            }
+        
+         ))
+    
+    ########################----------------------------- Klimakälte --------------------------###############################
+    #------------------------------------------------------------------------------
+    # Klimakälte für GHD/Haushalte/Industrie
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Kompressionskaelte",
+        inputs={b_el: solph.Flow()},
+        outputs={b_cool_GHD: solph.Flow(
+                    nominal_value= demand['cooling_ghd']['technology_data']['Kompressionskaelte']['max_value']
+                    ),
+                b_cool_haus: solph.Flow(
+                            nominal_value= demand['cooling_household']['technology_data']['Kompressionskaelte']['max_value']
+                            ),
+                b_cool_ind: solph.Flow(
+                    nominal_value= demand['cooling_industry']['technology_data']['Kompressionskaelte']['max_value']
+                    ),
+            },
+        conversion_factors={b_el: 3,
+                            b_cool_GHD: locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['Kompressionskaelte']),
+                            b_cool_haus:locale.atof(scalars['Demand_Household_east_b']['EER_'+ str(YEAR)]['Kompressionskaelte']),
+                            b_cool_ind: locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Kompressionskaelte'])
+                            }
+         ))
+    
+    energysystem.add(solph.components.Converter(
+        label="Sorptionskaelte",
+        inputs={b_el: solph.Flow()},
+        outputs={b_cool_haus: solph.Flow(
+                            nominal_value= demand['cooling_household']['technology_data']['Sorptionskaelte']['max_value']
+                            ),
+                 },
+        conversion_factors={b_el: 1,
+                            b_cool_haus:locale.atof(scalars['Demand_Household_east_b']['EER_'+ str(YEAR)]['Sorptionskaelte']),
+                            }
+         ))
+    
+    ########################----------------------------- Prozesswärme --------------------------###############################
+    #------------------------------------------------------  GHD   --------------------------------------------------#
+    #------------------------------------------------------------------------------
+    # Festbrennstoffkessel (GHD)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Festbrennstoffkessel_ghd",
+        inputs={b_solidf: solph.Flow()},
+        outputs={b_PW_GHD: solph.Flow(
+                            nominal_value= demand['process_heating_ghd']['technology_data']['Festbrennstoffkessel']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_GHD:locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['Festbrennstoffkessel']),
+                            }
+         ))
+    #------------------------------------------------------------------------------
+    # Heizkessel Gas (GHD)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Heizkessel_gas_ghd",
+        inputs={b_gas: solph.Flow()},
+        outputs={b_PW_GHD: solph.Flow(
+                            nominal_value= demand['process_heating_ghd']['technology_data']['Heizkessel Gas']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_GHD:locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['Heizkessel Gas']),
+                            }
+         ))
+    
+    #------------------------------------------------------------------------------
+    # Heizkessel Oel (GHD)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Heizkessel_oel_ghd",
+        inputs={b_oil_fuel: solph.Flow()},
+        outputs={b_PW_GHD: solph.Flow(
+                            nominal_value= demand['process_heating_ghd']['technology_data']['Heizkessel Oel']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_GHD:locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['Heizkessel Oel']),
+                            }
+         ))
+    
+    #------------------------------------------------------------------------------
+    # PtH Erdwärmepumpe (GHD)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="PtH_Erdwaermepumpe_ghd",
+        inputs={b_el: solph.Flow(),
+                b_uw: solph.Flow()},
+        outputs={b_PW_GHD: solph.Flow(
+                            nominal_value= demand['process_heating_ghd']['technology_data']['PtH Erdwaermepumpe']['max_value']
+                            ),
+                 },
+        conversion_factors={b_el :1/(locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
+                            b_uw: (locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])-1)/(locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
+                            }
+         ))
+    #------------------------------------------------------------------------------
+    # PtH Luftwärmepumpe (GHD)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="PtH_Luftwaermepumpe_ghd",
+        inputs={b_el: solph.Flow(),
+                b_umgebungsluft: solph.Flow()},
+        outputs={b_PW_GHD: solph.Flow(
+                            nominal_value= demand['process_heating_ghd']['technology_data']['PtH Luftwaermepumpe']['max_value']
+                            ),
+                 },
+        conversion_factors={b_el :1/(locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
+                            b_umgebungsluft: (locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])-1)/(locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
+                            }
+         ))
+    
+    #------------------------------------------------------------------------------
+    # PtH Heizstab (GHD)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="PtH_Heizstab_ghd",
+        inputs={b_el: solph.Flow(),
+                },
+        outputs={b_PW_GHD: solph.Flow(
+                            nominal_value= demand['process_heating_ghd']['technology_data']['PtH Heizstab']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_GHD :locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Heizstab']),
+                            }
+         ))
+    
+    #------------------------------------------------------------------------------
+    # Wärmeübergabestation (GHD)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Waermeuebergabestation_ghd",
+        inputs={b_dist_heat: solph.Flow(),
+                },
+        outputs={b_PW_GHD: solph.Flow(
+                            nominal_value= demand['process_heating_ghd']['technology_data']['Waermeuebergabestation']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_GHD :locale.atof(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['Waermeuebergabestation']),
+                            }
+         ))
+    
+    #------------------------------------------------------  Industry   --------------------------------------------------#
+    #------------------------------------------------------------------------------
+    # Festbrennstoffkessel (Ind)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Festbrennstoffkessel_PW_ind",
+        inputs={b_solidf: solph.Flow()},
+        outputs={b_PW_ind: solph.Flow(
+                            nominal_value= demand['process_heating_industry']['technology_data']['Festbrennstoffkessel']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_ind:locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Festbrennstoffkessel']),
+                            }
+         ))
+  
+    energysystem.add(solph.components.Converter(
+        label="Festbrennstoffkessel_1_PW_ind",
+        inputs={b_solidf: solph.Flow()},
+        outputs={b_PW_ind: solph.Flow(
+                            nominal_value= demand['process_heating_industry']['technology_data']['Festbrennstoffkessel_1']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_ind:locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Festbrennstoffkessel_1']),
+                            }
+         ))
+    #------------------------------------------------------------------------------
+    # Heizkessel Gas (INd)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Heizkessel_gas_PW_ind",
+        inputs={b_gas: solph.Flow()},
+        outputs={b_PW_ind: solph.Flow(
+                            nominal_value= demand['process_heating_industry']['technology_data']['Heizkessel Gas']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_ind:locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Heizkessel Gas']),
+                            }
+         ))
+    
+    energysystem.add(solph.components.Converter(
+        label="Heizkessel_gas_1_PW_ind",
+        inputs={b_gas: solph.Flow()},
+        outputs={b_PW_ind: solph.Flow(
+                            nominal_value= demand['process_heating_industry']['technology_data']['Heizkessel Gas_1']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_ind:locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Heizkessel Gas_1']),
+                            }
+         ))
+    
+    #------------------------------------------------------------------------------
+    # Heizkessel H2 (ind)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Heizkessel_H2_PW_ind",
+        inputs={b_H2: solph.Flow()},
+        outputs={b_PW_ind: solph.Flow(
+                            nominal_value= demand['process_heating_industry']['technology_data']['Heizkessel Wasserstoff']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_ind:locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Heizkessel Wasserstoff']),
+                            }
+         ))
+    
+    #------------------------------------------------------------------------------
+    # PtH Erdwärmepumpe (Ind)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="PtH_Erdwaermepumpe_PW_ind",
+        inputs={b_el: solph.Flow(),
+                b_uw: solph.Flow()},
+        outputs={b_PW_ind: solph.Flow(
+                            nominal_value= demand['process_heating_industry']['technology_data']['PtH Erdwaermepumpe']['max_value']
+                            ),
+                 },
+        conversion_factors={b_el :1/(locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
+                            b_uw: (locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])-1)/(locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
+                            }
+         ))
+    #------------------------------------------------------------------------------
+    # PtH Luftwärmepumpe (Ind)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="PtH_Luftwaermepumpe_PW_ind",
+        inputs={b_el: solph.Flow(),
+                b_umgebungsluft: solph.Flow()},
+        outputs={b_PW_ind: solph.Flow(
+                            nominal_value= demand['process_heating_industry']['technology_data']['PtH Luftwaermepumpe']['max_value']
+                            ),
+                 },
+        conversion_factors={b_el :1/(locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
+                            b_umgebungsluft: (locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])-1)/(locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
+                            }
+         ))
+    
+    #------------------------------------------------------------------------------
+    # PtH Heizstab (Ind)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="PtH_Heizstab_PW_ind",
+        inputs={b_el: solph.Flow(),
+                },
+        outputs={b_PW_ind: solph.Flow(
+                            nominal_value= demand['process_heating_industry']['technology_data']['PtH Heizstab']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_ind :locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Heizstab']),
+                            }
+         ))
+    
+    #------------------------------------------------------------------------------
+    # Wärmeübergabestation (Ind)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Waermeuebergabestation_PW_ind",
+        inputs={b_dist_heat: solph.Flow(),
+                },
+        outputs={b_PW_ind: solph.Flow(
+                            nominal_value= demand['process_heating_industry']['technology_data']['Waermeuebergabestation']['max_value']
+                            ),
+                 },
+        conversion_factors={b_PW_ind :locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Waermeuebergabestation']),
+                            }
+         ))
+    
+    ########################----------------------------- Stoffl. Nutzung --------------------------###############################
+    #------------------------------------------------------  Industry  --------------------------------------------------#
+    #------------------------------------------------------------------------------
+    # Materialnutzung Biomass (Ind)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Materialnutzung_biomasse_ind",
+        inputs={b_bio: solph.Flow(),
+                },
+        outputs={b_stoff_ind: solph.Flow(
+                            nominal_value= demand['material_usage_industry']['technology_data']['Materialnutzung Biomasse']['max_value']
+                            ),
+                 },
+        conversion_factors={b_stoff_ind :locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Materialnutzung Biomasse']),
+                            }
+         ))
+    #------------------------------------------------------------------------------
+    # Materialnutzung Gas (Ind)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Materialnutzung_gas_ind",
+        inputs={b_gas: solph.Flow(),
+                },
+        outputs={b_stoff_ind: solph.Flow(
+                            nominal_value= demand['material_usage_industry']['technology_data']['Materialnutzung Gas']['max_value']
+                            ),
+                 },
+        conversion_factors={b_stoff_ind :locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Materialnutzung Gas']),
+                            }
+         ))
+    #------------------------------------------------------------------------------
+    # Materialnutzung Oel (Ind)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="Materialnutzung_oel_ind",
+        inputs={b_oil_fuel: solph.Flow(),
+                },
+        outputs={b_stoff_ind: solph.Flow(
+                            nominal_value= demand['material_usage_industry']['technology_data']['Materialnutzung Öl']['max_value']
+                            ),
+                 },
+        conversion_factors={b_stoff_ind :locale.atof(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['Materialnutzung Öl']),
+                            }
+         ))
     
     """
     Excess energy capture sinks 
     """
     #------------------------------------------------------------------------------
-    # Überschuss Senke für Strom
+    # Überschuss Senke für Personen Verkehr
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
-        label='excess_b_el', 
-        inputs={b_el: solph.Flow(variable_costs = 10000000
+        label='excess_mobility_P', 
+        inputs={b_perV: solph.Flow(variable_costs=100000
         )}))
     #------------------------------------------------------------------------------
-    # Überschuss Senke für Gas
+    # Überschuss Senke für Güter Verkehr
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
-        label='excess_b_gas', 
-        inputs={b_gas: solph.Flow(variable_costs = 10000000
+        label='excess_mobility_G', 
+        inputs={b_gutV: solph.Flow(variable_costs=100000
         )}))
     #------------------------------------------------------------------------------
-    # Überschuss Senke für Oel/Kraftstoffe
+    # Überschuss Senke für Raumwärme Haushalte
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
-        label='excess_b_oil_fuel', 
-        inputs={b_oil_fuel: solph.Flow(variable_costs = 10000000
+        label='excess_spaceheating_household', 
+        inputs={b_heat_haus: solph.Flow(variable_costs=100000
         )}))
     #------------------------------------------------------------------------------
-    # Überschuss Senke für Biomasse
+    # Überschuss Senke für Raumwärme Industry
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
-        label='excess_b_bio', 
-        inputs={b_bio: solph.Flow(variable_costs = 10000000
+        label='excess_spaceheating_industry', 
+        inputs={b_heat_ind: solph.Flow(variable_costs=100000
         )}))
     #------------------------------------------------------------------------------
-    # Überschuss Senke für Waerme
+    # Überschuss Senke für Raumwärme GHD
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
-        label='excess_b_distheat', 
-        inputs={b_dist_heat: solph.Flow(#variable_costs = 10000000
+        label='excess_spaceheating_GHD', 
+        inputs={b_heat_GHD: solph.Flow(variable_costs=100000
         )}))
     #------------------------------------------------------------------------------
-    # Überschuss Senke für Wasserstoff
-    #-----------------------------------------------------------------------------
+    # Überschuss Senke für Prozesswärme Industry
+    #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
-        label='excess_b_H2', 
-        inputs={b_H2: solph.Flow(variable_costs = 10000000
+        label='excess_processheating_industry', 
+        inputs={b_PW_ind: solph.Flow(variable_costs=100000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Prozesswärme GHD
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_processheating_GHD', 
+        inputs={b_PW_GHD: solph.Flow(variable_costs=100000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Raumkälte Haushalte
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_spacecooling_household', 
+        inputs={b_cool_haus: solph.Flow(variable_costs=100000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Raumkälte Industry
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_spacecooling_industry', 
+        inputs={b_cool_ind: solph.Flow(variable_costs=100000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Raumkälte GHD
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_spacecooling_GHD', 
+        inputs={b_cool_GHD: solph.Flow(variable_costs=100000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Strom Industry
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_electricity_industry', 
+        inputs={b_el_ind: solph.Flow(variable_costs=100000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Strom Haushalte
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_electriciy_household', 
+        inputs={b_el_haus: solph.Flow(variable_costs=100000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Strom GHD
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_electricity_GHD', 
+        inputs={b_el_GHD: solph.Flow(variable_costs=100000
+        )}))
+    #------------------------------------------------------------------------------
+    # Überschuss Senke für Material Nutzung-Industrie
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='excess_material_usage_industry', 
+        inputs={b_stoff_ind: solph.Flow(variable_costs=100000
         )}))
     
     # Prepare a dataset for exporting, to have access after the simulation 
