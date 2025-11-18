@@ -5,7 +5,7 @@ import pandas as pd
 from oemof import solph
 
 from energymodels.BS_regionalization import BS_regionalization
-#from energymodels.BS_region_test import BS_test_middle as BS_regionalization
+from energymodels.Basic_example_zorro_1_utility_energy import Basisszenario_1_Nutz 
 from energymodels.Basic_example_zorro_1 import Basisszenario_1 as BS_1
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
@@ -45,7 +45,9 @@ def solveModels(
         logging.info(f"Solve %s", permutation)
         logging.info("Building the energy system")
         if model_name.startswith('BS_regionalization'):
-            energysystem,sim_data = BS_regionalization(permutation)
+            energysystem,sim_data = BS_regionalization(permutation, model_name)
+        elif model_name.endswith('utility_energy'):
+            energysystem,sim_data = Basisszenario_1_Nutz(permutation)
         else:
             energysystem,sim_data = BS_1(permutation)
         if print_graph:
@@ -101,9 +103,9 @@ def solveModels(
         
         logging.info("Export overview - CSV file")
         if model_name == 'BS_regionalization':
-            export_csv_region(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
-            grid_energy_map(energysystem.results["main"],permutation, model_name, scenario_num)
-        
+            #export_csv_region(energysystem.results["main"], YEAR, permutation, model_name, scenario_num)
+            #grid_energy_map(energysystem.results["main"],permutation, model_name, scenario_num)
+            print('Postprocessing should be done seperately')
         else:
             csv=None
             logging.info("Plotting different plots")
@@ -120,6 +122,6 @@ def solveModels(
                     sector = None
                     heat_maps(sim_data,YEAR,permutation, scenario_num, profile_type= profile_type,sector=None)
         logging.info("Creating simulation doc...")    
-        create_simulation_doc(permutation,scenario_num, hypothese, sim_remarks,csv)
+        #create_simulation_doc(permutation,scenario_num, hypothese, sim_remarks,csv)
         
-        return sim_data,result,csv
+        return sim_data,result

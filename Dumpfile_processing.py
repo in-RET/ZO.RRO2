@@ -11,7 +11,7 @@ import os
 from src.preprocessing.files import read_input_files
 from src.preprocessing.conversion import investment_parameter, CO2_price_addition, load_profile_scaling
 from src.postprocessing.utils_dump import get_dump_file_path, load_results_from_dump, interpret_results, calculate_investment_costs,clean_sequence_data, calc_energyimport_cost
-from src.postprocessing.utils_dump import calc_energyexport_cost, sankey_excel_output, extract_value, grid_operating_fee, calc_CO2_emission, grid_energy_map
+from src.postprocessing.utils_dump import calc_energyexport_cost, sankey_excel_output, extract_value, grid_operating_fee, calc_CO2_emission
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 workdir = os.getcwd()
 my_path = os.path.abspath(os.path.dirname(__file__))
@@ -23,13 +23,10 @@ import matplotlib.image as mpimg
 import matplotlib.patches as mpatches
 
 
-
-
-
 # Define the scenarios you want to compare
-scenarios = ["R16","ref"]#["001","002","003", "004", "005", "006","007","008","009","010","011","012", "013","ref"]#
+scenarios = ["test_sim","ref"]#["001","002","003", "004", "005", "006","007","008","009","010","011","012", "013","ref"]#
 year = 2030
-variation = "BS0005"
+variation = "BS0006"
 model_name = "BS_regionalization"
 #model_name = "Basic_example_zorro_1"
 permutation = str(year)+'_'+variation
@@ -38,7 +35,7 @@ sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=Non
 scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
 import_price = CO2_price_addition(scalars,sequences, year, 'Energy_price_brainpool_2024')
 epc_costs = investment_parameter(scalars, year, variation)
-demand = load_profile_scaling(scalars,sequences,year, region = True)
+demand = load_profile_scaling(scalars,sequences,year,model_name, region = True)
 CSV_DIR = os.path.abspath(os.path.join(workdir,"results", permutation))
 
 if model_name== 'BS_regionalization':
@@ -186,9 +183,6 @@ if model_name != 'BS_regionalization':
 
 else:
     
-    # Scalars comparision for regionilization
-    region_suffix_map = {'_n': 'North', '_m': 'Middle', '_s': 'Southwest', '_e': 'East'}
-    scenario_dfs={}
     component_info ={
         "Battery":                  "None",
         "Biogas- BHKW":              "Electricity",
@@ -234,48 +228,6 @@ else:
         "Preheater- WP":            "District heating",
         "Preheater- Electric boiler":"District heating",
         
-    }
-    for scenario_num in scenarios:
-        scenario_data = all_component_scalars.get(scenario_num, {})
-        data_by_tech = {}
-        
-        for component_name, bus_data in scenario_data.items():
-            is_storage = component_name.lower().endswith("storage")
-            
-        # Identify suffix and technology
-            matched = False
-            for suffix, region in region_suffix_map.items():
-                if component_name.endswith(suffix):
-                    base_tech = component_name[:-len(suffix)]
-                    matched = True
-                    break
-            if not matched:
-                base_tech = component_name
-                region = 'Unknown'
-            if base_tech not in data_by_tech:
-                data_by_tech[base_tech] = {r: 0 for r in region_suffix_map.values()}
-            
-            for bus_name, value in bus_data.items():
-            # Extract value (inlined from your code)
-                try:
-                    value = extract_value(component_name, value)
-                except:
-                    value = value  # fallback if extract_value is not essential
-                    
-                data_by_tech[base_tech][region] = value
-        df = pd.DataFrame.from_dict(data_by_tech, orient='index')
-        df.index.name = 'Technology'
-        scenario_dfs[scenario_num] = df
     
-    with pd.ExcelWriter(CSV_PATH) as writer:
-        for scenario, df in scenario_dfs.items():
-            df.to_excel(writer, sheet_name=f"Scenario {scenario}")
-    
-    sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, permutation, scenarios, Sankey_excel_path, region=True)
-    investment_costs = calculate_investment_costs(epc_costs, all_component_scalars, region =True)
-    cleaned_sequences_component = clean_sequence_data(all_component_sequences, data_source='component')
-    cleaned_sequences_bus = clean_sequence_data(all_bus_sequences, data_source= 'bus')
-    CO2_emission = calc_CO2_emission(year, cleaned_sequences_component)
-    grid_energy_map(results, permutation, model_name, scenario_num)
 #%%
     

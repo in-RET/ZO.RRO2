@@ -206,6 +206,22 @@ def Bilanziell_erneuerbar(om, sim_data, model_name, factor):
         for r in region:
            Sum_load += (sim_data['Loadprofiles']['electricity'][r].sum() + sim_data['Loadprofiles']['gas'][r].sum() + sim_data['Loadprofiles']['oil'][r].sum()+
                      sim_data['Loadprofiles']['fuel'][r].sum()+sim_data['Loadprofiles']['dist_heating'][r].sum()+sim_data['Loadprofiles']['H2'][r].sum())
+    elif model_name.endswith('utility_energy'):
+        Sum_load += (sim_data['Loadprofiles']['cooling_ghd']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['cooling_household']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['cooling_industry']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['electrical_ghd']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['electrical_household']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['electrical_industry']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['material_usage_industry']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['process_heating_ghd']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['process_heating_industry']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['space_heating_ghd']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['space_heating_household']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['space_heating_industry']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['mobility_goods']['demand_data']['total_value']+
+                     sim_data['Loadprofiles']['mobility_person']['demand_data']['total_value']
+                     )
     else:
         Sum_load +=(sim_data['Loadprofiles']['electricity'].sum() + sim_data['Loadprofiles']['gas'].sum() + sim_data['Loadprofiles']['oil'].sum()+
                   sim_data['Loadprofiles']['fuel'].sum()+sim_data['Loadprofiles']['dist_heating'].sum()+sim_data['Loadprofiles']['H2'].sum())

@@ -1,14 +1,14 @@
 import logging
-
+from datetime import datetime
 from src.models.solve_model import solveModels
-
+start_time = datetime.now()
 FORMAT = "%(asctime)s %(message)s"
 
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
 
-    sim_data, result,csv = solveModels(
+    sim_data, result = solveModels(
         variations=["BS0006"],
         scenario_num = "Im_Ex_Bilanz_Wind_P70",
         years=[2045],# 2040, 2050],
@@ -17,16 +17,16 @@ if __name__ == "__main__":
         gap=0.0,
         solver_output=False,
         print_graph=False,
-        Anteilig_erneuerbar = True,
-        hypothese = "Influence of new techno-economical parameter in regionalization scenario",
+        Anteilig_erneuerbar = False,
+        hypothese = "Regionalisation of the new Basis scenario",
         sim_remarks = "- The techno-economical parameters are updated. \n"+
-                        "- Loss rate defined for seasonal heat storage\n"+
-                        "- Pumped hydro storage split into storage and technology \n"+
-                        "- Weather dependent COP's are added only to the Air heatpumps \n"+
-                        "- Other parameters remain the same [[2030_BS0001_003]] "
+                        "- All changes made in BAsic exapmple by TR is updated in this scenario"
+                        
                         
     )
 
     # %TODO: Auswertung der Dump-Daten (csv-daten erstellen, automatische grafiken etc.)
 
     print("Hab's fertig!")
+    end_time = datetime.now()
+    print('Execution time: {}'.format(end_time - start_time))
