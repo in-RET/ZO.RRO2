@@ -55,7 +55,7 @@ res_solid_fuel = {}
 for x in range(0, 11):
     energysystem = solph.EnergySystem()
     energysystem.restore(dpath='2045_BS0006/', 
-                         filename='BS_2045_BS0006_Wind_P'+str(x)+'0.dump')
+                         filename='BS_2045_BS0006_Bilanz_1_Wind_P'+str(x)+'0.dump')
     
     results = energysystem.results["main"]
     
@@ -452,6 +452,9 @@ res_Elec['var11']["sequences"][('PV_open_middle', 'Electricity'), 'flow'].sum()+
 res_Elec['var11']["sequences"][('PV_open_swest', 'Electricity'), 'flow'].sum()+
 
 res_Elec['var11']["sequences"][('Wind_north', 'Electricity'), 'flow'].sum()+
+res_Elec['var11']["sequences"][('Wind_east', 'Electricity'), 'flow'].sum()+
+res_Elec['var11']["sequences"][('Wind_middle', 'Electricity'), 'flow'].sum()+
+res_Elec['var11']["sequences"][('Wind_swest', 'Electricity'), 'flow'].sum()+
 
 res_dis_heat['var11']["sequences"][('Biogas- BHKW', 'District heating'), 'flow'].sum()+
 res_Elec['var11']["sequences"][('Biogas- BHKW', 'Electricity'), 'flow'].sum()+

@@ -10,9 +10,9 @@ if __name__ == "__main__":
 
     sim_data, result = solveModels(
         variations=["BS0006"],
-        scenario_num = "test_sim",
-        years=[2030],# 2040, 2050],
-        model_name='Basic_example_zorro_1_utility_energy',
+        scenario_num = "Im_Ex_Bilanz_Wind_P70",
+        years=[2045],# 2040, 2050],
+        model_name='BS', #"BS_regionalization",
         solver="gurobi",
         gap=0.0,
         solver_output=False,

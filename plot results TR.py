@@ -17,7 +17,7 @@ try:
 except ImportError:
     plt = None
 
-name = "2035_BS0006"
+name = "2045_BS0006"
 
 '''Plot default settings'''
 fontsizenr=20
@@ -56,7 +56,7 @@ palette = seaborn.color_palette(cc.glasbey, n_colors=30)
 
 energysystem = solph.EnergySystem()
 energysystem.restore(dpath='dumps/'+ name+ '/', 
-                     filename='BS_2035_BS0006_Strompreis_notNegativ_noExportH2_nichtBilanziell.dump')
+                     filename='BS_2045_BS0006_Export_Elec_Limit.dump')
 
 results = energysystem.results["main"]
 
@@ -182,6 +182,13 @@ plt.ylabel('MWh')
 # res_Electricity["sequences"][('Wind_east', 'Electricity'), 'flow'].sum()+
 # res_Electricity["sequences"][('Wind_middle', 'Electricity'), 'flow'].sum()+
 # res_Electricity["sequences"][('Wind_swest', 'Electricity'), 'flow'].sum())
+
+#%%
+
+(res_Electricity["scalars"][('Wind_north', 'Electricity'), 'invest']+
+res_Electricity["scalars"][('Wind_east', 'Electricity'), 'invest']+
+res_Electricity["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+res_Electricity["scalars"][('Wind_swest', 'Electricity'), 'invest'])
 
 #%%
 
@@ -652,7 +659,23 @@ plt.legend(res_Electricity['sequences'].keys(),
            loc='upper center', prop={'size': 8},
            bbox_to_anchor=(0.5, 1.25), ncol=2)
 # fig.subplots_adjust(top=0.8)
-plt.title('')
+plt.title('Strombus')
+plt.ylabel('Leistung in MW')
+plt.grid()
+plt.show()
+
+
+#%%
+
+fig, ax = plt.subplots(figsize=(19.1, 10.5))
+res_Elec_hoes['sequences'].plot(ax=ax, kind='line',
+                                 drawstyle='steps-post', 
+                                 color=palette, linewidth=2.5)
+plt.legend(res_Elec_hoes['sequences'].keys(), 
+           loc='upper center', prop={'size': 8},
+           bbox_to_anchor=(0.5, 1.25), ncol=2)
+# fig.subplots_adjust(top=0.8)
+plt.title('Import Electricity auf HöS')
 plt.ylabel('Leistung in MW')
 plt.grid()
 plt.show()
@@ -738,7 +761,7 @@ for idx in res_dis_heat['sequences'].index:
 #%%
 
 fig, ax = plt.subplots(figsize=(19.1, 10.5))
-res_dis_heat['sequences']['2035-06-04 02:00:00':'2035-06-07 14:00:00'].plot(ax=ax, kind='line',
+res_dis_heat['sequences']['2045-06-04 02:00:00':'2045-06-07 14:00:00'].plot(ax=ax, kind='line',
                                  drawstyle='steps-post', 
                                  color=palette, linewidth=2.5)
 # res_Heat_storage_dist_heat['sequences'][
@@ -828,7 +851,7 @@ strompreis = pd.read_csv(pfad, encoding="unicode_escape", sep=";", decimal=",")
 
 fig, ax = plt.subplots(figsize=(8, 8))
 
-ax.plot(strompreis['Electricity_2035'],
+ax.plot(strompreis['Electricity_2045'],
         color="red")
 
 #%%

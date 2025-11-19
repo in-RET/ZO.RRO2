@@ -150,7 +150,7 @@ res_Pumped_hydro_storage_bestand = {}
 for x in range(0, 11):
     energysystem = solph.EnergySystem()
     energysystem.restore(dpath='2045_BS0006/', 
-                         filename='BS_2045_BS0006_Wind_P'+str(x)+'0.dump')
+                         filename='BS_2045_BS0006_Bilanz_1_Wind_P'+str(x)+'0.dump')
     
     results = energysystem.results["main"]
     
@@ -259,7 +259,7 @@ df2 = pd.DataFrame(y)
 
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='PV open', index=False)
 
 #%%
@@ -334,7 +334,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='PV rooftop', index=False)
 
 
@@ -413,27 +413,60 @@ fig, ax = plt.subplots(figsize=(19.1, 10.5))
 
 x = np.array(["00", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100"])
 
-y = np.array([(res_Elec['var1']["scalars"][('Wind_north', 'Electricity'), 'invest']),
+y = np.array([(res_Elec['var1']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var1']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var1']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var1']["scalars"][('Wind_swest', 'Electricity'), 'invest']),
               
-              (res_Elec['var2']["scalars"][('Wind_north', 'Electricity'), 'invest']),
+              (res_Elec['var2']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var2']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var2']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var2']["scalars"][('Wind_swest', 'Electricity'), 'invest']),
               
-              (res_Elec['var3']["scalars"][('Wind_north', 'Electricity'), 'invest']),
+              (res_Elec['var3']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var3']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var3']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var3']["scalars"][('Wind_swest', 'Electricity'), 'invest']),
               
-              (res_Elec['var4']["scalars"][('Wind_north', 'Electricity'), 'invest']),
+              (res_Elec['var4']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var4']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var4']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var4']["scalars"][('Wind_swest', 'Electricity'), 'invest']),
               
-              (res_Elec['var5']["scalars"][('Wind_north', 'Electricity'), 'invest']),
+              (res_Elec['var5']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var5']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var5']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var5']["scalars"][('Wind_swest', 'Electricity'), 'invest']),
               
-              (res_Elec['var6']["scalars"][('Wind_north', 'Electricity'), 'invest']),
+              (res_Elec['var6']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var6']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var6']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var6']["scalars"][('Wind_swest', 'Electricity'), 'invest']),
               
-              (res_Elec['var7']["scalars"][('Wind_north', 'Electricity'), 'invest']),
+              (res_Elec['var7']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var7']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var7']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var7']["scalars"][('Wind_swest', 'Electricity'), 'invest']),
               
-              (res_Elec['var8']["scalars"][('Wind_north', 'Electricity'), 'invest']),
+              (res_Elec['var8']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var8']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var8']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var8']["scalars"][('Wind_swest', 'Electricity'), 'invest']),
               
-              (res_Elec['var9']["scalars"][('Wind_north', 'Electricity'), 'invest']),
+              (res_Elec['var9']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var9']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var9']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var9']["scalars"][('Wind_swest', 'Electricity'), 'invest']),
               
-              (res_Elec['var10']["scalars"][('Wind_north', 'Electricity'), 'invest']),
+              (res_Elec['var10']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var10']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var10']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var10']["scalars"][('Wind_swest', 'Electricity'), 'invest']),
               
-              (res_Elec['var11']["scalars"][('Wind_north', 'Electricity'), 'invest'])
+              (res_Elec['var11']["scalars"][('Wind_north', 'Electricity'), 'invest']+
+               res_Elec['var11']["scalars"][('Wind_east', 'Electricity'), 'invest']+
+               res_Elec['var11']["scalars"][('Wind_middle', 'Electricity'), 'invest']+
+               res_Elec['var11']["scalars"][('Wind_swest', 'Electricity'), 'invest'])
               ])
 
 plt.ylabel('Leistung in MW')
@@ -445,7 +478,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Wind', index=False)
 
 #%%
@@ -516,7 +549,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Biogas- BHKW', index=False)
 
 #%%
@@ -569,7 +602,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Import Electricity', index=False)
 
 #%%
@@ -611,7 +644,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Battery', index=False)
 
 
@@ -654,7 +687,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Li-Ion_Battery', index=False)
 
 
@@ -698,7 +731,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Natrium Battery', index=False)
 
 
@@ -742,7 +775,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Gas storage', index=False)
 
 #%%
@@ -785,7 +818,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='H2 Storage', index=False)
 
 
@@ -829,7 +862,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Heat storage_dist_heat', index=False)
 
 #%%
@@ -873,7 +906,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Heat storage_seasonal', index=False)
 
 
@@ -916,7 +949,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Pumped_hydro_storage', index=False)
 
 
@@ -971,7 +1004,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Export_Electricity', index=False)
 
 
@@ -1014,7 +1047,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Electrolysis', index=False)
 
 #%%
@@ -1055,7 +1088,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Electric boiler', index=False)
 
 #%%
@@ -1096,7 +1129,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Heatpump_air', index=False)
 
 #%%
@@ -1137,7 +1170,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Heatpump_water', index=False)
 
 #%%
@@ -1178,7 +1211,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Heatpump_recovery', index=False)
 
 #%%
@@ -1219,7 +1252,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Biomasse_heat', index=False)
 
 #%%
@@ -1260,7 +1293,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Biomasse_elec_heat MWel', index=False)
 
 #%%
@@ -1302,7 +1335,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='GuD', index=False)
 
 
@@ -1345,7 +1378,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Biomasse_elec', index=False)
 
 
@@ -1432,7 +1465,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Gesamtkosten', index=False)
 
 
@@ -1487,7 +1520,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Bio feedin existing', index=False)
 
 #%%
@@ -1541,7 +1574,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Bio feedin new', index=False)
 
 
@@ -1755,7 +1788,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='BtL', index=False)
     
 #%%
@@ -1796,7 +1829,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Fuelcell', index=False)
     
 #%%
@@ -1838,7 +1871,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='PtL', index=False)
     
 #%%
@@ -1892,7 +1925,7 @@ df1 = pd.DataFrame(x)
 df2 = pd.DataFrame(y)
 combined = pd.concat([df1, df2], axis=1)
 
-with pd.ExcelWriter('Auswertung Windpotential neu.xlsx', engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter('Auswertung Bilanz1.xlsx', engine='openpyxl', mode='a') as writer:
     pd.DataFrame(combined).to_excel(writer, sheet_name='Methanisation', index=False)
     
 #%%

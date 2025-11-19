@@ -17,3 +17,4 @@ grid_operating_fee_HS<2500h;€/MWh;52,2;TEN Preisblatt 2025
 grid_operating_fee_HS>2500h;€/MWh;5,6;TEN Preisblatt 2025
 grid_annualperformance_fee_HS<2500h;€/MW/a;36330;TEN Preisblatt 2025
 grid_annualperformance_fee_HS>2500h;€/MW/a;152690;TEN Preisblatt 2025
+max_Rueckspeisung_2045;MW;13050;TEN
