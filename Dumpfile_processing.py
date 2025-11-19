@@ -27,7 +27,7 @@ import matplotlib.patches as mpatches
 scenarios = ["test_sim","ref"]#["001","002","003", "004", "005", "006","007","008","009","010","011","012", "013","ref"]#
 year = 2030
 variation = "BS0006"
-model_name = "BS_regionalization"
+model_name = "Basic_example_zorro_1_utility_energy"
 #model_name = "Basic_example_zorro_1"
 permutation = str(year)+'_'+variation
 
@@ -66,7 +66,7 @@ for scenario_num in scenarios:
     costs[scenario_num] = cost_calculation_from_es_and_results(es, results)
     
     # Extract sequences and scalars for this scenario
-    bus_sequences, bus_scalars, component_sequences, component_scalars = interpret_results(results)
+    bus_sequences, bus_scalars, component_sequences, component_scalars, component_bus_mapping = interpret_results(results)
       
     # Store the extracted data by scenario number
     all_bus_sequences[scenario_num] = bus_sequences
@@ -110,124 +110,157 @@ if model_name != 'BS_regionalization':
     cleaned_sequences_bus = clean_sequence_data(all_bus_sequences, data_source= 'bus')
     import_costs = calc_energyimport_cost(year,import_price, cleaned_sequences_component)
     export_costs = calc_energyexport_cost(year,import_price, cleaned_sequences_bus)
-    grid_import_usage_fee = grid_operating_fee(all_component_sequences, import_price)
+    #grid_import_usage_fee = grid_operating_fee(all_component_sequences, import_price)
     sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, permutation, scenarios, Sankey_excel_path, region = False)
     CO2_emission = calc_CO2_emission(year, cleaned_sequences_component)
     #%% Export cost csv
     
-    categories = ["Capital costs", "Operating costs", "Import cost", "Export cost", "Grid usage cost", "Grid yearly cost", "Total cost", " ", "Emission", 
-                  "Electricity", "Gas", "Oil","Hard coal", "Brown coal", "Total Emission"]
-    data = {category: [] for category in categories}
-    #dicts = [investment_costs,import_cost,export_cost,grid_import_usage_fee]
-    total_scenarios = len(scenarios)
-    for scenario in scenarios:
-        capital_cost = investment_costs.get(scenario, {}).get("total_capital_cost", 0)/1000000
-        operating_cost = investment_costs.get(scenario, {}).get("total_operating_cost", 0)/1000000
-        import_cost = import_costs.get(scenario, {}).get("total_import_cost", 0)/1000000
-        export_cost = export_costs.get(scenario, {}).get("total_export_cost", 0)/1000000
-        grid_cost = grid_import_usage_fee.get(scenario, {}).get("total_grid_usage_fee", 0)/1000000
-        grid_yearly_cost = grid_import_usage_fee.get(scenario, {}).get("peak_load", 0)* scalars['Electricity_grid']['electricity']['grid_annualperformance_fee']/1000000
+    # categories = ["Capital costs", "Operating costs", "Import cost", "Export cost", "Grid usage cost", "Grid yearly cost", "Total cost", " ", "Emission", 
+    #               "Electricity", "Gas", "Oil","Hard coal", "Brown coal", "Total Emission"]
+    # data = {category: [] for category in categories}
+    # #dicts = [investment_costs,import_cost,export_cost,grid_import_usage_fee]
+    # total_scenarios = len(scenarios)
+    # for scenario in scenarios:
+    #     capital_cost = investment_costs.get(scenario, {}).get("total_capital_cost", 0)/1000000
+    #     operating_cost = investment_costs.get(scenario, {}).get("total_operating_cost", 0)/1000000
+    #     import_cost = import_costs.get(scenario, {}).get("total_import_cost", 0)/1000000
+    #     export_cost = export_costs.get(scenario, {}).get("total_export_cost", 0)/1000000
+    #     grid_cost = grid_import_usage_fee.get(scenario, {}).get("total_grid_usage_fee", 0)/1000000
+    #     grid_yearly_cost = grid_import_usage_fee.get(scenario, {}).get("peak_load", 0)* scalars['Electricity_grid']['electricity']['grid_annualperformance_fee']/1000000
        
-        import_elec = CO2_emission.get(scenario, {}).get("Import_Electricity",0)
-        import_gas = CO2_emission.get(scenario, {}).get("Import_Gas",0)
-        import_oil = CO2_emission.get(scenario, {}).get("Import_Oil",0)
-        import_hard_coal = CO2_emission.get(scenario, {}).get("Import_hard_coal",0)
-        import_brown_coal = CO2_emission.get(scenario, {}).get("Import_brown_coal",0)
-        total_emission = CO2_emission.get(scenario, {}).get("total_CO2_emission",0)
+    #     import_elec = CO2_emission.get(scenario, {}).get("Import_Electricity",0)
+    #     import_gas = CO2_emission.get(scenario, {}).get("Import_Gas",0)
+    #     import_oil = CO2_emission.get(scenario, {}).get("Import_Oil",0)
+    #     import_hard_coal = CO2_emission.get(scenario, {}).get("Import_hard_coal",0)
+    #     import_brown_coal = CO2_emission.get(scenario, {}).get("Import_brown_coal",0)
+    #     total_emission = CO2_emission.get(scenario, {}).get("total_CO2_emission",0)
         
-        # Append the costs to the corresponding lists
-        data["Capital costs"].append(capital_cost)
-        data["Operating costs"].append(operating_cost)
-        data["Import cost"].append(import_cost)
-        data["Export cost"].append(export_cost)
-        data["Grid usage cost"].append(grid_cost)
-        data["Grid yearly cost"].append(grid_yearly_cost)
+    #     # Append the costs to the corresponding lists
+    #     data["Capital costs"].append(capital_cost)
+    #     data["Operating costs"].append(operating_cost)
+    #     data["Import cost"].append(import_cost)
+    #     data["Export cost"].append(export_cost)
+    #     data["Grid usage cost"].append(grid_cost)
+    #     data["Grid yearly cost"].append(grid_yearly_cost)
     
-        total_cost = (capital_cost + operating_cost + import_cost + grid_cost +grid_yearly_cost - export_cost)
-        data["Total cost"].append(total_cost)
-        data[" "].append(' ')
-        data["Emission"].append(' ')
-        data["Electricity"].append(import_elec)
-        data["Gas"].append(import_gas)
-        data["Oil"].append(import_oil)
-        data["Hard coal"].append(import_hard_coal)
-        data["Brown coal"].append(import_brown_coal)
-        data["Total Emission"].append(total_emission)
+    #     total_cost = (capital_cost + operating_cost + import_cost + grid_cost +grid_yearly_cost - export_cost)
+    #     data["Total cost"].append(total_cost)
+    #     data[" "].append(' ')
+    #     data["Emission"].append(' ')
+    #     data["Electricity"].append(import_elec)
+    #     data["Gas"].append(import_gas)
+    #     data["Oil"].append(import_oil)
+    #     data["Hard coal"].append(import_hard_coal)
+    #     data["Brown coal"].append(import_brown_coal)
+    #     data["Total Emission"].append(total_emission)
         
         
-    df = (pd.DataFrame(data, index=[f"Scenario {scenario}" for scenario in scenarios]).T)
-    df.round().applymap(lambda x: str(x).replace('.', ',')).to_csv(COSTS_PATH, sep = ';', index=True)
+    # df = (pd.DataFrame(data, index=[f"Scenario {scenario}" for scenario in scenarios]).T)
+    # df.round().applymap(lambda x: str(x).replace('.', ',')).to_csv(COSTS_PATH, sep = ';', index=True)
     
     print("Ende")
     
+ #%%   
+    bus_dfs = {}
     
-    #%% Plot
+    bus_dfs = {}
     
-    storage_plot = ['Heat storage_dist_heat', 'Heat storage_seasonal']
-    date_time_index = pd.date_range('1/1/'+ str(year), periods=8760,freq='H')
-    for scenario, component_data in all_component_sequences.items(): 
-        for component, dict_data in component_data.items():
-            if component in storage_plot:                     
-                fig = plt.figure(figsize=(19.1, 10.5))
-                fig.canvas.set_window_title('Speicherverläufe-' +scenario)
-                plt.plot(date_time_index,(((dict_data['None']['storage_content'])/all_component_scalars[scenario][component]['None'])*100),label=component, linewidth=0.5)
-                # plt.plot(date_time_index,(((Erdgasspeicher_results['sequences'][('Erdgasspeicher','None'),'storage_content']).dropna()/Erdgasspeicher_results['scalars'][('Erdgasspeicher','None'),'invest'])*100),label='Erdgasspeicher')
-                # plt.plot(date_time_index,(((Natriumspeicher['sequences'][('Batterie','None'),'storage_content']).dropna()/Natriumspeicher['scalars'][('Batterie','None'),'invest'])*100),label='Natriumspeicher', color = 'lightgreen')   
-                # plt.plot(date_time_index,(((Waermespeicher_results['sequences'][('Waermespeicher','None'),'storage_content']).dropna()/Waermespeicher_results['scalars'][('Waermespeicher','None'),'invest'])*100), label='Waermespeicher')
-                plt.grid()
-                plt.legend()
-                plt.ylabel('Speicherfüllstand in \%')
-                plt.xlabel('Zeit')
-                plt.title('Speicherverläufe_'+component +'_'+ scenario)
-                plt.savefig(os.path.join(FIG_PATH, scenario, 'Speicherverläufe_'+component+'.png'))
-
-else:
-    
-    component_info ={
-        "Battery":                  "None",
-        "Biogas- BHKW":              "Electricity",
-        "Biogas_feedin_existing":    "Gas",
-        "Biogas_feedin_new":        "Gas",
-        "Biomasse_elec_heat":       "Electricity",
-        "Biomasse_elec":            "Electricity",
-        "Biomasse_heat":            "District heating",
-        "BioTransformer":          "Solidfuel",
-        "Pre-heater":              "District heating",
-        "BtL":                      "Oil_fuel",
-        "Electric boiler":          "District heating",
-        "Electrolysis":             "Hydrogen",
-        "Fuelcell":                 "Electricity",
-        "Gas_storage":               "None",
-        "GuD":                      "Electricity",
-        "H2_storage":               "None",
-        "Heat storage":             "None",
-        "Heat storage_dist_heat":    "None",
-        "Heat storage_seasonal":   "None",
-        "Heatpump_air":             "District heating",
-        "Heatpump_water":           "District heating",
-        "Heatpump_recovery_heat":   "District heating",
-        "Hydro power plant":        "Electricity",
-        "Hydrogen_feedin":          "Gas",
-        "Methanisation":            "Gas",
-        "PtL":                      "Oil_fuel",
-        "Pumped_hydro_storage":     "None",
-        "Pumped_hydro_storage_Goldistal": "None",
-        "PV_open_east":             "Electricity",
-        "PV_open_middle":           "Electricity",
-        "PV_open_north":            "Electricity",
-        "PV_open_swest":            "Electricity",
-        "PV_rooftop_east":          "Electricity",
-        "PV_rooftop_middle":        "Electricity",
-        "PV_rooftop_north":         "Electricity",
-        "PV_rooftop_swest":         "Electricity",
-        "ST":                       "District heating",
-        "Wind_east":                "Electricity",
-        "Wind_middle":              "Electricity",
-        "Wind_north":               "Electricity",
-        "Wind_swest":               "Electricity",
-        "Preheater- WP":            "District heating",
-        "Preheater- Electric boiler":"District heating",
+    for bus_name, components in bus_sequences.items():
+        bus_data = {}
         
+        for component_name, sequence_data in components.items():
+            # Extract the actual flow values from the sequence data
+            if hasattr(sequence_data, 'values'):
+                # If it's a pandas Series or similar with .values attribute
+                flow_values = sequence_data.values
+            elif isinstance(sequence_data, dict):
+                # If it's a dictionary, get the flow data
+                flow_data = sequence_data.get('flow', None)
+                if flow_data is not None and hasattr(flow_data, 'values'):
+                    flow_values = flow_data.values
+                else:
+                    continue  # Skip if no valid flow data
+            else:
+                continue  # Skip if we can't extract values
+            
+            # Ensure we have a 1D array
+            if hasattr(flow_values, 'shape') and len(flow_values.shape) == 1:
+                bus_data[f"{bus_name} -> {component_name}"] = flow_values
+            else:
+                # If it's 2D, take the first column or flatten
+                try:
+                    if hasattr(flow_values, 'shape') and len(flow_values.shape) == 2:
+                        bus_data[f"{bus_name} -> {component_name}"] = flow_values[:, 0]
+                    else:
+                        bus_data[f"{bus_name} -> {component_name}"] = flow_values.flatten()
+                except:
+                    continue
+        
+        if bus_data:
+            # Use energysystem timeindex
+            time_index = es.timeindex
+            
+            # Ensure all arrays have the same length
+            min_length = min(len(arr) for arr in bus_data.values())
+            if min_length != len(time_index):
+                time_index = time_index[:min_length]
+                
+            # Truncate all arrays to the same length
+            for key in bus_data.keys():
+                bus_data[key] = bus_data[key][:min_length]
+            
+            # Create DataFrame
+            bus_dfs[bus_name] = pd.DataFrame(bus_data, index=time_index[:min_length])
     
-#%%
+    
+    component_dfs = {}
+    
+    for component_name, targets in component_sequences.items():
+        component_data = {}
+        
+        for target_name, sequence_data in targets.items():
+            # Extract the actual flow values from the sequence data
+            if hasattr(sequence_data, 'values'):
+                # If it's a pandas Series or similar with .values attribute
+                flow_values = sequence_data.values
+            elif isinstance(sequence_data, dict):
+                # If it's a dictionary, get the flow data
+                flow_data = sequence_data.get('flow', None)
+                if flow_data is not None and hasattr(flow_data, 'values'):
+                    flow_values = flow_data.values
+                else:
+                    continue  # Skip if no valid flow data
+            else:
+                continue  # Skip if we can't extract values
+            
+            # Ensure we have a 1D array
+            if hasattr(flow_values, 'shape') and len(flow_values.shape) == 1:
+                component_data[f"{component_name} -> {target_name}"] = flow_values
+            else:
+                # If it's 2D, take the first column or flatten
+                try:
+                    if hasattr(flow_values, 'shape') and len(flow_values.shape) == 2:
+                        component_data[f"{component_name} -> {target_name}"] = flow_values[:, 0]
+                    else:
+                        component_data[f"{component_name} -> {target_name}"] = flow_values.flatten()
+                except:
+                    print(f"Could not process data for {component_name} -> {target_name}")
+                    continue
+        
+        if component_data:
+            # Use energysystem timeindex
+            time_index = es.timeindex
+            
+            # Ensure all arrays have the same length
+            min_length = min(len(arr) for arr in component_data.values())
+            if min_length != len(time_index):
+                print(f"Data length mismatch for component {component_name}. Truncating to {min_length} points.")
+                time_index = time_index[:min_length]
+                
+            # Truncate all arrays to the same length
+            for key in component_data.keys():
+                component_data[key] = component_data[key][:min_length]
+            
+            # Create DataFrame
+            component_dfs[component_name] = pd.DataFrame(component_data, index=time_index[:min_length])
     
