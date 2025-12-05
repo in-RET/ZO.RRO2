@@ -83,7 +83,7 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
     for name in profile:
         load_profile_nom[name]= sequences[name]/sequences[name].sum() # Normalising the timeseries to scale the profile to respective energy demand.
     
-    sector = ['electricity', 'gas', 'dist_heating', 'biomass', 'oil', 'material_usage_gas', 'material_usage_biomasse','material_usage_oil', 'H2', 'fuel']
+    sector = ['electricity', 'gas', 'dist_heating', 'biomass', 'oil', 'material_usage_gas', 'material_usage_biomasse','material_usage_oil', 'H2', 'fuel', 'rechnenzentrum']
     
     region = ['north', 'middle', 'east', 'swest']
     
@@ -154,6 +154,9 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
                 Gas: Baseload
                 Oil: baseload
                 Biomass: baseload
+            
+            Rechnenzentrum:
+                Electricity: Baseload
 
             """
             if s == 'electricity':
@@ -267,6 +270,9 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
             elif s == 'material_usage_biomasse':
                 demand_profile_dict[s][r] = ((load_profile_nom['Base_demand_profile']['base_load']*(float(scalars['Demand_Industry_' + r + '_b']['Stoffl. Nutzung_'+str(YEAR)]['Summe']) * (float(scalars['Demand_Industry_'+ r + '_b']['Stoffl. Nutzung_' + str(YEAR)]['Materialnutzung Biomasse'])/100) /float(scalars['Demand_Industry_'+ r + '_b']['EER_' + str(YEAR)]['Materialnutzung Biomasse'])))
                                              )*1000000
+            
+            elif s == 'rechnenzentrum':
+                demand_profile_dict[s][r] = (load_profile_nom['Base_demand_profile']['base_load'] *((float(scalars['Demand_Rechnenzentrum']['electricity_'+str(YEAR)]['Summe'])/4)* (float(scalars['System_configurations_2024']['System']['gesamte_Bundesflaeche'])/100)))*1000000
                 
     demand = pd.DataFrame()
     demand['electricity'] = demand_profile_dict['electricity']['north']+demand_profile_dict['electricity']['east']+demand_profile_dict['electricity']['middle']+demand_profile_dict['electricity']['swest']
@@ -285,6 +291,7 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
 
     demand['material_usage_gas'] = demand_profile_dict['material_usage_gas']['north']+demand_profile_dict['material_usage_gas']['east']+demand_profile_dict['material_usage_gas']['middle']+demand_profile_dict['material_usage_gas']['swest']
     demand['material_usage_oil'] = demand_profile_dict['material_usage_oil']['north']+demand_profile_dict['material_usage_oil']['east']+demand_profile_dict['material_usage_oil']['middle']+demand_profile_dict['material_usage_oil']['swest']
+    demand['rechnenzentrum'] = demand_profile_dict['rechnenzentrum']['north']+demand_profile_dict['rechnenzentrum']['east']+demand_profile_dict['rechnenzentrum']['middle']+demand_profile_dict['rechnenzentrum']['swest']
     
     print('Demand Electricity: ', demand['electricity'].sum())
     print('Demand Gas: ', demand['gas'].sum())
@@ -298,6 +305,7 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
     print('Demand Fuel: ', demand['fuel'].sum())
     print('Demand Matrialbedarf Gas: ', demand['material_usage_gas'].sum())
     print('Demand Matrialbedarf Oil: ', demand['material_usage_oil'].sum())
+    print('Demand Rechnenzentrum: ', demand['rechnenzentrum'].sum())
     
     if model_ID.startswith('BS_regionalization'):
         print('Region')
@@ -367,7 +375,7 @@ def COP_calculation(scalars, T_a, model_ID, YEAR):
             T_VL[i] = T_VL_U
         nu_H = 0.36 #efficiency of heatpump
         COP[i] = nu_H*(T_VL[i]+273.15) / (T_VL[i]-T_RL)
-    return pd.Series(COP)
+    return pd.Series(COP), pd.Series(T_VL)
 
     
 def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heating_household', region = True):
@@ -843,6 +851,15 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, demand_type = 'space_heat
                      (float(scalars['Demand_Transport_nutzenergie_' + r + '_b']['NE_Gueterverkehr_' + str(YEAR)]['LKW - Batterie']))
                      ))* 1000000
                 }
+        
+        elif demand_type == 'rechnenzentrum':
+            technlogies = {
+                'Rechnenzentrum':(load_profile_nom['Base_demand_profile']['base_load'] *
+                                  (float(scalars['Demand_Rechnenzentrum']['electricity_'+str(YEAR)]['Summe'])/4)
+                                  * (float(scalars['System_configurations_2024']['System']['gesamte_Bundesflaeche'])/100)
+                                  )*1000000
+                    }
+            
         else:
             technologies = {}
             print(f"Warning: Demand type '{demand_type}' not implemented in technology breakdown")

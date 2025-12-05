@@ -35,7 +35,11 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     east = Location(os.path.join(Weather_dir,'Gera-Leumnitz-hour.csv'), os.path.join(Weather_dir,'Gera-Leumnitz-min.dat'))
     
     Ta_avg = ((north.weather_data_hour[' Ta'] + east.weather_data_hour[' Ta'] + middle.weather_data_hour[' Ta'] + swest.weather_data_hour[' Ta'])/4)
-    COP = COP_calculation(scalars, Ta_avg, model_ID, YEAR)
+    COP, T_VL = COP_calculation(scalars, Ta_avg, model_ID, YEAR)
+    T_seaso_speicher = 90
+    for i in range(len(T_VL)):
+        if T_VL[i] < T_seaso_speicher:
+            T_VL[i] = T_seaso_speicher
     fixed_losses_absolute_seasonal_storage = 1656.2*(85 - Ta_avg )+ 74.7 *(10-11) # 11°C- Bodentemp
     Planing_region = [middle, north, swest, east]
     """ Simulate Wind feed-in profile for the desired location """
@@ -115,7 +119,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     # Preheat
     #------------------------------------------------------------------------------
-    b_preheat = solph.buses.Bus(label="Pre-heating")
+    b_preheat = solph.buses.Bus(label="Preheater")
     
     #------------------------------------------------------------------------------
     # Pumpspeicher
@@ -450,7 +454,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
        label='Import_Electricity',
-       outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
+       outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_Bezug_'+str(YEAR)],
                                  variable_costs = strompreiszeitreihe + import_price['grid_operating_fee_HöS<2500h'],
                                  custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Strom_'+ str(YEAR)],
                                                     'import_bilanz': -1},
@@ -471,7 +475,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     
     
     energysystem.add(solph.components.Converter(
-        label="Netzverluste",
+        label="Grid_losses",
         inputs={b_el_in: solph.Flow()},
         outputs={b_el_out: solph.Flow()},
         conversion_factors={b_el_out: 0.95}
@@ -638,7 +642,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     # Biomass-to-Liquid
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
-        label="BtL",
+        label="BtL_Holz",
         inputs={b_bio: solph.Flow()},
         outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['biomass_to_liquid_system_holz']['epc'], 
                                                                               #maximum=scalars['Parameter_biomass_to_liquid_system']['potential'][model_ID]
@@ -646,6 +650,20 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                         custom_attributes={'emission_factor': scalars['Parameter_biomass_to_liquid_system_holz']['EE_factor'][model_ID]}
                                         )},
         conversion_factors={b_oil_fuel: scalars['Parameter_biomass_to_liquid_system_holz']['efficiency_'+str(YEAR)][model_ID]/100}
+        ))
+    
+    #------------------------------------------------------------------------------
+    # Biomass-to-Liquid (Substrat)
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Converter(
+        label="BtL_substrat",
+        inputs={b_bio: solph.Flow()},
+        outputs={b_oil_fuel: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['biomass_to_liquid_system_substrat']['epc'], 
+                                                                              #maximum=scalars['Parameter_biomass_to_liquid_system']['potential'][model_ID]
+                                                                              ),
+                                          custom_attributes={'emission_factor': scalars['Parameter_biomass_to_liquid_system_substrat']['EE_factor'][model_ID]}
+                                          )},
+        conversion_factors={b_oil_fuel: scalars['Parameter_biomass_to_liquid_system_substrat']['efficiency_'+str(YEAR)][model_ID]/100}
         ))
     
     #------------------------------------------------------------------------------
@@ -869,7 +887,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['heat_pump_ground_Flusswärme']['epc'], 
                                                                   #maximum=scalars['Parameter_electrolysis']['potential'][model_ID]
                                                                   ))},
-        conversion_factors={b_dist_heat: COP},
+        conversion_factors={b_el_out: 1 - (T_seaso_speicher/T_VL),
+                            b_preheat: (T_seaso_speicher/T_VL)},
         #conversion_factors={b_dist_heat: scalars['Parameter_heat_pump_ground_Flusswärme']['efficiency_'+str(YEAR)][model_ID]/100
          #                   },
         ))
@@ -884,7 +903,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
         outputs={b_dist_heat: solph.Flow(investment = solph.Investment(ep_costs= epc_costs['electrical_heater']['epc'], 
                                                                   #maximum=scalars['Parameter_electrolysis']['potential'][model_ID]
                                                                   ))},
-        conversion_factors={b_dist_heat: scalars['Parameter_electrical_heater']['efficiency_' +str(YEAR)][model_ID]/100
+        conversion_factors={b_el_out: 1 - (T_seaso_speicher/T_VL),
+                            b_preheat: (T_seaso_speicher/T_VL)
                             },
         ))
     
@@ -1268,42 +1288,42 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_el', 
-        inputs={b_el_out: solph.Flow(variable_costs = 10000000
+        inputs={b_el_out: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Gas
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_gas', 
-        inputs={b_gas: solph.Flow(variable_costs = 10000000
+        inputs={b_gas: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Oel/Kraftstoffe
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_oil_fuel', 
-        inputs={b_oil_fuel: solph.Flow(variable_costs = 10000000
+        inputs={b_oil_fuel: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Biomasse
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_bio', 
-        inputs={b_bio: solph.Flow(variable_costs = 10000000
+        inputs={b_bio: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Waerme
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_distheat', 
-        inputs={b_dist_heat: solph.Flow(#variable_costs = 10000000
+        inputs={b_dist_heat: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Wasserstoff
     #-----------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_H2', 
-        inputs={b_H2: solph.Flow(variable_costs = 10000000
+        inputs={b_H2: solph.Flow(variable_costs = 1000000
         )}))
     
     # Prepare a dataset for exporting, to have access after the simulation 

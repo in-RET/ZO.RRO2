@@ -1,20 +1,55 @@
-index;Einheit;electricity;Schnittstelle
-max_power;MW;20000;
-grid_operating_fee;€/MWh;26,6;
-grid_annualperformance_fee;€/MW/a;10720;TEN - Hochspannung
-max_power_north;MW;640;1
-max_power_swest;MW;300;2
-max_power_middle;MW;1350;3,4
-max_power_east;MW;1100;5,6,7
-connection_north_middle;MW;460;
-connection_middle_swest;MW;1060;
-connection_east_middle;MW;1360;
-grid_operating_fee_HöS<2500h;€/MWh;64,5;50Hertz Preisblatt 2024
-grid_operating_fee_HöS>2500h;€/MWh;11,2;50Hertz Preisblatt 2024
-grid_annualperformance_fee_Hös<2500h;€/MW/a;25760;50Hertz Preisblatt 2024
-grid_annualperformance_fee_Hös>2500h;€/MW/a;158980;50Hertz Preisblatt 2024
-grid_operating_fee_HS<2500h;€/MWh;52,2;TEN Preisblatt 2025
-grid_operating_fee_HS>2500h;€/MWh;5,6;TEN Preisblatt 2025
-grid_annualperformance_fee_HS<2500h;€/MW/a;36330;TEN Preisblatt 2025
-grid_annualperformance_fee_HS>2500h;€/MW/a;152690;TEN Preisblatt 2025
-max_Rueckspeisung_2045;MW;13050;TEN
+index;Einheit;electricity;Schnittstelle/Quelle;;;;;;;;;;;
+max_Bezug_2030;MW;3340;TEN Netzausbauplan 2024;;;;;;;;;;;
+max_Bezug_2035;MW;5060;TEN Netzausbauplan 2024;;;;;;;;;;;
+max_Bezug_2040;MW;5930;TEN Netzausbauplan 2024;;;;;;;;;;;
+max_Bezug_2045;MW;6800;TEN Netzausbauplan 2024;;;;;;;;;;;
+max_power;MW;20000;;;;;;;;;;;;
+grid_operating_fee;€/MWh;26,6;;;;;;;;;;;;
+grid_annualperformance_fee;€/MW/a;10720;TEN - Hochspannung;;;;;;;;;;;
+max_import_power_north_2030;MW;630,56;;;;;;;;;;;;
+max_import_power_swest_2030;MW;295,58;;;;;;;;;;;;
+max_import_power_middle_2030;MW;1330,09;;;;;;;;;;;;
+max_import_power_east_2030;MW;1083,78;;;;;;;;;;;;
+max_import_power_north_2035;MW;955,28;;;;;;;;;;;;
+max_import_power_swest_2035;MW;447,79;;;;;;;;;;;;
+max_import_power_middle_2035;MW;2015,04;;;;;;;;;;;;
+max_import_power_east_2035;MW;1641,89;;;;;;;;;;;;
+max_import_power_north_2040;MW;1119,53;;;;;;;;;;;;
+max_import_power_swest_2040;MW;524,78;;;;;;;;;;;;
+max_import_power_middle_2040;MW;2361,50;;;;;;;;;;;;
+max_import_power_east_2040;MW;1924,19;;;;;;;;;;Max.Leistung;Prozentualaufteilung;Schnittstelle von TEN-mail
+max_import_power_north_2045;MW;1283,78;;;;;;;;max_power_north;MW;640;0,19;1
+max_import_power_swest_2045;MW;601,77;;;;;;;;max_power_swest;MW;300;0,09;2
+max_import_power_middle_2045;MW;2707,96;;;;;;;;max_power_middle;MW;1350;0,40;3,4
+max_import_power_east_2045;MW;2206,49;;;;;;;;max_power_east;MW;1100;0,32;5,6,7
+connection_north_middle;MW;460;;;;;;;;Summe;MW;3390;1,00;
+connection_middle_swest;MW;1060;;;;;;;;;;;;
+connection_east_middle;MW;1360;;;;;;;;;;;;
+grid_operating_fee_HöS<2500h;€/MWh;64,5;50Hertz Preisblatt 2024;;;;;;;;;;;
+grid_operating_fee_HöS>2500h;€/MWh;11,2;50Hertz Preisblatt 2024;;;;;;;;;;;
+grid_annualperformance_fee_Hös<2500h;€/MW/a;25760;50Hertz Preisblatt 2024;;;;;;;;;;;
+grid_annualperformance_fee_Hös>2500h;€/MW/a;158980;50Hertz Preisblatt 2024;;;;;;;;;;;
+grid_operating_fee_HS<2500h;€/MWh;52,2;TEN Preisblatt 2025;;;;;;;;;;;
+grid_operating_fee_HS>2500h;€/MWh;5,6;TEN Preisblatt 2025;;;;;;;;;;;
+grid_annualperformance_fee_HS<2500h;€/MW/a;36330;TEN Preisblatt 2025;;;;;;;;;;;
+grid_annualperformance_fee_HS>2500h;€/MW/a;152690;TEN Preisblatt 2025;;;;;;;;;;;
+max_Rueckspeisung_2030;MW;5040;TEN Netzausbauplan 2024;;;;;;;;;;;
+max_Rueckspeisung_2035;MW;8980;TEN Netzausbauplan 2024;;;;;;;;;;;
+max_Rueckspeisung_2040;MW;11015;TEN Netzausbauplan 2024;;;;;;;;;;;
+max_Rueckspeisung_2045;MW;13050;TEN Netzausbauplan 2024;;;;;;;;;;;
+max_export_power_north_2030;MW;951,50;;;;;;;;;;;;
+max_export_power_swest_2030;MW;446,02;;;;;;;;;;;;
+max_export_power_middle_2030;MW;2007,08;;;;;;;;;;;;
+max_export_power_east_2030;MW;1635,40;;;;;;;;;;;;
+max_export_power_north_2035;MW;1695,34;;;;;;;;;;;;
+max_export_power_swest_2035;MW;794,69;;;;;;;;;;;;
+max_export_power_middle_2035;MW;3576,11;;;;;;;;;;;;
+max_export_power_east_2035;MW;2913,86;;;;;;;;;;;;
+max_export_power_north_2040;MW;2079,53;;;;;;;;;;;;
+max_export_power_swest_2040;MW;974,78;;;;;;;;;;;;
+max_export_power_middle_2040;MW;4386,50;;;;;;;;;;;;
+max_export_power_east_2040;MW;3574,19;;;;;;;;;;;;
+max_export_power_north_2045;MW;2463,72;;;;;;;;;;;;
+max_export_power_swest_2045;MW;1154,87;;;;;;;;;;;;
+max_export_power_middle_2045;MW;5196,90;;;;;;;;;;;;
+max_export_power_east_2045;MW;4234,51;;;;;;;;;;;;

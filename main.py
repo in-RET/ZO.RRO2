@@ -7,20 +7,22 @@ FORMAT = "%(asctime)s %(message)s"
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
-
+    
     sim_data, result = solveModels(
         variations=["BS0006"],
-        scenario_num = "Im_Ex_Bilanz_Wind_P70",
+        scenario_num = "R05_same_Temp_no_grid_limit_03_12_25",
         years=[2045],# 2040, 2050],
-        model_name='BS', #"BS_regionalization",
+        model_name="BS_regionalization",
         solver="gurobi",
         gap=0.0,
         solver_output=False,
         print_graph=False,
-        Anteilig_erneuerbar = False,
-        hypothese = "Regionalisation of the new Basis scenario",
+        Anteilig_erneuerbar = True,
+        hypothese = "New Basis scenario",
         sim_remarks = "- The techno-economical parameters are updated. \n"+
-                        "- All changes made in BAsic exapmple by TR is updated in this scenario"
+                        "- All changes made in Basic exapmple by TR is updated in this scenario. \n"+
+                        "- Additional BtL Substrat component added. \n"+
+                        "- TEN Netzausbauplan, Import-Export Bilanz ab 2030, Rechnenzentrum, Netzverlust usw."
                         
                         
     )

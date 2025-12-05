@@ -36,8 +36,9 @@ my_path = os.path.abspath(os.path.dirname(__file__))
 energysystem = solph.EnergySystem()
 #energysystem.restore(my_path, os.path.join(workdir,
  #                                          'dumps', '2030_BS0001', 'Basic_example_zorro_1_2030_BS0001_005.dump'))
-YEAR = 2030
-model_ID = 'BS0005'
+YEAR = 2045
+model_ID = 'BS0006'
+model_name = "BS_regionalization"
 # model_name '_' years '_' variations '.dump'
 # img_path = os.path.abspath(os.path.join(os.getcwd(),
 # 'figures','Thuringia_karte_mit_Landkreisen_dull.png'))
@@ -46,19 +47,19 @@ model_ID = 'BS0005'
 sequences = read_input_files(
     folder_name='data/sequences', sub_folder_name=None)
 scalars = read_input_files(folder_name='data/scalars', sub_folder_name=None)
-#demand = load_profile_scaling(scalars,sequences, YEAR, region=False)
+demand = load_profile_scaling(scalars,sequences,YEAR,model_name, region = True)
 #demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
 
 
-demands = ['space_heating_household', 'space_heating_industry', 'space_heating_ghd',
-           'process_heating_industry', 'process_heating_ghd',
-           'cooling_household', 'cooling_industry', 'cooling_ghd',
-           'electrical_household', 'electrical_ghd', 'electrical_industry',
-           'mobility_person', 'mobility_goods', 'material_usage_industry'
-           ]
-demand = {}
-for d in demands:
-    demand[d] = Utility_demand_breakdown(scalars, sequences, YEAR, demand_type= d, region= False)
+# demands = ['space_heating_household', 'space_heating_industry', 'space_heating_ghd',
+#            'process_heating_industry', 'process_heating_ghd',
+#            'cooling_household', 'cooling_industry', 'cooling_ghd',
+#            'electrical_household', 'electrical_ghd', 'electrical_industry',
+#            'mobility_person', 'mobility_goods', 'material_usage_industry'
+#            ]
+# demand = {}
+# for d in demands:
+#     demand[d] = Utility_demand_breakdown(scalars, sequences, YEAR, demand_type= d, region= True)
 epc_costs = investment_parameter(scalars, YEAR, model_ID)
 #results = energysystem.results["main"]
 year = [2030, 2040, 2050]
@@ -76,9 +77,12 @@ for L in Planing_region:
     L.Wind_feed_in_profile(YEAR)
     L.PV_feed_in_profile(YEAR)
 
-COP = COP_calculation(scalars, Ta_avg, model_ID, YEAR)
 
+COP_avg, T_VL_avg = COP_calculation(scalars, Ta_avg, model_ID, YEAR)
+fixed_losses_absolute_seasonal_storage_avg = 1656.2*(85 - Ta_avg )+ 74.7 *(10-11)
 
+COP_n = COP_m = COP_e = COP_s = COP_avg
+T_VL_e = T_VL_m = T_VL_n = T_VL_s = T_VL_avg
 
 #%%
 # sum_2 =[]
