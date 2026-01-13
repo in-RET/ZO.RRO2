@@ -36,7 +36,7 @@ my_path = os.path.abspath(os.path.dirname(__file__))
 energysystem = solph.EnergySystem()
 #energysystem.restore(my_path, os.path.join(workdir,
  #                                          'dumps', '2030_BS0001', 'Basic_example_zorro_1_2030_BS0001_005.dump'))
-YEAR = 2045
+YEAR = 2030
 model_ID = 'BS0006'
 model_name = "BS_regionalization"
 # model_name '_' years '_' variations '.dump'
@@ -126,5 +126,3 @@ T_VL_e = T_VL_m = T_VL_n = T_VL_s = T_VL_avg
 # plt.legend()
 # plt.grid(True)
 #%%
-
-
