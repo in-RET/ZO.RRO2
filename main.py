@@ -7,25 +7,27 @@ FORMAT = "%(asctime)s %(message)s"
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
-    
-    sim_data, result = solveModels(
-        variations=["BS0006"],
-        scenario_num = "R05_same_Temp_no_grid_limit_03_12_25",
-        years=[2045],# 2040, 2050],
-        model_name="BS_regionalization",
-        solver="gurobi",
-        gap=0.0,
-        solver_output=False,
-        print_graph=False,
-        Anteilig_erneuerbar = True,
-        hypothese = "New Basis scenario",
-        sim_remarks = "- The techno-economical parameters are updated. \n"+
-                        "- All changes made in Basic exapmple by TR is updated in this scenario. \n"+
-                        "- Additional BtL Substrat component added. \n"+
-                        "- TEN Netzausbauplan, Import-Export Bilanz ab 2030, Rechnenzentrum, Netzverlust usw."
-                        
-                        
-    )
+    years = [2030, 2035, 2040, 2045]
+    for y in years:
+        sim_data, result = solveModels(
+            variations=["BS0006"],
+            scenario_num = "R06_final_05_01_26",
+            years=[y],# 2040, 2050],
+            model_name="BS_regionalization",
+            solver="gurobi",
+            gap=0.0,
+            solver_output=False,
+            print_graph=False,
+            Anteilig_erneuerbar = True,
+            hypothese = "New Basis scenario",
+            sim_remarks = "- The techno-economical parameters are updated. \n"+
+                            "- All changes made in Basic exapmple by TR is updated in this scenario. \n"+
+                            "- Additional BtL Substrat component added. \n"+
+                            "- TEN Netzausbauplan, Import-Export Bilanz ab 2030, Rechnenzentrum, Netzverlust usw."
+                            
+                            
+        )
+        print("Simulation done for year: " + str(y))
 
     # %TODO: Auswertung der Dump-Daten (csv-daten erstellen, automatische grafiken etc.)
 
