@@ -7,7 +7,7 @@ FORMAT = "%(asctime)s %(message)s"
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
-    years = [2030, 2035, 2040, 2045]
+    years = [2020, 2025, 2030, 2035, 2040, 2045]
     for y in years:
         sim_data, result = solveModels(
             variations=["BS0006"],
@@ -19,7 +19,7 @@ if __name__ == "__main__":
             solver_output=False,
             print_graph=False,
             Anteilig_erneuerbar = True,
-            hypothese = "New Basis scenario",
+            hypothese = "Sensitivity: Regionalisation- Basis szenario split into regions",
             sim_remarks = "- The techno-economical parameters are updated. \n"+
                             "- All changes made in Basic exapmple by TR is updated in this scenario. \n"+
                             "- Additional BtL Substrat component added. \n"+
