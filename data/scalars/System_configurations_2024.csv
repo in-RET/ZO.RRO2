@@ -18,6 +18,7 @@ CO2_Grenze_2040;kg_CO2;3500000000;;
 CO2_Grenze_2035;kg_CO2;7000000000;;
 CO2_Grenze_2030;kg_CO2;9000000000;;
 CO2_Grenze_2025;kg_CO2;11000000000;;(angenommen)
+CO2_Grenze_2020;kg_CO2;11000000000;;(angenommen)
 Menge_Steinkohle;MW;0;;
 Menge_Braunkohle;MW;37,9;;
 Holzpotential_nord;MWh;1500798,428;;
