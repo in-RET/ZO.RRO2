@@ -6,21 +6,18 @@ Created on Mon Dec  1 15:30:57 2025
 """
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import numpy as np
-import pickle
-from matplotlib import cm
-import seaborn as sns
 from datetime import datetime
 from src.postprocessing.utils_dump import get_dump_file_path,load_results_from_dump
 from src.postprocessing.plot_report_utils import interpret_results, create_combined_bus_component_dfs, plot_bus_flows, categorize_for_sequence, rename_index_with_category
-from src.postprocessing.plot_report_utils import create_barplot_dict
-from datetime import datetime, timedelta
+from src.postprocessing.plot_report_utils import create_barplot_dict, scalars_bar_plot
 import os 
+
 workdir = os.getcwd()
 
 #%%
 scalars_comp_plot = True
+component_filename = 'component_peak_flow_comparison_20260119_1655.csv'
+storage_filename = 'peak_storage_flow_comparison_20260119_1656.csv'
 
 
 
@@ -71,10 +68,10 @@ for scenario_num in scenarios:
         
         # Fossil fuels
         'GUD': '#FF4500',          # Gas und Dampf
-        
+        'GUD - KW': '#FF4500',
         # Storage
         'WAERMESPEICHER': '#FF8C00',                  # Dark Orange
-        'ST': '#FFB74D',                    # Light Orange
+        'ST': '#D10000',                    # Light Orange
         'PUMPSPEICHERKRAFTWERK': '#8A2BE2',         # Blue Violet for pumped storage
         'STROMSPEICHER': '#4B0082',      # Indigo for battery
         'GASSPEICHER': '#DAF0AD',
@@ -101,6 +98,7 @@ for scenario_num in scenarios:
         'UMWELTWAERME': '#C6EF6B',
         'STOFFLICHE NUTZUNG': '#FF5CC6',
         'ABWAERME': '#F59184',
+        'UMGEBUNGSLUFT': '#D6F5B5',
                 
         # Default
         'DEFAULT': '#A9A9A9'       # Dark Gray
@@ -165,13 +163,13 @@ for scenario_num in scenarios:
 if scalars_comp_plot:
     # Import component peak flow output csv file from Dashboard 
     component_csv_path = os.path.join(workdir, 'results',
-                         "dashboard_results",'component_peak_flow_comparison_20260119_1655.csv')
+                         "dashboard_results",component_filename)
     raw_component_scalar_df = pd.read_csv(component_csv_path, decimal= '.', sep =',', index_col = 0, skiprows = [0])
     component_scalar_df = rename_index_with_category(raw_component_scalar_df, category_list)
     
     # Import storage peak flow output csv file from Dashboard 
     storage_csv_path = os.path.join(workdir, 'results',
-                         "dashboard_results",'peak_storage_flow_comparison_20260119_1656.csv')
+                         "dashboard_results",storage_filename)
     raw_storage_scalar_df = pd.read_csv(storage_csv_path, decimal= '.', sep =',', index_col = 0, skiprows = [0])
     storage_scalar_df = rename_index_with_category(raw_storage_scalar_df, category_list)
     
@@ -192,7 +190,7 @@ if scalars_comp_plot:
             'Wasserstoffspeicher', 'Waermespeicher'
         ],
         
-        'Wärmesysteme': [
+        'Waermesysteme': [
             'Heizstab', 'Waermepumpen', 'Nachheizung für Speicher',
             'Umweltwaerme', 'Umgebungsluft', 'Abwärme'
         ],
@@ -215,7 +213,27 @@ if scalars_comp_plot:
         'Sonstige': []  # Für nicht kategorisierte Komponenten
     }
     
+    category_color = {
+            'Erneuerbare Erzeugung': '#A0E24B',      
+            'Bioenergie': '#397302',                
+            'Power-to-X (PtX) & Wasserstoff': '#5CFFFF', 
+            'Waermesysteme': '#D14900',              
+            #'Importe': '#795548',                   # Braun
+            'Konventionelle Erzeugung': '#BF1515'   # Grau
+        }
     
     bar_plot_scalars = create_barplot_dict(component_scalar_df, category_map)
-
+    del_list = ['Importe', 'Netzinfrastruktur', 'Speichertechnologien']
+    for l in del_list:
+        bar_plot_scalars.pop(l)
     
+
+    scalars_bar_plot(bar_plot_dict = bar_plot_scalars,
+                     Category_color_mapping = category_color,
+                     Technology_color_mapping = Color_mapping,
+                     fig_title = 'Transformationspfade',
+                     figsize = (14, 10),
+                     fontsize=14,
+                     figure_bg_color='#159A3433',
+                     axes_bg_color='#159A3400' )
+   

@@ -11,6 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
+from matplotlib.lines import Line2D
 
 def interpret_results(results):          
     bus_sequences = {}
@@ -578,3 +579,107 @@ def create_barplot_dict(df_original, kategorien_dict):
         kategorie_dict['Sonstige'] = df_original.loc[sonstige_komponenten]
     
     return kategorie_dict
+
+def scalars_bar_plot(bar_plot_dict, Category_color_mapping, Technology_color_mapping, fig_title = None,
+                     fontsize = 14, figsize = (14,7), figure_bg_color = '#159A3433',axes_bg_color='#159A3400'):
+    
+    years = bar_plot_dict[next(iter(bar_plot_dict))].columns.astype(int)
+    x = np.arange(len(years))
+    width = 0.25
+    
+    fig, ax = plt.subplots(figsize=figsize)
+    fig.patch.set_facecolor(figure_bg_color)
+    ax.set_facecolor(axes_bg_color)
+    # LEFT BAR
+    bottom_cat = np.zeros(len(years))
+    total_per_year = np.zeros(len(years))
+    cat_handles = {}
+    # first compute totals
+    for df in bar_plot_dict.values():
+        total_per_year += df.sum(axis=0).values
+    
+    for cat, df in bar_plot_dict.items():
+        values = df.sum(axis=0).values
+        bars = ax.bar(x - width/2, values, width,
+                      bottom=bottom_cat,
+                      label=cat,
+                      color=Category_color_mapping.get(cat, '#A9A9A9'))
+        
+        cat_handles[cat] = bars[0]
+    
+        # percentage annotations
+        for i, v in enumerate(values):
+            if v > 0:
+                perc = v / total_per_year[i] * 100
+                y = bottom_cat[i] + v / 2
+                ax.annotate(f"{perc:.0f}%",
+                            xy=(x[i] - width/2, y),
+                            xytext=(x[i] - width*1, y),
+                            arrowprops=dict(arrowstyle="-", lw=0.8),
+                            ha="right", va="center", fontsize=fontsize)
+    
+        bottom_cat += values
+    
+    # RIGHT BAR
+    bottom_tech = np.zeros(len(years))
+    tech_handles = {}
+    tech_totals = np.zeros(len(years))
+    
+    for cat, df in bar_plot_dict.items():
+        for tech in df.index:
+            tech_key = tech.upper().replace("Ä","AE").replace("Ö","OE").replace("Ü","UE")
+            color = Technology_color_mapping.get(tech_key, Technology_color_mapping['DEFAULT'])
+            values = df.loc[tech].values
+            bars = ax.bar(x + width/2, values, width,
+                           bottom=bottom_tech,
+                           color=color,
+                           label=tech)
+            bottom_tech += values
+            tech_totals += values
+            tech_handles[tech] = bars[0]
+    
+    for i, total in enumerate(tech_totals):
+        ax.text(x[i], total * 1.01, f"{total:.0f}"+" MW",
+                ha="center", va="bottom", fontsize=fontsize, fontweight="bold")
+    
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(years)
+    ax.set_ylabel("Leistung [MW]", fontsize =fontsize)
+    ax.set_title(fig_title, fontsize = fontsize, fontweight = 'bold')
+    ax.set_ylim(0, max(tech_totals)*1.1)
+    ax.tick_params(axis='y', labelsize=fontsize-2)
+    ax.tick_params(axis='x', labelsize=fontsize-2)
+                         
+    combined_handles = []
+    combined_labels = []
+    
+    combined_handles.append(Line2D([0], [0], color='none'))
+    combined_labels.append("Kategorien")
+    
+    for name, handle in reversed(list(cat_handles.items())):
+        combined_handles.append(handle)
+        combined_labels.append(name)
+    
+    combined_handles.append(Line2D([0], [0], color='none'))
+    combined_labels.append("")
+    
+    combined_handles.append(Line2D([0], [0], color='none'))
+    combined_labels.append("Technologien")
+    
+    for name, handle in reversed(list(tech_handles.items())):
+        combined_handles.append(handle)
+        combined_labels.append(name)
+    
+    legend = ax.legend(combined_handles, combined_labels,
+                       bbox_to_anchor=(1.02, 1),
+                       loc="upper left",
+                       frameon=False,
+                       fontsize=fontsize)
+    
+    for text in legend.get_texts():
+        if text.get_text() in ["Kategorien", "Technologien"]:
+            text.set_weight("bold")
+    
+    plt.tight_layout()
+    plt.show()
