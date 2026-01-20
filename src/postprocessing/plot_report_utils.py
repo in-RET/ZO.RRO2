@@ -1,0 +1,580 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jan 15 14:16:54 2026
+
+@author: rbala
+
+help funtion for plots
+"""
+from oemof import solph
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import numpy as np
+
+def interpret_results(results):          
+    bus_sequences = {}
+    bus_scalars = {}
+    component_sequences = {}
+    component_scalars = {}
+    component_bus_mapping = {}
+    
+    # Iterate through results to classify flows for Bus, Source, Converter, etc.
+    for key, value in results.items():
+        component_name = str(key[1].label) if key[1] else "None"  # Extract component name (e.g., Source, Converter, etc.)
+        
+        if isinstance(key[0], solph.Bus):
+            bus_name = str(key[0].label)  # Extract bus name
+            
+            if component_name != "None":
+                component_bus_mapping[component_name] = bus_name
+            
+            # Extract sequences for Bus
+            if isinstance(value, dict) and "sequences" in value:
+                if bus_name not in bus_sequences:
+                    bus_sequences[bus_name] = {}
+                bus_sequences[bus_name][component_name] = value["sequences"]
+    
+            # Extract scalar values for Bus
+            elif isinstance(value, (int, float)):
+                if bus_name not in bus_scalars:
+                    bus_scalars[bus_name] = {}
+                bus_scalars[bus_name][component_name] = value["scalars"]["total"]
+    
+        
+        elif isinstance(key[0], (solph.components.Source, solph.components.Link, solph.components.Converter, solph.components.Sink, solph.components.GenericStorage)):
+            component_name = str(key[0].label)  # Extract component name
+            component_obj = key[0]
+            connected_bus = "None"
+            
+            if hasattr(component_obj, 'outputs'):
+                # Sources, Converters - connected via outputs
+                output_buses = list(component_obj.outputs.keys())
+                if output_buses:
+                    connected_bus = str(output_buses[0].label)
+            
+            elif hasattr(component_obj, 'inputs'):
+                # Sinks - connected via inputs  
+                input_buses = list(component_obj.inputs.keys())
+                if input_buses:
+                    connected_bus = str(input_buses[0].label)
+            
+            component_bus_mapping[component_name] = connected_bus
+            
+            # Extract sequences for Component
+            if isinstance(value, dict):
+                if "scalars" in value:
+                    total_value = value["scalars"].get("total", 0)
+            
+                    if component_name not in component_scalars:
+                        component_scalars[component_name] = {}
+            
+                    component_scalars[component_name][str(key[1].label) if key[1] else "None"] = total_value
+            
+                if "sequences" in value:
+                    sequence_data = value["sequences"]
+            
+                    # You can choose to store sequences in a separate dictionary or process as needed
+                    if component_name not in component_sequences:
+                        component_sequences[component_name] = {}
+            
+                    component_sequences[component_name][str(key[1].label) if key[1] else "None"] = sequence_data
+
+    return bus_sequences, bus_scalars, component_sequences, component_scalars, component_bus_mapping
+
+def create_combined_bus_component_dfs(bus_sequences, component_sequences, energysystem):
+    """Create combined DataFrames showing flows to/from each bus"""
+    combined_dfs = {}
+    
+    for bus_name, components in bus_sequences.items():
+        combined_data = {}
+        
+        # Add flows FROM bus TO components (outputs)
+        for component_name, sequence_data in components.items():
+            flow_values = extract_flow_values(sequence_data)
+            if flow_values is not None:
+                # Output from bus to component
+                combined_data[f"OUT: {component_name}"] = flow_values
+        
+        # Add flows FROM components TO bus (inputs)
+        for component_name, targets in component_sequences.items():
+            for target_name, sequence_data in targets.items():
+                if str(target_name) == bus_name:
+                    flow_values = extract_flow_values(sequence_data)
+                    if flow_values is not None:
+                        # Input from component to bus
+                        combined_data[f"IN: {component_name}"] = flow_values
+        
+        if combined_data:
+            time_index = energysystem.timeindex
+            min_length = min(len(arr) for arr in combined_data.values())
+            
+            if min_length != len(time_index):
+                time_index = time_index[:min_length]
+
+            for key in combined_data.keys():
+                combined_data[key] = combined_data[key][:min_length]
+            
+            combined_dfs[bus_name] = pd.DataFrame(combined_data, index=time_index[:min_length])
+    
+    return combined_dfs
+
+def extract_flow_values(sequence_data):
+    """Helper function to extract flow values from sequence data"""
+    if hasattr(sequence_data, 'values'):
+        flow_values = sequence_data.values
+    elif isinstance(sequence_data, dict):
+        flow_data = sequence_data.get('flow', None)
+        if flow_data is not None and hasattr(flow_data, 'values'):
+            flow_values = flow_data.values
+        else:
+            return None
+    else:
+        return None
+    
+    # Ensure we have a 1D array
+    if hasattr(flow_values, 'shape'):
+        if len(flow_values.shape) == 1:
+            return flow_values
+        elif len(flow_values.shape) == 2:
+            return flow_values[:, 0]
+        else:
+            try:
+                return flow_values.flatten()
+            except:
+                return None
+    return None
+
+
+
+def plot_bus_flows(combined_dfs, bus_name, inflow_plot_title, outflow_plot_title, COLOR_MAPPING, start_date=None, end_date=None, 
+               figsize=(14, 10), title_fontsize=14, label_fontsize=10, figure_bg_color='#159A3433', axes_bg_color='#159A3400'):
+    """
+    Plot combined flows for a specific bus with IN flows on top and OUT flows on bottom
+    
+    Parameters:
+    -----------
+    combined_dfs : dict
+        Dictionary containing DataFrames for each bus
+    bus_name : str
+        Name of the bus to plot
+    start_date : str or datetime, optional
+        Start date for filtering data (format: 'YYYY-MM-DD')
+    end_date : str or datetime, optional
+        End date for filtering data (format: 'YYYY-MM-DD')
+    figsize : tuple
+        Figure size (width, height)
+    title_fontsize : int
+        Font size for titles
+    label_fontsize : int
+        Font size for axis labels
+    """
+    
+    
+    # Specific for ZORRO
+    is_electricity_bus = bus_name.startswith('Electricity')
+    if is_electricity_bus:
+        electricity_in_bus = 'ElectricityIn' if 'ElectricityIn' in combined_dfs else None
+        electricity_out_bus = 'ElectricityOut' if 'ElectricityOut' in combined_dfs else None
+        if not electricity_in_bus or not electricity_out_bus:
+            print(f"Required buses not found. Need both 'ElectricityIn' and 'ElectricityOut'")
+            print(f"Available buses: {list(combined_dfs.keys())}")
+            return
+        
+        df_in = combined_dfs[electricity_in_bus].copy()
+        df_out = combined_dfs[electricity_out_bus].copy()
+        
+        if start_date or end_date:
+            if isinstance(start_date, str):
+                start_date = pd.to_datetime(start_date)
+            if isinstance(end_date, str):
+                end_date = pd.to_datetime(end_date)
+            
+            if start_date and not end_date:
+                end_date = df_in.index[-1]
+            elif end_date and not start_date:
+                start_date = df_in.index[0]
+            
+            if end_date:
+                end_date = end_date + pd.Timedelta(days=1)
+            
+            mask_in = (df_in.index >= start_date) & (df_in.index < end_date)
+            mask_out = (df_out.index >= start_date) & (df_out.index < end_date)
+            
+            df_in = df_in[mask_in]
+            df_out= df_out[mask_out] 
+            
+            common_index = df_in.index.intersection(df_out.index)
+            if len(common_index) == 0:
+                print("No overlapping time periods between ElectricityIn and ElectricityOut buses")
+                return
+            
+            df_in = df_in.loc[common_index]
+            df_out = df_out.loc[common_index]
+            
+            if df_in.empty or df_out.empty:
+                print(f"No data available for Electricity buses in the specified date range")
+                return
+            
+            # Get IN and OUT columns
+            in_columns = [col for col in df_in.columns if col.startswith('IN:')]
+            out_columns = [col for col in df_out.columns if col.startswith('OUT:')]
+            
+            if not in_columns:
+                print(f"No IN flows found for {electricity_in_bus}")
+                return
+            if not out_columns:
+                print(f"No OUT flows found for {electricity_out_bus}")
+                return
+    else: 
+        if bus_name not in combined_dfs:
+            print(f"Bus '{bus_name}' not found in combined DataFrames")
+            return
+        df = combined_dfs[bus_name].copy()
+        
+        # Filter by date range if specified
+        if start_date or end_date:
+            if isinstance(start_date, str):
+                start_date = pd.to_datetime(start_date)
+            if isinstance(end_date, str):
+                end_date = pd.to_datetime(end_date)
+            
+            if start_date and not end_date:
+                end_date = df.index[-1]
+            elif end_date and not start_date:
+                start_date = df.index[0]
+            
+            if end_date:
+                end_date = end_date + pd.Timedelta(days=1)
+            
+            mask = (df.index >= start_date) & (df.index < end_date)
+            df = df[mask]
+        
+        if df.empty:
+            print(f"No data available for bus '{bus_name}' in the specified date range")
+            return
+        
+        # Separate IN and OUT flows
+        in_columns = [col for col in df.columns if col.startswith('IN:')]
+        out_columns = [col for col in df.columns if col.startswith('OUT:')]
+        
+        if not in_columns and not out_columns:
+            print(f"No IN or OUT flows found for bus '{bus_name}'")
+            return
+        
+        df_in = df[in_columns] if in_columns else pd.DataFrame()
+        df_out = df[out_columns] if out_columns else pd.DataFrame()
+        
+    # Create subplots
+    fig, axes = plt.subplots(2, 1, figsize=figsize, sharex=True)
+    fig.patch.set_facecolor(figure_bg_color)
+    
+    # Helper function to get color - FIXED VERSION
+    def get_component_color(full_column_name):
+        """
+        Get color for a component based on the column name
+        """
+        if ': ' in full_column_name:
+            component = full_column_name.split(': ')[1].upper()
+        else:
+            component = full_column_name.upper()
+        
+        if component in COLOR_MAPPING:
+            return COLOR_MAPPING[component]
+        
+        for key, color in COLOR_MAPPING.items():
+            if key in component:
+                return color
+        
+        # For components with underscores or specific patterns
+        component_parts = component.split('_')
+        for part in component_parts:
+            if part in COLOR_MAPPING:
+                return COLOR_MAPPING[part]
+        return COLOR_MAPPING['DEFAULT']
+    
+    # Plot IN flows (top subplot)
+    ax1 = axes[0]
+    ax1.set_facecolor(axes_bg_color)
+    
+    if not df_in.empty and len(in_columns) > 0:    
+        
+        df_in_sorted = df_in[in_columns].reindex(sorted(in_columns), axis=1)
+        component_means = df_in_sorted.mean()
+        sorted_columns = component_means.sort_values(ascending=True).index.tolist()
+        df_in_sorted = df_in_sorted[sorted_columns]
+        
+        in_colors = [get_component_color(col) for col in df_in_sorted.columns]
+        in_labels = [col[4:] for col in df_in_sorted.columns]
+    
+        # Create area plot with EXPLICIT colors
+        ax1.stackplot(df_in_sorted.index, df_in_sorted.T.values, 
+                     labels=in_labels, 
+                     colors=in_colors,  # Explicitly pass colors
+                     alpha=0.85)
+        
+        # Add total IN flow line
+        total_in = df_in_sorted.sum(axis=1)
+        ax1.plot(df_in_sorted.index, total_in, 'k-', linewidth=2, alpha=0.9, label='Total IN')
+        
+        # Customize plot
+        ax1.set_title(inflow_plot_title, fontsize=title_fontsize, fontweight='bold')
+        ax1.set_ylabel('', fontsize=label_fontsize)
+        ax1.yaxis.set_label_coords(-0.05, 1.05)  
+        ax1.text(0, 1.02, '[MWh/h]', transform=ax1.transAxes, 
+                 fontsize=label_fontsize, ha='right', va='bottom')
+        ax1.grid(True, alpha=0.3, linestyle='--')
+        ax1.set_xlim(start_date, end_date - pd.Timedelta(days=1))
+        # Add legend inside plot
+        handles_in, labels_in = ax1.get_legend_handles_labels()
+        handles_in.reverse()
+        labels_in.reverse()
+        ax1.legend(handles_in, labels_in, loc='upper left', fontsize=label_fontsize-2, 
+          bbox_to_anchor=(1.02, 1), borderaxespad=0.)
+        # ax1.legend(loc='upper left', fontsize=label_fontsize-2, 
+        #   bbox_to_anchor=(1.02, 1), borderaxespad=0.)
+    
+    # Plot OUT flows (bottom subplot)
+    ax2 = axes[1]
+    ax2.set_facecolor(axes_bg_color)
+    
+    if not df_out.empty and len(out_columns) > 0:
+        df_out_sorted = df_out[out_columns].reindex(sorted(out_columns), axis=1)
+        total_out = df_out_sorted.sum(axis=1)  
+        
+        if is_electricity_bus and 'total_in' in locals():
+            # Calculate grid loss (difference between total in and total out)
+            grid_loss = total_in - total_out
+            grid_loss = grid_loss.clip(lower=0)
+            grid_loss_df = pd.DataFrame({'OUT: Grid Loss': grid_loss}, index=df_out_sorted.index)
+            df_out_with_loss = pd.concat([df_out_sorted, grid_loss_df], axis=1)
+            
+            component_means = df_out_with_loss.mean()
+            sorted_columns = component_means.sort_values(ascending=False).index.tolist()
+            df_out_with_loss = df_out_with_loss[sorted_columns]
+            
+            out_colors = [get_component_color(col) for col in df_out_with_loss.columns]
+            out_labels = [col[5:] for col in df_out_with_loss.columns]
+        
+      
+            ax2.stackplot(df_out_with_loss.index, df_out_with_loss.T.values, 
+                         labels=out_labels, 
+                         colors=out_colors,  # Explicitly pass colors
+                         alpha=0.85)
+            
+            total_out_with_loss = df_out_with_loss.sum(axis=1)
+            ax2.plot(df_out_with_loss.index, total_out_with_loss, 'k-', linewidth=2, alpha=0.9, label='Total OUT')
+        
+        else:
+            component_means = df_out_sorted.mean()
+            sorted_columns = component_means.sort_values(ascending=False).index.tolist()
+            df_out_sorted = df_out_sorted[sorted_columns]
+            out_colors = [get_component_color(col) for col in df_out_sorted.columns]
+            out_labels = [col[5:] for col in df_out_sorted.columns]
+            
+            ax2.stackplot(df_out_sorted.index, df_out_sorted.T.values, 
+                         labels=out_labels, 
+                         colors=out_colors,
+                         alpha=0.85)
+            
+            ax2.plot(df_out_sorted.index, total_out, 'k-', linewidth=2, alpha=0.9, label='Total OUT')
+        
+        # Customize plot
+        ax2.set_title(outflow_plot_title, fontsize=title_fontsize, fontweight='bold')
+        ax2.set_ylabel('', fontsize=label_fontsize)
+        ax2.yaxis.set_label_coords(-0.05, 1.02)  
+        ax2.text(0, 1.02, '[MWh/h]', transform=ax2.transAxes, 
+                 fontsize=label_fontsize, ha='right', va='bottom')
+        ax2.set_xlabel('Zeit in h', fontsize=label_fontsize)
+        ax2.grid(True, alpha=0.3, linestyle='--')
+        ax2.set_xlim(start_date, end_date - pd.Timedelta(days=1))
+        # Add legend inside plot
+        handles_out, labels_out = ax2.get_legend_handles_labels()
+        handles_out.reverse()
+        labels_out.reverse()
+        ax2.legend(handles_out, labels_out, loc='upper left', fontsize=label_fontsize-2, 
+          bbox_to_anchor=(1.02, 1), borderaxespad=0.)
+    
+    if 'total_in' in locals():
+        if is_electricity_bus and 'df_out_with_loss' in locals():
+            max_in = total_in.max()
+            max_out_with_loss = df_out_with_loss.sum(axis=1).max()
+            y_max = max(max_in, max_out_with_loss) * 1.1  
+        elif 'total_out' in locals():
+            max_in = total_in.max()
+            max_out = total_out.max()
+            y_max = max(max_in, max_out) * 1.1  
+        else:
+            y_max = total_in.max() * 1.1
+
+        ax1.set_ylim(0, y_max)
+        ax2.set_ylim(0, y_max)
+        ax1.tick_params(axis='y', labelsize=label_fontsize-2)
+        ax2.tick_params(axis='y', labelsize=label_fontsize-2)
+    
+    # Format x-axis
+    ax_bottom = axes[1] 
+    
+    # Set date formatting
+    if is_electricity_bus and 'df_out_with_loss' in locals():
+        date_df = df_out_with_loss
+    elif not df_out.empty:
+        date_df = df_out_sorted
+    else:
+        date_df = df_in_sorted
+    
+    if not date_df.empty:
+        date_range = (date_df.index[-1] - date_df.index[0]).days
+        if date_range <= 7:
+            ax_bottom.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d\n%H:%M'))
+            ax_bottom.xaxis.set_major_locator(mdates.DayLocator())
+        elif date_range <= 31:
+            ax_bottom.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+            ax_bottom.xaxis.set_major_locator(mdates.WeekdayLocator())
+        else:
+            ax_bottom.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+            ax_bottom.xaxis.set_major_locator(mdates.MonthLocator())
+    
+    plt.xticks(rotation=45, fontsize=label_fontsize-2)
+    #plt.tight_layout(rect=[0, 0, 0.85, 0.96])
+    plt.tight_layout()
+    plt.show()
+    
+    return fig, axes
+
+def categorize_for_sequence(category_list, combined_df):
+    categorized_dict = {}
+    
+    for bus_name, df in combined_df.items():
+        df_cat = df.copy()
+        
+        # Helper function to categorize columns
+        def categorize_columns(prefix):
+            groups = {}
+            prefix_cols = [col for col in df_cat.columns if col.startswith(prefix)]
+            
+            for col in prefix_cols:
+                col_upper = col.upper()
+                cat_found = None
+                
+                for category, patterns in category_list.items():
+                    for pattern in patterns:
+                        if pattern.upper() in col_upper:
+                            cat_found = category
+                            break
+                    if cat_found:
+                        break
+                
+                if cat_found:
+                    group_name = f'{prefix}{cat_found}'
+                    groups.setdefault(group_name, []).append(col)
+                else:
+                    groups[col] = [col]
+            
+            return groups
+        
+        # Process IN and OUT columns
+        in_groups = categorize_columns('IN: ')
+        out_groups = categorize_columns('OUT: ')
+        
+        # Aggregate grouped columns
+        def aggregate_groups(groups_dict):
+            for group_name, cols in groups_dict.items():
+                if len(cols) > 1:
+                    df_cat[group_name] = df_cat[cols].sum(axis=1)
+                    df_cat.drop(columns=cols, inplace=True)
+                elif group_name != cols[0]:
+                    df_cat.rename(columns={cols[0]: group_name}, inplace=True)
+        
+        aggregate_groups(in_groups)
+        aggregate_groups(out_groups)
+        
+        # Add to categorized dictionary
+        categorized_dict[bus_name] = df_cat
+    
+    return categorized_dict
+
+def rename_index_with_category(df, category_list, case_sensitive=False):
+    """
+    Rename DataFrame index using category_list and sum values for components
+    that map to the same category.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame with component names as index
+    category_list : dict
+        Dictionary mapping category names to list of component patterns
+    case_sensitive : bool
+        Whether matching should be case-sensitive (default: False)
+    
+    Returns:
+    --------
+    pandas.DataFrame: DataFrame with renamed index (categories as index)
+    """
+    
+    df_renamed = df.copy()
+    
+    pattern_to_category = {}
+    for category, patterns in category_list.items():
+        for pattern in patterns:
+            if case_sensitive:
+                pattern_to_category[pattern] = category
+            else:
+                pattern_to_category[pattern.lower()] = category
+    
+    def find_category(component_name):
+        if case_sensitive:
+            search_name = component_name
+        else:
+            search_name = component_name.lower()
+        
+        for pattern, category in pattern_to_category.items():
+            if pattern == search_name:
+                return category
+        
+        for pattern, category in pattern_to_category.items():
+            if pattern in search_name:
+                return category
+        
+        return component_name
+    
+    index_mapping = {}
+    for idx in df_renamed.index:
+        category = find_category(str(idx))
+        index_mapping[idx] = category
+
+    df_renamed['_category'] = df_renamed.index.map(index_mapping)
+    numeric_cols = df_renamed.select_dtypes(include=[np.number]).columns.tolist()
+    
+    # If we have MultiIndex or specific column structure
+    if '_category' in df_renamed.columns:
+        df_grouped = df_renamed.groupby('_category')[numeric_cols].sum()
+        
+        df_renamed = df_renamed.drop(columns=['_category'])
+    else:
+        df_grouped = df_renamed
+    
+    return df_grouped
+
+def create_barplot_dict(df_original, kategorien_dict):
+    """Erstellt ein Dictionary mit DataFrames für jede Kategorie"""
+    
+    kategorie_dict = {}
+    
+    for kategorie, komponenten_liste in kategorien_dict.items():
+        komponenten_in_kategorie = [k for k in komponenten_liste if k in df_original.index]
+        
+        if komponenten_in_kategorie:
+            kategorie_dict[kategorie] = df_original.loc[komponenten_in_kategorie]
+    
+    zugeordnete_komponenten = []
+    for komps in kategorie_dict.values():
+        zugeordnete_komponenten.extend(list(komps.index))
+    
+    sonstige_komponenten = [k for k in df_original.index if k not in zugeordnete_komponenten]
+    
+    if sonstige_komponenten:
+        kategorie_dict['Sonstige'] = df_original.loc[sonstige_komponenten]
+    
+    return kategorie_dict
