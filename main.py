@@ -4,22 +4,23 @@ from src.models.solve_model import solveModels
 start_time = datetime.now()
 FORMAT = "%(asctime)s %(message)s"
 
+
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
-    years = [2020, 2025, 2030, 2035, 2040, 2045]
+    years = [2030]#, 2025, 2030, 2035, 2040, 2045]
     for y in years:
         sim_data, result = solveModels(
             variations=["BS0006"],
-            scenario_num = "R06_final_05_01_26",
+            scenario_num = "test_sim",
             years=[y],# 2040, 2050],
-            model_name="BS_regionalization",
+            model_name="Basic_example_zorro_1_utility_energy",
             solver="gurobi",
             gap=0.0,
             solver_output=False,
             print_graph=False,
             Anteilig_erneuerbar = True,
-            hypothese = "Sensitivity: Regionalisation- Basis szenario split into regions",
+            hypothese = "Modelerweiterung auf Nutzenergie",
             sim_remarks = "- The techno-economical parameters are updated. \n"+
                             "- All changes made in Basic exapmple by TR is updated in this scenario. \n"+
                             "- Additional BtL Substrat component added. \n"+
