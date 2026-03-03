@@ -1,0 +1,72 @@
+;source;target;flow_type;value
+0;Battery;ElectricityIn;incoming;691127,9171590982
+1;BioTransformer;Solidfuel;incoming;2113344,9345013737
+2;BioWood;BioTransformer;outgoing;2113344,9345013737
+3;BioWood;Biomasse_elec_heat;outgoing;935832,0863227621
+4;BioWood;BtL_Holz;outgoing;3508545,0001759003
+5;Biogas_feedin_existing;Gas;incoming;1098777,1354353114
+6;Biomass;Biogas_feedin_existing;outgoing;1248610,38117649
+7;Biomass;BtL_substrat;outgoing;2633637,127822987
+8;Biomasse_elec_heat;District heating;incoming;533424,2892039743
+9;Biomasse_elec_heat;ElectricityIn;incoming;308824,5884865116
+10;BtL_Holz;Oil_fuel;incoming;1613930,7000809135
+11;BtL_substrat;Oil_fuel;incoming;1580182,276693792
+12;District heating;Heat storage_dist_heat;outgoing;406546,95557985356
+13;District heating;Heat storage_seasonal;outgoing;1237558,8718669247
+14;District heating;Heat_demand_total;outgoing;2918198,9901332064
+15;District heating;excess_b_distheat;outgoing;641771,8793898962
+16;Electric boiler;District heating;incoming;2369849,3082921635
+17;ElectricityIn;Battery;outgoing;743148,2980205361
+18;ElectricityIn;Natrium_Battery;outgoing;1703717,5052737044
+19;ElectricityIn;Netzverluste;outgoing;39388992,6139124
+20;ElectricityIn;Pumped_hydro_storage_bestand;outgoing;712895,9424866366
+21;ElectricityOut;Electric boiler;outgoing;2393787,1800930942
+22;ElectricityOut;Electricity_demand_Rechenzentren;outgoing;3599589,0410958896
+23;ElectricityOut;Electricity_demand_total;outgoing;19386565,030916978
+24;ElectricityOut;Electrolysis;outgoing;5776960,54239567
+25;ElectricityOut;Export_Electricity;outgoing;5500703,701841522
+26;ElectricityOut;Heatpump_air;outgoing;175782,0321420208
+27;ElectricityOut;Preheater- Electric boiler;outgoing;629,2675055124204
+28;ElectricityOut;PtL;outgoing;585526,1872250665
+29;Electricity_Hös;Hös<->HS;outgoing;5500703,701841135
+30;Electrolysis;Hydrogen;incoming;4043872,379676969
+31;Gas;Gas_demand_total;outgoing;2171329,883786918
+32;Gas;Gas_storage;outgoing;355584,62989674276
+33;Gas;Material_demand_Gas;outgoing;9275,865990296803
+34;Gas_storage;Gas;incoming;337805,3984018926
+35;H2_storage;Hydrogen;incoming;1689611,3098315615
+36;Heat storage_dist_heat;District heating;incoming;390732,752140057
+37;Heat storage_seasonal;Preheater;incoming;1145855,9175022186
+38;Heatpump_air;District heating;incoming;763585,1623259563
+39;Hydro power plant;ElectricityIn;incoming;195270,85999999996
+40;Hydrogen;H2_storage;outgoing;1877345,8998128497
+41;Hydrogen;Hydrogen_demand_total;outgoing;1390108,1464682429
+42;Hydrogen;Methanisation;outgoing;1221786,4953741715
+43;Hydrogen;PtL;outgoing;1244243,1478532664
+44;Hös<->HS;ElectricityIn;incoming;5500703,701841135
+45;Import_Electricity;Electricity_Hös;incoming;5500703,701841135
+46;Import_Wood;BioWood;incoming;6557722,021000034
+47;Import_solid_fuel;Biomass;incoming;3882247,5089994785
+48;Methanisation;Gas;incoming;1099607,845836754
+49;Natrium_Battery;ElectricityIn;incoming;1533345,7547463342
+50;Netzverluste;ElectricityOut;incoming;37419542,983216785
+51;Oil_fuel;Material_demand_Oil;outgoing;836815,6246960615
+52;Oil_fuel;Oil & fuel_demand_total;outgoing;3455158,953126198
+53;PV_open_east;ElectricityIn;incoming;2588177,221866487
+54;PV_open_middle;ElectricityIn;incoming;4213199,797083519
+55;PV_open_north;ElectricityIn;incoming;3255380,519636255
+56;PV_open_swest;ElectricityIn;incoming;2545999,6816615597
+57;Preheater;Preheater- Electric boiler;outgoing;1145855,9175022186
+58;Preheater- Electric boiler;District heating;incoming;1146485,185007731
+59;PtL;Oil_fuel;incoming;1097861,601047
+60;Pumped_hydro_storage_bestand;ElectricityIn;incoming;609526,0308260742
+61;Solidfuel;Biomass_demand_total;outgoing;2012919,487402344
+62;Solidfuel;Material_demand_Biomasse;outgoing;100425,44709902971
+63;Umgebungsluft;Umgebungsluftbus;incoming;587803,1301839355
+64;Umgebungsluftbus;Heatpump_air;outgoing;587803,1301839355
+65;Wind_east;ElectricityIn;incoming;2133986,584684227
+66;Wind_middle;ElectricityIn;incoming;5521819,839000258
+67;Wind_north;ElectricityIn;incoming;7634239,902191051
+68;Wind_swest;ElectricityIn;incoming;5817151,960510769
+69;PV_total;ElectricityIN;incoming;12602757,22024782
+70;Wind_total;ElectricityIN;incoming;21107198,286386304
