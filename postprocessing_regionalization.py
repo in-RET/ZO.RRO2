@@ -18,8 +18,8 @@ import pandas as pd
 import os
 workdir = os.getcwd()
 
-scenarios = ["test_sim", "ref"]
-year = 2030
+scenarios = ["final_26_03_09"]#, "ref"]
+year = 2045
 variation = "BS0006"
 model_name = "BS_regionalization"    
 
@@ -28,7 +28,7 @@ permutation = str(year)+'_'+variation
 CSV_DIR = os.path.abspath(os.path.join(workdir,"results", permutation))
 CSV_PATH = os.path.join(CSV_DIR, "Scenario_comparison_region.xlsx")
 COSTS_PATH = os.path.join(CSV_DIR, "Costs_and_emission_region.csv")
-Sankey_excel_path = os.path.join(CSV_DIR, "Sankey_sequences_all_scenarios_region.xlsx")
+#Sankey_excel_path = os.path.join(CSV_DIR, "Sankey_sequences_all_scenarios_region.xlsx")
 epc_costs = investment_parameter(scalars, year, variation)
 all_bus_sequences = {}
 all_bus_scalars = {}
@@ -98,11 +98,12 @@ with pd.ExcelWriter(CSV_PATH) as writer:
         df.to_excel(writer, sheet_name=f"Scenario {scenario}")
         
 
-sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, permutation, scenarios, Sankey_excel_path, region=True)
+#0sankey_excel_output(all_bus_sequences, all_component_sequences, model_name, permutation, scenarios, Sankey_excel_path, region=True)
 cleaned_sequences_component = clean_sequence_data(all_component_sequences, data_source='component')
 cleaned_sequences_bus = clean_sequence_data(all_bus_sequences, data_source= 'bus')
 CO2_emission = calc_CO2_emission(year, cleaned_sequences_component)
-grid_energy_map(results, permutation, model_name, scenario_num)
+grid_energy_map(results, permutation, model_name, scenario_num, heatmap=True)
+grid_energy_map(results, permutation, model_name, scenario_num, heatmap=False)
 
 summarized_sequences_bus, summarized_sequences_component = summarize_sequences_by_name(cleaned_sequences_bus, cleaned_sequences_component)
 plot_bus_energy_flows(summarized_sequences_bus, summarized_sequences_component, scenarios = ['test_sim'],days=round(8760/24/2))

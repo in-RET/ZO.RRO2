@@ -397,7 +397,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     """ Imports """
     
     energysystem.add(solph.components.Converter(
-        label="Grid_losses_n",
+        label="Netzverluste_n",
         inputs={b_el_n_in: solph.Flow()},
         outputs={b_el_n_out: solph.Flow()},
         conversion_factors={b_el_n_out: 0.95}
@@ -429,30 +429,30 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     # Import Brown-coal
     #------------------------------------------------------------------------------
-    if YEAR == 2020:
-        energysystem.add(solph.components.Source(
-            label='Import_brown_coal_n',
-            outputs={b_solidf_n: solph.Flow(variable_costs = import_price['import_brown_coal_price'],
-                                        fix=sequences['Base_demand_profile']['base_load'], 
-                                        #nominal_value = 1,
-                                        investment = solph.Investment(ep_costs=0),
-                                        summed_max=(scalars['System_configurations_2024']['System']['Menge_Braunkohle']/4 )*len(import_price['import_brown_coal_price']),
-                                        custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Braunkohle']},
-            )}))
+    #if YEAR == 2020:
+    energysystem.add(solph.components.Source(
+        label='Import_brown_coal_n',
+        outputs={b_solidf_n: solph.Flow(variable_costs = import_price['import_brown_coal_price'],
+                                    fix=sequences['Base_demand_profile']['base_load'], 
+                                    #nominal_value = 1,
+                                    investment = solph.Investment(ep_costs=0),
+                                    summed_max=(scalars['System_configurations_2024']['System']['Menge_Braunkohle']/4 )*len(import_price['import_brown_coal_price']),
+                                    custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Braunkohle']},
+        )}))
         
         #------------------------------------------------------------------------------
         # Import hard coal
         #------------------------------------------------------------------------------
-        energysystem.add(solph.components.Source(
-            label='Import_hard_coal_n',
-            outputs={b_solidf_n: solph.Flow(variable_costs = import_price['import_hard_coal_price'],
-                                        fix=sequences['Base_demand_profile']['base_load'], 
-                                        #nominal_value = 1,
-                                        investment = solph.Investment(ep_costs=0),
-                                        summed_max=(scalars['System_configurations_2024']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
-                                        custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Steinkohle']},
+        # energysystem.add(solph.components.Source(
+        #     label='Import_hard_coal_n',
+        #     outputs={b_solidf_n: solph.Flow(variable_costs = import_price['import_hard_coal_price'],
+        #                                 fix=sequences['Base_demand_profile']['base_load'], 
+        #                                 #nominal_value = 1,
+        #                                 investment = solph.Investment(ep_costs=0),
+        #                                 summed_max=(scalars['System_configurations_2024']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
+        #                                 custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Steinkohle']},
                                         
-            )}))
+        #     )}))
     
     #------------------------------------------------------------------------------
     # Import Gas
@@ -561,8 +561,8 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     # Biomass-to-Liquid (Holz)
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
-        label="BtL_holz_n",
-        inputs={b_bio_n: solph.Flow()},
+        label="BtL_Holz_n",
+        inputs={b_bioWood_n: solph.Flow()},
         outputs={b_oil_fuel_n: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['biomass_to_liquid_system_holz']['epc'], 
                                                                               #maximum=scalars['Parameter_biomass_to_liquid_system']['potential'][model_ID]
                                                                               ),
@@ -1098,6 +1098,15 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
         inputs={b_oil_fuel_n: solph.Flow(fix=demand['material_usage_oil']['north'], 
                                               nominal_value=1,
         )}))
+    
+    #------------------------------------------------------------------------------
+    # Material demand: Biomasse
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Material_demand_Biomasse_n', 
+        inputs={b_solidf_n: solph.Flow(fix=demand['material_usage_biomasse']['north'], 
+                                       nominal_value=1,
+        )}))
 
     #------------------------------------------------------------------------------
     # Heat demand
@@ -1124,28 +1133,28 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_el_n', 
-        inputs={b_el_n_out: solph.Flow(variable_costs = 100000
+        inputs={b_el_n_out: solph.Flow(variable_costs = 200
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Gas
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_gas_n', 
-        inputs={b_gas_n: solph.Flow(variable_costs = 100000
+        inputs={b_gas_n: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Oel/Kraftstoffe
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_oil_fuel_n', 
-        inputs={b_oil_fuel_n: solph.Flow(variable_costs = 100000
+        inputs={b_oil_fuel_n: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Biomasse
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_bio_n', 
-        inputs={b_bio_n: solph.Flow(variable_costs = 100000
+        inputs={b_bio_n: solph.Flow(variable_costs = 0
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Waerme
@@ -1159,7 +1168,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #-----------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_H2_n', 
-        inputs={b_H2_n: solph.Flow(variable_costs = 100000
+        inputs={b_H2_n: solph.Flow(variable_costs = 1000000
         )}))
     
     ##############################################################       East region         #################################################################
@@ -1313,7 +1322,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     """ Imports """
     
     energysystem.add(solph.components.Converter(
-        label="Grid_losses_e",
+        label="Netzverluste_e",
         inputs={b_el_e_in: solph.Flow()},
         outputs={b_el_e_out: solph.Flow()},
         conversion_factors={b_el_e_out: 0.95}
@@ -1345,30 +1354,30 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     # Import Brown-coal
     #------------------------------------------------------------------------------
-    if YEAR == 2020:
-        energysystem.add(solph.components.Source(
-            label='Import_brown_coal_e',
-            outputs={b_solidf_e: solph.Flow(variable_costs = import_price['import_brown_coal_price'],
-                                        fix=sequences['Base_demand_profile']['base_load'], 
-                                        #nominal_value = 1,
-                                        investment = solph.Investment(ep_costs=0),
-                                        summed_max=(scalars['System_configurations_2024']['System']['Menge_Braunkohle']/4 )*len(import_price['import_brown_coal_price']),
-                                        custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Braunkohle']},
-            )}))
+    #if YEAR == 2020:
+    energysystem.add(solph.components.Source(
+        label='Import_brown_coal_e',
+        outputs={b_solidf_e: solph.Flow(variable_costs = import_price['import_brown_coal_price'],
+                                    fix=sequences['Base_demand_profile']['base_load'], 
+                                    #nominal_value = 1,
+                                    investment = solph.Investment(ep_costs=0),
+                                    summed_max=(scalars['System_configurations_2024']['System']['Menge_Braunkohle']/4 )*len(import_price['import_brown_coal_price']),
+                                    custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Braunkohle']},
+        )}))
         
         #------------------------------------------------------------------------------
         # Import hard coal
         #------------------------------------------------------------------------------
-        energysystem.add(solph.components.Source(
-            label='Import_hard_coal_e',
-            outputs={b_solidf_e: solph.Flow(variable_costs = import_price['import_hard_coal_price'],
-                                        fix=sequences['Base_demand_profile']['base_load'], 
-                                        #nominal_value = 1,
-                                        investment = solph.Investment(ep_costs=0),
-                                        summed_max=(scalars['System_configurations_2024']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
-                                        custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Steinkohle']},
+        # energysystem.add(solph.components.Source(
+        #     label='Import_hard_coal_e',
+        #     outputs={b_solidf_e: solph.Flow(variable_costs = import_price['import_hard_coal_price'],
+        #                                 fix=sequences['Base_demand_profile']['base_load'], 
+        #                                 #nominal_value = 1,
+        #                                 investment = solph.Investment(ep_costs=0),
+        #                                 summed_max=(scalars['System_configurations_2024']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
+        #                                 custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Steinkohle']},
                                         
-            )}))
+        #     )}))
     
     #------------------------------------------------------------------------------
     # Import Gas
@@ -1477,8 +1486,8 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     # Biomass-to-Liquid (Holz)
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
-        label="BtL_holz_e",
-        inputs={b_bio_e: solph.Flow()},
+        label="BtL_Holz_e",
+        inputs={b_bioWood_e: solph.Flow()},
         outputs={b_oil_fuel_e: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['biomass_to_liquid_system_holz']['epc'], 
                                                                               #maximum=scalars['Parameter_biomass_to_liquid_system']['potential'][model_ID]
                                                                               ),
@@ -2014,7 +2023,14 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
         inputs={b_oil_fuel_e: solph.Flow(fix=demand['material_usage_oil']['east'], 
                                               nominal_value=1,
         )}))
- 
+    #------------------------------------------------------------------------------
+    # Material demand: Biomasse
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Material_demand_Biomasse_e', 
+        inputs={b_solidf_e: solph.Flow(fix=demand['material_usage_biomasse']['east'], 
+                                       nominal_value=1,
+        )}))
     #------------------------------------------------------------------------------
     # Heat demand
     #------------------------------------------------------------------------------
@@ -2040,28 +2056,28 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_el_e', 
-        inputs={b_el_e_out: solph.Flow(variable_costs = 100000
+        inputs={b_el_e_out: solph.Flow(variable_costs = 200
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Gas
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_gas_e', 
-        inputs={b_gas_e: solph.Flow(variable_costs = 100000
+        inputs={b_gas_e: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Oel/Kraftstoffe
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_oil_fuel_e', 
-        inputs={b_oil_fuel_e: solph.Flow(variable_costs = 100000
+        inputs={b_oil_fuel_e: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Biomasse
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_bio_e', 
-        inputs={b_bio_e: solph.Flow(variable_costs = 100000
+        inputs={b_bio_e: solph.Flow(variable_costs = 0
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Waerme
@@ -2075,7 +2091,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #-----------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_H2_e', 
-        inputs={b_H2_e: solph.Flow(variable_costs = 100000
+        inputs={b_H2_e: solph.Flow(variable_costs = 1000000
         )}))
     
     ##############################################################      Middle region         #################################################################
@@ -2229,7 +2245,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     """ Imports """
     
     energysystem.add(solph.components.Converter(
-        label="Grid_losses_m",
+        label="Netzverluste_m",
         inputs={b_el_m_in: solph.Flow()},
         outputs={b_el_m_out: solph.Flow()},
         conversion_factors={b_el_m_out: 0.95}
@@ -2261,30 +2277,30 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     # Import Brown-coal
     #------------------------------------------------------------------------------
-    if YEAR == 2020:
-        energysystem.add(solph.components.Source(
-            label='Import_brown_coal_m',
-            outputs={b_solidf_m: solph.Flow(variable_costs = import_price['import_brown_coal_price'],
-                                        fix=sequences['Base_demand_profile']['base_load'], 
-                                        #nominal_value = 1,
-                                        investment = solph.Investment(ep_costs=0),
-                                        summed_max=(scalars['System_configurations_2024']['System']['Menge_Braunkohle']/4 )*len(import_price['import_brown_coal_price']),
-                                        custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Braunkohle']},
-            )}))
+    #if YEAR == 2020:
+    energysystem.add(solph.components.Source(
+        label='Import_brown_coal_m',
+        outputs={b_solidf_m: solph.Flow(variable_costs = import_price['import_brown_coal_price'],
+                                    fix=sequences['Base_demand_profile']['base_load'], 
+                                    #nominal_value = 1,
+                                    investment = solph.Investment(ep_costs=0),
+                                    summed_max=(scalars['System_configurations_2024']['System']['Menge_Braunkohle']/4 )*len(import_price['import_brown_coal_price']),
+                                    custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Braunkohle']},
+        )}))
         
         #------------------------------------------------------------------------------
         # Import hard coal
         #------------------------------------------------------------------------------
-        energysystem.add(solph.components.Source(
-            label='Import_hard_coal_m',
-            outputs={b_solidf_m: solph.Flow(variable_costs = import_price['import_hard_coal_price'],
-                                        fix=sequences['Base_demand_profile']['base_load'], 
-                                        #nominal_value = 1,
-                                        investment = solph.Investment(ep_costs=0),
-                                        summed_max=(scalars['System_configurations_2024']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
-                                        custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Steinkohle']},
+        # energysystem.add(solph.components.Source(
+        #     label='Import_hard_coal_m',
+        #     outputs={b_solidf_m: solph.Flow(variable_costs = import_price['import_hard_coal_price'],
+        #                                 fix=sequences['Base_demand_profile']['base_load'], 
+        #                                 #nominal_value = 1,
+        #                                 investment = solph.Investment(ep_costs=0),
+        #                                 summed_max=(scalars['System_configurations_2024']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
+        #                                 custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Steinkohle']},
                                         
-            )}))
+        #     )}))
     
     #------------------------------------------------------------------------------
     # Import Gas
@@ -2393,8 +2409,8 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     # Biomass-to-Liquid (Holz)
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
-        label="BtL_holz_m",
-        inputs={b_bio_m: solph.Flow()},
+        label="BtL_Holz_m",
+        inputs={b_bioWood_m: solph.Flow()},
         outputs={b_oil_fuel_m: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['biomass_to_liquid_system_holz']['epc'], 
                                                                               #maximum=scalars['Parameter_biomass_to_liquid_system']['potential'][model_ID]
                                                                               ),
@@ -2930,7 +2946,16 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
         inputs={b_oil_fuel_m: solph.Flow(fix=demand['material_usage_oil']['middle'], 
                                               nominal_value=1,
         )}))
- 
+    
+    #------------------------------------------------------------------------------
+    # Material demand: Biomasse
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Material_demand_Biomasse_m', 
+        inputs={b_solidf_m: solph.Flow(fix=demand['material_usage_biomasse']['middle'], 
+                                       nominal_value=1,
+        )}))
+    
     #------------------------------------------------------------------------------
     # Heat demand
     #------------------------------------------------------------------------------
@@ -2956,28 +2981,28 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_el_m', 
-        inputs={b_el_m_out: solph.Flow(variable_costs = 100000
+        inputs={b_el_m_out: solph.Flow(variable_costs = 200
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Gas
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_gas_m', 
-        inputs={b_gas_m: solph.Flow(variable_costs = 100000
+        inputs={b_gas_m: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Oel/Kraftstoffe
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_oil_fuel_m', 
-        inputs={b_oil_fuel_m: solph.Flow(variable_costs = 100000
+        inputs={b_oil_fuel_m: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Biomasse
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_bio_m', 
-        inputs={b_bio_m: solph.Flow(variable_costs = 100000
+        inputs={b_bio_m: solph.Flow(variable_costs = 0
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Waerme
@@ -2991,7 +3016,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #-----------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_H2_m', 
-        inputs={b_H2_m: solph.Flow(variable_costs = 100000
+        inputs={b_H2_m: solph.Flow(variable_costs = 1000000
         )}))
     
     
@@ -3147,7 +3172,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     """ Imports """
     
     energysystem.add(solph.components.Converter(
-        label="Grid_losses_s",
+        label="Netzverluste_s",
         inputs={b_el_s_in: solph.Flow()},
         outputs={b_el_s_out: solph.Flow()},
         conversion_factors={b_el_s_out: 0.95}
@@ -3179,30 +3204,30 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     # Import Brown-coal
     #------------------------------------------------------------------------------
-    if YEAR == 2020:
-        energysystem.add(solph.components.Source(
-            label='Import_brown_coal_s',
-            outputs={b_solidf_s: solph.Flow(variable_costs = import_price['import_brown_coal_price'],
-                                        fix=sequences['Base_demand_profile']['base_load'], 
-                                        #nominal_value = 1,
-                                        investment = solph.Investment(ep_costs=0),
-                                        summed_max=(scalars['System_configurations_2024']['System']['Menge_Braunkohle']/4 )*len(import_price['import_brown_coal_price']),
-                                        custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Braunkohle']},
-            )}))
+   # if YEAR == 2020:
+    energysystem.add(solph.components.Source(
+        label='Import_brown_coal_s',
+        outputs={b_solidf_s: solph.Flow(variable_costs = import_price['import_brown_coal_price'],
+                                    fix=sequences['Base_demand_profile']['base_load'], 
+                                    #nominal_value = 1,
+                                    investment = solph.Investment(ep_costs=0),
+                                    summed_max=(scalars['System_configurations_2024']['System']['Menge_Braunkohle']/4 )*len(import_price['import_brown_coal_price']),
+                                    custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Braunkohle']},
+        )}))
         
         #------------------------------------------------------------------------------
         # Import hard coal
         #------------------------------------------------------------------------------
-        energysystem.add(solph.components.Source(
-            label='Import_hard_coal_s',
-            outputs={b_solidf_s: solph.Flow(variable_costs = import_price['import_hard_coal_price'],
-                                        fix=sequences['Base_demand_profile']['base_load'], 
-                                        #nominal_value = 1,
-                                        investment = solph.Investment(ep_costs=0),
-                                        summed_max=(scalars['System_configurations_2024']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
-                                        custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Steinkohle']},
+        # energysystem.add(solph.components.Source(
+        #     label='Import_hard_coal_s',
+        #     outputs={b_solidf_s: solph.Flow(variable_costs = import_price['import_hard_coal_price'],
+        #                                 fix=sequences['Base_demand_profile']['base_load'], 
+        #                                 #nominal_value = 1,
+        #                                 investment = solph.Investment(ep_costs=0),
+        #                                 summed_max=(scalars['System_configurations_2024']['System']['Menge_Steinkohle']/4)*len(import_price['import_brown_coal_price']),
+        #                                 custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Steinkohle']},
                                         
-            )}))
+        #     )}))
     
     #------------------------------------------------------------------------------
     # Import Gas
@@ -3311,8 +3336,8 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     # Biomass-to-Liquid (Holz)
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
-        label="BtL_holz_s",
-        inputs={b_bio_s: solph.Flow()},
+        label="BtL_Holz_s",
+        inputs={b_bioWood_s: solph.Flow()},
         outputs={b_oil_fuel_s: solph.Flow(investment = solph.Investment(ep_costs=epc_costs['biomass_to_liquid_system_holz']['epc'], 
                                                                               #maximum=scalars['Parameter_biomass_to_liquid_system']['potential'][model_ID]
                                                                               ),
@@ -3848,7 +3873,15 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
         inputs={b_oil_fuel_s: solph.Flow(fix=demand['material_usage_oil']['swest'], 
                                               nominal_value=1,
         )}))
- 
+    
+    #------------------------------------------------------------------------------
+    # Material demand: Biomasse
+    #------------------------------------------------------------------------------
+    energysystem.add(solph.components.Sink(
+        label='Material_demand_Biomasse_s', 
+        inputs={b_solidf_s: solph.Flow(fix=demand['material_usage_biomasse']['swest'], 
+                                       nominal_value=1,
+        )}))
     #------------------------------------------------------------------------------
     # Heat demand
     #------------------------------------------------------------------------------
@@ -3874,28 +3907,28 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_el_s', 
-        inputs={b_el_s_out: solph.Flow(variable_costs = 100000
+        inputs={b_el_s_out: solph.Flow(variable_costs = 200
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Gas
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_gas_s', 
-        inputs={b_gas_s: solph.Flow(variable_costs = 100000
+        inputs={b_gas_s: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Oel/Kraftstoffe
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_oil_fuel_s', 
-        inputs={b_oil_fuel_s: solph.Flow(variable_costs = 100000
+        inputs={b_oil_fuel_s: solph.Flow(variable_costs = 1000000
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Biomasse
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_bio_s', 
-        inputs={b_bio_s: solph.Flow(variable_costs = 100000
+        inputs={b_bio_s: solph.Flow(variable_costs = 0
         )}))
     #------------------------------------------------------------------------------
     # Überschuss Senke für Waerme
@@ -3909,7 +3942,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     #-----------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='excess_b_H2_s', 
-        inputs={b_H2_s: solph.Flow(variable_costs = 100000
+        inputs={b_H2_s: solph.Flow(variable_costs = 1000000
         )}))
     
     # Prepare a dataset for exporting, to have access after the simulation 

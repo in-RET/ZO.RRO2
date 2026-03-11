@@ -39,12 +39,14 @@
             "id": "38c3236926f8cdff",
             "type": "leaf",
             "state": {
-              "type": "release-notes",
+              "type": "markdown",
               "state": {
-                "currentVersion": "1.9.12"
+                "file": "2030_BS0001_003.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-book-up",
-              "title": "Release Notes 1.9.12"
+              "icon": "lucide-file",
+              "title": "2030_BS0001_003"
             }
           },
           {
@@ -217,12 +219,12 @@
   },
   "active": "38c3236926f8cdff",
   "lastOpenFiles": [
+    "2030_BS0001_002.md",
+    "2030_BS0001_001.md",
     "2050_BS0005_016.md",
     "2040_BS0005_016.md",
     "2030_BS0005_016.md",
-    "2030_BS0001_002.md",
     "Model tracking overview.md",
-    "2030_BS0001_001.md",
     "2030_BS0001_005.md",
     "2030_BS0001_006.md",
     "2030_BS0001_011.md",

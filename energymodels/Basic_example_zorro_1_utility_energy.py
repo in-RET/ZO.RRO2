@@ -463,7 +463,7 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     
     energysystem.add(solph.components.Source(
        label='Import_Electricity',
-       outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_power'],
+       outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_Bezug_'+str(YEAR)],
                                  variable_costs = strompreiszeitreihe + import_price['grid_operating_fee_HöS<2500h'],
                                  custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Strom_'+ str(YEAR)],
                                                     'import_bilanz': -1},
@@ -1041,13 +1041,15 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.GenericStorage(
         label='Heat storage_dist_heat',
         inputs={b_dist_heat: solph.Flow(
-                                  custom_attributes={'keywordWSP': 1},
-                                  nominal_value=float(scalars['Parameter_storage_heat_district_heating']['potential_total'][model_ID]/scalars['Parameter_storage_heat_district_heating']['inverse_c_rate'][model_ID]),
+                                  custom_attributes={'keywordWSP_dist': 1},
+                                  #nominal_value=float(scalars['Parameter_storage_heat_district_heating']['potential_total'][model_ID]/scalars['Parameter_storage_heat_district_heating']['inverse_c_rate'][model_ID]),
+                                  variable_costs= 0.01,
                                   #nonconvex=solph.NonConvex()    
                                     )},
         outputs={b_dist_heat: solph.Flow(
-                                    custom_attributes={'keywordWSP': 1},
-                                    nominal_value=float(scalars['Parameter_storage_heat_district_heating']['potential_total'][model_ID]/scalars['Parameter_storage_heat_district_heating']['inverse_c_rate'][model_ID]),
+                                    custom_attributes={'keywordWSP_dist': 1},
+                                    #nominal_value=float(scalars['Parameter_storage_heat_district_heating']['potential_total'][model_ID]/scalars['Parameter_storage_heat_district_heating']['inverse_c_rate'][model_ID]),
+                                    variable_costs= 0.01,
                                     #nonconvex=solph.NonConvex()
                                     )},
         loss_rate=float(scalars['Parameter_storage_heat_district_heating']['loss_rate'][model_ID]/24),
@@ -1068,12 +1070,12 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label='Heat storage_seasonal',
         inputs={b_dist_heat: solph.Flow(
                                   custom_attributes={'keywordWSP': 1},
-                                  nominal_value=float(scalars['Parameter_storage_heat_seasonal']['potential_total'][model_ID]/scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
+                                  #nominal_value=float(scalars['Parameter_storage_heat_seasonal']['potential_total'][model_ID]/scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
                                   #nonconvex=solph.NonConvex()
                                     )},
         outputs={b_preheat: solph.Flow(
                                     custom_attributes={'keywordWSP': 1},
-                                    nominal_value=float(scalars['Parameter_storage_heat_seasonal']['potential_total'][model_ID]/scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
+                                    #nominal_value=float(scalars['Parameter_storage_heat_seasonal']['potential_total'][model_ID]/scalars['Parameter_storage_heat_seasonal']['inverse_c_rate'][model_ID]),
                                     #nonconvex=solph.NonConvex()
                                     )},
         loss_rate=float(scalars['Parameter_storage_heat_seasonal']['loss_rate'][model_ID]),
@@ -1206,7 +1208,7 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Sink(
         label='Electricity_demand_Rechenzentren', 
         inputs={b_el_out: solph.Flow(fix=demand['rechnenzentrum']['demand_data']['series'], 
-                                     nominal_value=0,
+                                     nominal_value=1,
         )}))
     
     #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1277,124 +1279,124 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     
     for bus in utility_buses:
         energysystem.add(bus)
-        energysystem.add(solph.components.Source(
-            label=f'emergency_{bus.label}',
-            outputs={bus: solph.Flow(variable_costs= 1000000)}  # Very expensive emergency supply
-            ))
+        # energysystem.add(solph.components.Source(
+        #     label=f'emergency_{bus.label}',
+        #     outputs={bus: solph.Flow(variable_costs= 0)}  # Very expensive emergency supply
+        #     ))
     
     """ Demand blocks"""
     
-    #------------------------------------------------------------------------------
-    # Demand Mobility-Personen
-    #------------------------------------------------------------------------------
-    energysystem.add(solph.components.Sink(
-        label='demand_mobility_P', 
-        inputs={b_perV: solph.Flow(fix = demand['mobility_person']['demand_data']['series'],
-                                   nominal_value = 1
-        )}))
-    #------------------------------------------------------------------------------
-    # Demand Mobility-Goods
-    #------------------------------------------------------------------------------
-    energysystem.add(solph.components.Sink(
-        label='demand_mobility_G', 
-        inputs={b_gutV: solph.Flow(fix = demand['mobility_goods']['demand_data']['series'],
-                                   nominal_value = 1
-        )}))
+    # #------------------------------------------------------------------------------
+    # # Demand Mobility-Personen
+    # #------------------------------------------------------------------------------
+    # energysystem.add(solph.components.Sink(
+    #     label='demand_mobility_P', 
+    #     inputs={b_perV: solph.Flow(#fix = demand['mobility_person']['demand_data']['series'],
+    #                                #nominal_value = 1
+    #     )}))
+    # #------------------------------------------------------------------------------
+    # # Demand Mobility-Goods
+    # #------------------------------------------------------------------------------
+    # energysystem.add(solph.components.Sink(
+    #     label='demand_mobility_G', 
+    #     inputs={b_gutV: solph.Flow(#fix = demand['mobility_goods']['demand_data']['series'],
+    #                                #nominal_value = 1
+    #     )}))
     #------------------------------------------------------------------------------
     # Demand Spaceheating Household
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_spaceheating_household', 
-        inputs={b_heat_haus: solph.Flow(fix = demand['space_heating_household']['demand_data']['series'],
-                                        nominal_value = 1
+        inputs={b_heat_haus: solph.Flow(#fix = demand['space_heating_household']['demand_data']['series'],
+                                        #nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Spaceheating- Industry
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_spaceheating_industry', 
-        inputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['demand_data']['series'],
-                                       nominal_value = 1
+        inputs={b_heat_ind: solph.Flow(#fix = demand['space_heating_industry']['demand_data']['series'],
+                                       #nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Spaceheating- GHD
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_spaceheating_GHD', 
-        inputs={b_heat_GHD: solph.Flow(fix = demand['space_heating_ghd']['demand_data']['series'],
-                                       nominal_value = 1
+        inputs={b_heat_GHD: solph.Flow(#fix = demand['space_heating_ghd']['demand_data']['series'],
+                                       #nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Processheating- Industry
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_processheating_industry', 
-        inputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['demand_data']['series'],
-                                     nominal_value = 1
+        inputs={b_PW_ind: solph.Flow(#fix = demand['process_heating_industry']['demand_data']['series'],
+                                     #nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Processheating- GHD
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_processheating_GHD', 
-        inputs={b_PW_GHD: solph.Flow(fix = demand['process_heating_ghd']['demand_data']['series'],
-                                     nominal_value = 1
+        inputs={b_PW_GHD: solph.Flow(#fix = demand['process_heating_ghd']['demand_data']['series'],
+                                     #nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Spacecooling- Household
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_spacecooling_household', 
-        inputs={b_cool_haus: solph.Flow(fix = demand['cooling_household']['demand_data']['series'],
-                                        nominal_value = 1
+        inputs={b_cool_haus: solph.Flow(#fix = demand['cooling_household']['demand_data']['series'],
+                                        #nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Spacecooling- Industry
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_spacecooling_industry', 
-        inputs={b_cool_ind: solph.Flow(fix = demand['cooling_industry']['demand_data']['series'],
-                                       nominal_value = 1
+        inputs={b_cool_ind: solph.Flow(#fix = demand['cooling_industry']['demand_data']['series'],
+                                      # nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Spacecooling- GHD
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_spacecooling_GHD', 
-        inputs={b_cool_GHD: solph.Flow(fix = demand['cooling_ghd']['demand_data']['series'],
-                                       nominal_value = 1
+        inputs={b_cool_GHD: solph.Flow(#fix = demand['cooling_ghd']['demand_data']['series'],
+                                       #nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Electricity- Industry
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_electricity_industry', 
-        inputs={b_el_ind: solph.Flow(fix = demand['electrical_industry']['demand_data']['series'],
-                                     nominal_value = 1
+        inputs={b_el_ind: solph.Flow(#fix = demand['electrical_industry']['demand_data']['series'],
+                                     #nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Electricity- Household
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_electriciy_household', 
-        inputs={b_el_haus: solph.Flow(fix = demand['electrical_household']['demand_data']['series'],
-                                      nominal_value = 1
+        inputs={b_el_haus: solph.Flow(#fix = demand['electrical_household']['demand_data']['series'],
+                                      #nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Electricity- GHD
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_electricity_GHD', 
-        inputs={b_el_GHD: solph.Flow(fix = demand['electrical_ghd']['demand_data']['series'],
-                                     nominal_value = 1
+        inputs={b_el_GHD: solph.Flow(#fix = demand['electrical_ghd']['demand_data']['series'],
+                                     #nominal_value = 1
         )}))
     #------------------------------------------------------------------------------
     # Demand Material usage -Industry
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Sink(
         label='demand_material_usage_industry', 
-        inputs={b_stoff_ind: solph.Flow(fix = demand['material_usage_industry']['demand_data']['series'],
-                                        nominal_value = 1
+        inputs={b_stoff_ind: solph.Flow(#fix = demand['material_usage_industry']['demand_data']['series'],
+                                        #nominal_value = 1
         )}))
     
     """ Converter Nutzenergie"""
@@ -1405,41 +1407,37 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PKW_Batterie",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_perV: solph.Flow(
-                    #nominal_value= demand['mobility_person']['technology_data']['PKW - Batterie']['max_value']
+        outputs={b_perV: solph.Flow(fix = demand['mobility_person']['technology_data']['PKW - Batterie']['series_flh'],
+                    nominal_value=  demand['mobility_person']['technology_data']['PKW - Batterie']['max_value']
                     )},
-        conversion_factors={b_el_out: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['PKW - Batterie'])/1000,
-                            b_perV : 1},
+        #conversion_factors={b_el_out : locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['PKW - Batterie'])/1000},
          ))
     
     energysystem.add(solph.components.Converter(
         label="PKW_H2",
         inputs={b_H2: solph.Flow()},
-        outputs={b_perV: solph.Flow(
-                    #nominal_value= demand['mobility_person']['technology_data']['PKW - H2']['max_value']
+        outputs={b_perV: solph.Flow(fix = demand['mobility_person']['technology_data']['PKW - H2']['series_flh'],
+                    nominal_value=  demand['mobility_person']['technology_data']['PKW - H2']['max_value']
                     )},
-        conversion_factors={b_H2: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['PKW - H2'])/1000,
-                            b_perV: 1},
+        #conversion_factors={b_H2: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['PKW - H2'])/1000},
          ))
     
     energysystem.add(solph.components.Converter(
         label="PKW_Verbrenner",
         inputs={b_oil_fuel: solph.Flow()},
-        outputs={b_perV: solph.Flow(
-                    #nominal_value= demand['mobility_person']['technology_data']['PKW - Verbrenner']['max_value']
+        outputs={b_perV: solph.Flow( fix = demand['mobility_person']['technology_data']['PKW - Verbrenner']['series_flh'],
+                    nominal_value=  demand['mobility_person']['technology_data']['PKW - Verbrenner']['max_value']
                     )},
-        conversion_factors={b_oil_fuel: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['PKW - Verbrenner'])/1000,
-                            b_perV: 1},
+        #conversion_factors={b_oil_fuel: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['PKW - Verbrenner'])/1000},
          ))
     
     energysystem.add(solph.components.Converter(
         label="PKW_Verbrenner CNG",
         inputs={b_gas: solph.Flow()},
-        outputs={b_perV: solph.Flow(
-                    #nominal_value= demand['mobility_person']['technology_data']['PKW - Verbrenner CNG']['max_value']
+        outputs={b_perV: solph.Flow(fix = demand['mobility_person']['technology_data']['PKW - Verbrenner CNG']['series_flh'],
+                    nominal_value=  demand['mobility_person']['technology_data']['PKW - Verbrenner CNG']['max_value']
                     )},
-        conversion_factors={b_gas: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['PKW - Verbrenner CNG'])/1000,
-                            b_perV: 1},
+        #conversion_factors={b_gas: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['PKW - Verbrenner CNG'])/1000},
          ))
     #------------------------------------------------------------------------------
     # Busse
@@ -1447,21 +1445,19 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Busse_Batterie",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_perV: solph.Flow(
-                    #nominal_value= demand['mobility_person']['technology_data']['Busse - Batterie']['max_value']
+        outputs={b_perV: solph.Flow(fix = demand['mobility_person']['technology_data']['Busse - Batterie']['series_flh'],
+                    nominal_value=  demand['mobility_person']['technology_data']['Busse - Batterie']['max_value']
                     )},
-        conversion_factors={b_el_out: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Busse - Batterie'])/1000,
-                            b_perV: 1},
+        #conversion_factors={b_el_out: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Busse - Batterie'])/1000},
          ))
     
     energysystem.add(solph.components.Converter(
         label="Busse_Verbrenner",
         inputs={b_oil_fuel: solph.Flow()},
-        outputs={b_perV: solph.Flow(
-                    #nominal_value= demand['mobility_person']['technology_data']['Busse - Verbrenner']['max_value']
+        outputs={b_perV: solph.Flow(fix = demand['mobility_person']['technology_data']['Busse - Verbrenner']['series_flh'],
+                    nominal_value=  demand['mobility_person']['technology_data']['Busse - Verbrenner']['max_value']
                     )},
-        conversion_factors={b_oil_fuel: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Busse - Verbrenner'])/1000,
-                            b_perV:1},
+        #conversion_factors={b_oil_fuel:locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Busse - Verbrenner'])/1000},
          ))
     #------------------------------------------------------------------------------
     # Schiene
@@ -1469,21 +1465,19 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Schiene_Batterie",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_perV: solph.Flow(
-                    #nominal_value= demand['mobility_person']['technology_data']['Schiene - Elektrisch']['max_value']
+        outputs={b_perV: solph.Flow(fix = demand['mobility_person']['technology_data']['Schiene - Elektrisch']['series_flh'],
+                    nominal_value=  demand['mobility_person']['technology_data']['Schiene - Elektrisch']['max_value']
                     )},
-        conversion_factors={b_el_out: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Schiene - Elektrisch'])/1000,
-                            b_perV: 1},
+        #conversion_factors={b_el_out: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Schiene - Elektrisch'])/1000},
          ))
     
     energysystem.add(solph.components.Converter(
         label="Schiene_Verbrenner",
         inputs={b_oil_fuel: solph.Flow()},
-        outputs={b_perV: solph.Flow(
-                    #nominal_value= demand['mobility_person']['technology_data']['Schiene - Verbrenner']['max_value']
+        outputs={b_perV: solph.Flow(fix = demand['mobility_person']['technology_data']['Schiene - Verbrenner']['series_flh'],
+                    nominal_value=  demand['mobility_person']['technology_data']['Schiene - Verbrenner']['max_value']
                     )},
-        conversion_factors={b_oil_fuel: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Schiene - Verbrenner'])/1000,
-                            b_perV: 1},
+        #conversion_factors={b_oil_fuel: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Schiene - Verbrenner'])/1000},
          ))
     
     #------------------------------------------------------------------------------
@@ -1492,31 +1486,28 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="LKW_Batterie",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_gutV: solph.Flow(
-                    #nominal_value= demand['mobility_goods']['technology_data']['LKW - Batterie']['max_value']
+        outputs={b_gutV: solph.Flow(fix = demand['mobility_goods']['technology_data']['LKW - Batterie']['series_flh'],
+                    nominal_value=  demand['mobility_goods']['technology_data']['LKW - Batterie']['max_value']
                     )},
-        conversion_factors={b_el_out: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['LKW - Batterie'])/1000,
-                            b_gutV: 1},
+        #conversion_factors={b_el_out: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['LKW - Batterie'])/1000},
          ))
     
     energysystem.add(solph.components.Converter(
         label="LKW_Verbrenner",
         inputs={b_oil_fuel: solph.Flow()},
-        outputs={b_gutV: solph.Flow(
-                    #nominal_value= demand['mobility_goods']['technology_data']['LKW - Verbrenner']['max_value']
+        outputs={b_gutV: solph.Flow(fix = demand['mobility_goods']['technology_data']['LKW - Verbrenner']['series_flh'],
+                    nominal_value=  demand['mobility_goods']['technology_data']['LKW - Verbrenner']['max_value']
                     )},
-        conversion_factors={b_oil_fuel: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['LKW - Verbrenner'])/1000,
-                            b_gutV: 1},
+        #conversion_factors={b_oil_fuel: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['LKW - Verbrenner'])/1000},
          ))
     
     energysystem.add(solph.components.Converter(
         label="LKW_H2",
         inputs={b_H2: solph.Flow()},
-        outputs={b_gutV: solph.Flow(
-                    #nominal_value= demand['mobility_goods']['technology_data']['LKW - H2']['max_value']
+        outputs={b_gutV: solph.Flow(fix = demand['mobility_goods']['technology_data']['LKW - H2']['series_flh'],
+                    nominal_value=  demand['mobility_goods']['technology_data']['LKW - H2']['max_value']
                     )},
-        conversion_factors={b_H2: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['LKW - H2'])/1000,
-                            b_gutV: 1},
+        #conversion_factors={b_H2: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['LKW - H2'])/1000},
          ))
     
     #------------------------------------------------------------------------------
@@ -1525,21 +1516,19 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Schiene_Batterie_G",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_gutV: solph.Flow(
-                    #nominal_value= demand['mobility_goods']['technology_data']['Schiene - Elektrisch_g']['max_value']
+        outputs={b_gutV: solph.Flow(fix = demand['mobility_goods']['technology_data']['Schiene - Elektrisch_g']['series_flh'],
+                    nominal_value=  demand['mobility_goods']['technology_data']['Schiene - Elektrisch_g']['max_value']
                     )},
-        conversion_factors={b_el_out: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Schiene - Elektrisch_g'])/1000,
-                            b_gutV: 1},
+        #conversion_factors={b_el_out: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Schiene - Elektrisch_g'])/1000},
          ))
     
     energysystem.add(solph.components.Converter(
         label="Schiene_Verbrenner_G",
         inputs={b_oil_fuel: solph.Flow()},
-        outputs={b_gutV: solph.Flow(
-                    #nominal_value= demand['mobility_goods']['technology_data']['Schiene - Verbrenner_g']['max_value']
+        outputs={b_gutV: solph.Flow(fix = demand['mobility_goods']['technology_data']['Schiene - Verbrenner_g']['series_flh'],
+                    nominal_value=  demand['mobility_goods']['technology_data']['Schiene - Verbrenner_g']['max_value']
                     )},
-        conversion_factors={b_oil_fuel: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Schiene - Verbrenner_g'])/1000,
-                            b_gutV: 1},
+        #conversion_factors={b_oil_fuel: locale.atof(scalars['Demand_Transport_nutzenergie_east_b']['EER']['Schiene - Verbrenner_g'])/1000},
          ))
     
     ########################----------------------------- Strom --------------------------###############################
@@ -1549,72 +1538,66 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Elektogeräte_HH",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_el_haus: solph.Flow(
-                            #nominal_value= demand['electrical_household']['technology_data']['Elektrogeraete']['max_value']
+        outputs={b_el_haus: solph.Flow(fix = demand['electrical_household']['technology_data']['Elektrogeraete']['series_flh'],
+                            nominal_value=  demand['electrical_household']['technology_data']['Elektrogeraete']['max_value']
                             )
             },
-        conversion_factors={b_el_haus:scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Elektrogeraete'],
-                            }
+        #conversion_factors={b_el_out: 1/scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Elektrogeraete']}
          ))
     
     energysystem.add(solph.components.Converter(
         label="Elektogeräte_GHD",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_el_GHD: solph.Flow(
-                    #nominal_value= demand['electrical_ghd']['technology_data']['Elektrogeraete']['max_value']
+        outputs={b_el_GHD: solph.Flow(fix = demand['electrical_ghd']['technology_data']['Elektrogeraete']['series_flh'],
+                    nominal_value=  demand['electrical_ghd']['technology_data']['Elektrogeraete']['max_value']
                     ),
             },
-        conversion_factors={b_el_GHD: scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Elektrogeraete'],
-                            }
+        #conversion_factors={b_el_out: 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Elektrogeraete']}
          ))
     
     energysystem.add(solph.components.Converter(
         label="Elektogeräte_ind",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_el_ind: solph.Flow(
-            #nominal_value= demand['electrical_industry']['technology_data']['Elektrogeraete']['max_value']
+        outputs={b_el_ind: solph.Flow( fix = demand['electrical_industry']['technology_data']['Elektrogeraete']['series_flh'],
+            nominal_value=  demand['electrical_industry']['technology_data']['Elektrogeraete']['max_value']
             ),
             },
-        conversion_factors={b_el_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Elektrogeraete']
-                            }
+        #conversion_factors={b_el_out: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Elektrogeraete']}
          ))
     
     
-    ########################----------------------------- Klimakälte --------------------------###############################
+    # ########################----------------------------- Klimakälte --------------------------###############################
     #------------------------------------------------------------------------------
     # Klimakälte für GHD/Haushalte/Industrie
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Converter(
         label="Kompressionskaelte_HH",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_cool_haus: solph.Flow(
-                            #nominal_value= demand['cooling_household']['technology_data']['Kompressionskaelte']['max_value']
+        outputs={b_cool_haus: solph.Flow(fix = demand['cooling_household']['technology_data']['Kompressionskaelte']['series_flh'],
+                            nominal_value=  demand['cooling_household']['technology_data']['Kompressionskaelte']['max_value']
                             ),
                 },
-        conversion_factors={b_cool_haus:scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Kompressionskaelte'],
-                            }
+        #conversion_factors={b_el_out: 1/scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Kompressionskaelte']}
          ))
     
     energysystem.add(solph.components.Converter(
         label="Kompressionskaelte_GHD",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_cool_GHD: solph.Flow(
-                    #nominal_value= demand['cooling_ghd']['technology_data']['Kompressionskaelte']['max_value']
+        outputs={b_cool_GHD: solph.Flow(fix = demand['cooling_ghd']['technology_data']['Kompressionskaelte']['series_flh'],
+                    nominal_value=  demand['cooling_ghd']['technology_data']['Kompressionskaelte']['max_value']
                     ),
                 },
-        conversion_factors={b_cool_GHD: scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Kompressionskaelte']
-                            }
+        #conversion_factors={b_el_out: 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Kompressionskaelte']            }
          ))
     
     energysystem.add(solph.components.Converter(
         label="Kompressionskaelte_ind",
         inputs={b_el_out: solph.Flow()},
-        outputs={b_cool_ind: solph.Flow(
-            #nominal_value= demand['cooling_industry']['technology_data']['Kompressionskaelte']['max_value']
+        outputs={b_cool_ind: solph.Flow(fix = demand['cooling_industry']['technology_data']['Kompressionskaelte']['series_flh'],
+            nominal_value=  demand['cooling_industry']['technology_data']['Kompressionskaelte']['max_value']
             )
                 },
-        conversion_factors={b_cool_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Kompressionskaelte']
-                            }
+        #conversion_factors={b_el_out: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Kompressionskaelte']                            }
          ))
     
     
@@ -1626,12 +1609,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Festbrennstoffkessel_PW_ghd",
         inputs={b_solidf: solph.Flow()},
-        outputs={b_PW_GHD: solph.Flow(
-                            #nominal_value= demand['process_heating_ghd']['technology_data']['Festbrennstoffkessel']['max_value']
+        outputs={b_PW_GHD: solph.Flow(fix = demand['process_heating_ghd']['technology_data']['Festbrennstoffkessel']['series_flh'],
+                            nominal_value=  demand['process_heating_ghd']['technology_data']['Festbrennstoffkessel']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_GHD: scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel'],
-                            }
+        #conversion_factors={b_solidf: 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel'],                            }
          ))
     #------------------------------------------------------------------------------
     # Heizkessel Gas (GHD)
@@ -1639,12 +1621,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heizkessel_gas_PW_ghd",
         inputs={b_gas: solph.Flow()},
-        outputs={b_PW_GHD: solph.Flow(
-                            #nominal_value= demand['process_heating_ghd']['technology_data']['Heizkessel Gas']['max_value']
+        outputs={b_PW_GHD: solph.Flow(fix = demand['process_heating_ghd']['technology_data']['Heizkessel Gas']['series_flh'],
+                            nominal_value=  demand['process_heating_ghd']['technology_data']['Heizkessel Gas']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_GHD: scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Heizkessel Gas'],
-                            }
+        #conversion_factors={b_gas: 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Heizkessel Gas'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -1653,12 +1634,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heizkessel_oel_PW_ghd",
         inputs={b_oil_fuel: solph.Flow()},
-        outputs={b_PW_GHD: solph.Flow(
-                            #nominal_value= demand['process_heating_ghd']['technology_data']['Heizkessel Oel']['max_value']
+        outputs={b_PW_GHD: solph.Flow(fix = demand['process_heating_ghd']['technology_data']['Heizkessel Oel']['series_flh'],
+                            nominal_value=  demand['process_heating_ghd']['technology_data']['Heizkessel Oel']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_GHD: scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Heizkessel Oel'],
-                            }
+        #conversion_factors={b_oil_fuel: 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Heizkessel Oel'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -1667,16 +1647,16 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PtH_Erdwaermepumpe_PW_ghd",
         inputs={b_el_out: solph.Flow(),
-                b_uw: solph.Flow()},
-        outputs={b_PW_GHD: solph.Flow(
-                            #nominal_value= demand['process_heating_ghd']['technology_data']['PtH Erdwaermepumpe']['max_value']
+                #b_uw: solph.Flow()
+                },
+        outputs={b_PW_GHD: solph.Flow(fix = demand['process_heating_ghd']['technology_data']['PtH Erdwaermepumpe']['series_flh'],
+                            nominal_value=  demand['process_heating_ghd']['technology_data']['PtH Erdwaermepumpe']['max_value']
                             ),
                  },
-        # conversion_factors={b_el :1/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
+        # #conversion_factors={b_el :1/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
         #                     b_uw: (float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])-1)/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
         #                     }
-        conversion_factors={b_PW_GHD : scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'],
-                             }
+        #conversion_factors={b_el_out : 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'],                             }
          ))
     #------------------------------------------------------------------------------
     # PtH Luftwärmepumpe (GHD)
@@ -1684,16 +1664,16 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PtH_Luftwaermepumpe_PW_ghd",
         inputs={b_el_out: solph.Flow(),
-                b_umgebungsluft: solph.Flow()},
-        outputs={b_PW_GHD: solph.Flow(
-                            #nominal_value= demand['process_heating_ghd']['technology_data']['PtH Luftwaermepumpe']['max_value']
+                #b_umgebungsluft: solph.Flow()
+                },
+        outputs={b_PW_GHD: solph.Flow(fix = demand['process_heating_ghd']['technology_data']['PtH Luftwaermepumpe']['series_flh'],
+                            nominal_value=  demand['process_heating_ghd']['technology_data']['PtH Luftwaermepumpe']['max_value']
                             ),
                  },
-        # conversion_factors={b_el :1/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
+        # #conversion_factors={b_el :1/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
         #                     b_umgebungsluft: (float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])-1)/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
         #                     }
-        conversion_factors={b_PW_GHD : scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe']
-                            }
+        #conversion_factors={b_el_out : 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe']                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -1703,12 +1683,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="PtH_Heizstab_PW_ghd",
         inputs={b_el_out: solph.Flow(),
                 },
-        outputs={b_PW_GHD: solph.Flow(
-                            #nominal_value= demand['process_heating_ghd']['technology_data']['PtH Heizstab']['max_value']
+        outputs={b_PW_GHD: solph.Flow(fix = demand['process_heating_ghd']['technology_data']['PtH Heizstab']['series_flh'],
+                            nominal_value=  demand['process_heating_ghd']['technology_data']['PtH Heizstab']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_GHD : scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Heizstab'],
-                            }
+        #conversion_factors={b_el_out : 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Heizstab'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -1718,12 +1697,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="Waermeuebergabestation_PW_ghd",
         inputs={b_dist_heat: solph.Flow(),
                 },
-        outputs={b_PW_GHD: solph.Flow(
-                            #nominal_value= demand['process_heating_ghd']['technology_data']['Waermeuebergabestation']['max_value']
+        outputs={b_PW_GHD: solph.Flow(fix = demand['process_heating_ghd']['technology_data']['Waermeuebergabestation']['series_flh'],
+                            nominal_value=  demand['process_heating_ghd']['technology_data']['Waermeuebergabestation']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_GHD : scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Waermeuebergabestation'],
-                            }
+        #conversion_factors={b_dist_heat : 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Waermeuebergabestation'],                            }
          ))
     
     #------------------------------------------------------  Industry   --------------------------------------------------#
@@ -1733,23 +1711,21 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Festbrennstoffkessel_PW_ind",
         inputs={b_solidf: solph.Flow()},
-        outputs={b_PW_ind: solph.Flow(
-                            #nominal_value= demand['process_heating_industry']['technology_data']['Festbrennstoffkessel']['max_value']
+        outputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['technology_data']['Festbrennstoffkessel']['series_flh'],
+                            nominal_value=  demand['process_heating_industry']['technology_data']['Festbrennstoffkessel']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel'],
-                            }
+        #conversion_factors={b_solidf: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel'],                            }
          ))
   
     energysystem.add(solph.components.Converter(
         label="Festbrennstoffkessel_1_PW_ind",
         inputs={b_solidf: solph.Flow()},
-        outputs={b_PW_ind: solph.Flow(
-                            #nominal_value= demand['process_heating_industry']['technology_data']['Festbrennstoffkessel_1']['max_value']
+        outputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['technology_data']['Festbrennstoffkessel_1']['series_flh'],
+                            nominal_value=  demand['process_heating_industry']['technology_data']['Festbrennstoffkessel_1']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel_1'],
-                            }
+        #conversion_factors={b_solidf: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel_1'],                            }
          ))
     #------------------------------------------------------------------------------
     # Heizkessel Gas (INd)
@@ -1757,23 +1733,21 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heizkessel_gas_PW_ind",
         inputs={b_gas: solph.Flow()},
-        outputs={b_PW_ind: solph.Flow(
-                            #nominal_value= demand['process_heating_industry']['technology_data']['Heizkessel Gas']['max_value']
+        outputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['technology_data']['Heizkessel Gas']['series_flh'],
+                            nominal_value=  demand['process_heating_industry']['technology_data']['Heizkessel Gas']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Gas'],
-                            }
+        #conversion_factors={b_gas: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Gas'],                            }
          ))
     
     energysystem.add(solph.components.Converter(
         label="Heizkessel_gas_1_PW_ind",
         inputs={b_gas: solph.Flow()},
-        outputs={b_PW_ind: solph.Flow(
-                            #nominal_value= demand['process_heating_industry']['technology_data']['Heizkessel Gas_1']['max_value']
+        outputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['technology_data']['Heizkessel Gas_1']['series_flh'],
+                            nominal_value=  demand['process_heating_industry']['technology_data']['Heizkessel Gas_1']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Gas_1'],
-                            }
+        #conversion_factors={b_gas: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Gas_1'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -1782,12 +1756,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heizkessel_H2_PW_ind",
         inputs={b_H2: solph.Flow()},
-        outputs={b_PW_ind: solph.Flow(
-                            #nominal_value= demand['process_heating_industry']['technology_data']['Heizkessel Wasserstoff']['max_value']
+        outputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['technology_data']['Heizkessel Wasserstoff']['series_flh'],
+                            nominal_value=  demand['process_heating_industry']['technology_data']['Heizkessel Wasserstoff']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Wasserstoff'],
-                            }
+        #conversion_factors={b_H2: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Wasserstoff'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -1796,16 +1769,16 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PtH_Erdwaermepumpe_PW_ind",
         inputs={b_el_out: solph.Flow(),
-                b_uw: solph.Flow()},
-        outputs={b_PW_ind: solph.Flow(
-                            #nominal_value= demand['process_heating_industry']['technology_data']['PtH Erdwaermepumpe']['max_value']
+                #b_uw: solph.Flow()
+                },
+        outputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['technology_data']['PtH Erdwaermepumpe']['series_flh'],
+                            nominal_value=  demand['process_heating_industry']['technology_data']['PtH Erdwaermepumpe']['max_value']
                             ),
                  },
-        # conversion_factors={b_el :1/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
+        # #conversion_factors={b_el :1/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
         #                     b_uw: (float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])-1)/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
         #                     }
-        conversion_factors={b_PW_ind : scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'],
-                            }
+        #conversion_factors={b_el_out : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'],                            }
          ))
     #------------------------------------------------------------------------------
     # PtH Luftwärmepumpe (Ind)
@@ -1813,16 +1786,16 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PtH_Luftwaermepumpe_PW_ind",
         inputs={b_el_out: solph.Flow(),
-                b_umgebungsluft: solph.Flow()},
-        outputs={b_PW_ind: solph.Flow(
-                            #nominal_value= demand['process_heating_industry']['technology_data']['PtH Luftwaermepumpe']['max_value']
+                #b_umgebungsluft: solph.Flow()
+                },
+        outputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['technology_data']['PtH Luftwaermepumpe']['series_flh'],
+                            nominal_value=  demand['process_heating_industry']['technology_data']['PtH Luftwaermepumpe']['max_value']
                             ),
                  },
-        # conversion_factors={b_el :1/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
+        # #conversion_factors={b_el :1/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
         #                     b_umgebungsluft: (float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])-1)/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
         #                     }
-        conversion_factors={b_PW_ind : scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'],
-                              }
+        #conversion_factors={b_el_out : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'],                              }
          ))
     
     #------------------------------------------------------------------------------
@@ -1832,12 +1805,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="PtH_Heizstab_PW_ind",
         inputs={b_el_out: solph.Flow(),
                 },
-        outputs={b_PW_ind: solph.Flow(
-                            #nominal_value= demand['process_heating_industry']['technology_data']['PtH Heizstab']['max_value']
+        outputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['technology_data']['PtH Heizstab']['series_flh'],
+                            nominal_value=  demand['process_heating_industry']['technology_data']['PtH Heizstab']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_ind : scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Heizstab'],
-                            }
+        #conversion_factors={b_el_out : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Heizstab'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -1847,12 +1819,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="Waermeuebergabestation_PW_ind",
         inputs={b_dist_heat: solph.Flow(),
                 },
-        outputs={b_PW_ind: solph.Flow(
-                            #nominal_value= demand['process_heating_industry']['technology_data']['Waermeuebergabestation']['max_value']
+        outputs={b_PW_ind: solph.Flow(fix = demand['process_heating_industry']['technology_data']['Waermeuebergabestation']['series_flh'],
+                            nominal_value=  demand['process_heating_industry']['technology_data']['Waermeuebergabestation']['max_value']
                             ),
                  },
-        conversion_factors={b_PW_ind : scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Waermeuebergabestation'],
-                            }
+        #conversion_factors={b_dist_heat : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Waermeuebergabestation'],                            }
          ))
     
     ########################----------------------------- Stoffl. Nutzung --------------------------###############################
@@ -1864,12 +1835,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="Materialnutzung_biomasse_ind",
         inputs={b_bio: solph.Flow(),
                 },
-        outputs={b_stoff_ind: solph.Flow(
-                            #nominal_value= demand['material_usage_industry']['technology_data']['Materialnutzung Biomasse']['max_value']
+        outputs={b_stoff_ind: solph.Flow(fix = demand['material_usage_industry']['technology_data']['Materialnutzung Biomasse']['series_flh'],
+                            nominal_value=  demand['material_usage_industry']['technology_data']['Materialnutzung Biomasse']['max_value']
                             ),
                  },
-        conversion_factors={b_stoff_ind : scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Materialnutzung Biomasse'],
-                            }
+        #conversion_factors={b_bio : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Materialnutzung Biomasse'],                            }
          ))
     #------------------------------------------------------------------------------
     # Materialnutzung Gas (Ind)
@@ -1878,12 +1848,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="Materialnutzung_gas_ind",
         inputs={b_gas: solph.Flow(),
                 },
-        outputs={b_stoff_ind: solph.Flow(
-                            #nominal_value= demand['material_usage_industry']['technology_data']['Materialnutzung Gas']['max_value']
+        outputs={b_stoff_ind: solph.Flow(fix = demand['material_usage_industry']['technology_data']['Materialnutzung Gas']['series_flh'],
+                            nominal_value=  demand['material_usage_industry']['technology_data']['Materialnutzung Gas']['max_value']
                             ),
                  },
-        conversion_factors={b_stoff_ind : scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Materialnutzung Gas'],
-                            }
+        #conversion_factors={b_gas : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Materialnutzung Gas'],                            }
          ))
     #------------------------------------------------------------------------------
     # Materialnutzung Oel (Ind)
@@ -1892,12 +1861,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="Materialnutzung_oel_ind",
         inputs={b_oil_fuel: solph.Flow(),
                 },
-        outputs={b_stoff_ind: solph.Flow(
-                            #nominal_value= demand['material_usage_industry']['technology_data']['Materialnutzung Öl']['max_value']
+        outputs={b_stoff_ind: solph.Flow(fix = demand['material_usage_industry']['technology_data']['Materialnutzung Öl']['series_flh'],
+                            nominal_value=  demand['material_usage_industry']['technology_data']['Materialnutzung Öl']['max_value']
                             ),
                  },
-        conversion_factors={b_stoff_ind : scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Materialnutzung Oel'],
-                            }
+        #conversion_factors={b_oil_fuel : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Materialnutzung Oel'],                            }
          ))
     
     ########################----------------------------- Raumwärme --------------------------###############################
@@ -1908,12 +1876,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Festbrennstoffkessel_RW_HH",
         inputs={b_solidf: solph.Flow()},
-        outputs={b_heat_haus: solph.Flow(
-                            #nominal_value= demand['space_heating_household']['technology_data']['Festbrennstoffkessel']['max_value']
+        outputs={b_heat_haus: solph.Flow(fix = demand['space_heating_household']['technology_data']['Festbrennstoffkessel']['series_flh'],
+                            nominal_value=  demand['space_heating_household']['technology_data']['Festbrennstoffkessel']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_haus: scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel'],
-                            }
+        #conversion_factors={b_solidf: 1/scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel'],                            }
          ))
     #------------------------------------------------------------------------------
     # Heizkessel Gas (Haus)
@@ -1921,12 +1888,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heizkessel_gas_RW_HH",
         inputs={b_gas: solph.Flow()},
-        outputs={b_heat_haus: solph.Flow(
-                            #nominal_value= demand['space_heating_household']['technology_data']['Heizkessel Gas']['max_value']
+        outputs={b_heat_haus: solph.Flow(fix = demand['space_heating_household']['technology_data']['Heizkessel Gas']['series_flh'],
+                            nominal_value=  demand['space_heating_household']['technology_data']['Heizkessel Gas']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_haus: scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Heizkessel Gas'],
-                            }
+        #conversion_factors={b_gas: 1/scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Heizkessel Gas'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -1935,12 +1901,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heizkessel_oel_RW_HH",
         inputs={b_oil_fuel: solph.Flow()},
-        outputs={b_heat_haus: solph.Flow(
-                            #nominal_value= demand['space_heating_household']['technology_data']['Heizkessel Oel']['max_value']
+        outputs={b_heat_haus: solph.Flow(fix = demand['space_heating_household']['technology_data']['Heizkessel Oel']['series_flh'],
+                            nominal_value=  demand['space_heating_household']['technology_data']['Heizkessel Oel']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_haus: scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Heizkessel Oel'],
-                            }
+        #conversion_factors={b_oil_fuel: 1/scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Heizkessel Oel'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -1949,16 +1914,16 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PtH_Erdwaermepumpe_RW_HH",
         inputs={b_el_out: solph.Flow(),
-                b_uw: solph.Flow()},
-        outputs={b_heat_haus: solph.Flow(
-                            #nominal_value= demand['space_heating_household']['technology_data']['PtH Erdwaermepumpe']['max_value']
+                #b_uw: solph.Flow()
+                },
+        outputs={b_heat_haus: solph.Flow(fix = demand['space_heating_household']['technology_data']['PtH Erdwaermepumpe']['series_flh'],
+                            nominal_value=  demand['space_heating_household']['technology_data']['PtH Erdwaermepumpe']['max_value']
                             ),
                  },
-        # conversion_factors={b_el :1/(float(scalars['Demand_Household_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
+        # #conversion_factors={b_el :1/(float(scalars['Demand_Household_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
         #                     b_uw: (float(scalars['Demand_Household_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])-1)/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
         #                     }
-        conversion_factors={b_heat_haus : scalars['Demand_Household_east']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'],
-                             }
+        #conversion_factors={b_el_out : 1/scalars['Demand_Household_east']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'],                             }
          ))
     #------------------------------------------------------------------------------
     # PtH Luftwärmepumpe (Haus)
@@ -1966,16 +1931,16 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PtH_Luftwaermepumpe_RW_HH",
         inputs={b_el_out: solph.Flow(),
-                b_umgebungsluft: solph.Flow()},
-        outputs={b_heat_haus: solph.Flow(
-                            #nominal_value= demand['space_heating_household']['technology_data']['PtH Luftwaermepumpe']['max_value']
+                #b_umgebungsluft: solph.Flow()
+                },
+        outputs={b_heat_haus: solph.Flow(fix = demand['space_heating_household']['technology_data']['PtH Luftwaermepumpe']['series_flh'],
+                            nominal_value=  demand['space_heating_household']['technology_data']['PtH Luftwaermepumpe']['max_value']
                             ),
                  },
-        # conversion_factors={b_el :1/(float(scalars['Demand_Household_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
+        # #conversion_factors={b_el :1/(float(scalars['Demand_Household_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
         #                     b_umgebungsluft: (float(scalars['Demand_Household_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])-1)/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
         #                     }
-        conversion_factors={b_heat_haus : scalars['Demand_Household_east']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'] 
-                                     }
+        #conversion_factors={b_el_out : 1/scalars['Demand_Household_east']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe']                                     }
          ))
     
     #------------------------------------------------------------------------------
@@ -1985,12 +1950,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="PtH_Heizstab_RW_HH",
         inputs={b_el_out: solph.Flow(),
                 },
-        outputs={b_heat_haus: solph.Flow(
-                            #nominal_value= demand['space_heating_household']['technology_data']['PtH Heizstab']['max_value']
+        outputs={b_heat_haus: solph.Flow(fix = demand['space_heating_household']['technology_data']['PtH Heizstab']['series_flh'],
+                            nominal_value=  demand['space_heating_household']['technology_data']['PtH Heizstab']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_haus : scalars['Demand_Household_east']['EER_'+ str(YEAR)]['PtH Heizstab'],
-                            }
+        #conversion_factors={b_el_out : 1/scalars['Demand_Household_east']['EER_'+ str(YEAR)]['PtH Heizstab'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2000,12 +1964,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="Waermeuebergabestation_RW_HH",
         inputs={b_dist_heat: solph.Flow(),
                 },
-        outputs={b_heat_haus: solph.Flow(
-                            #nominal_value= demand['space_heating_household']['technology_data']['Waermeuebergabestation']['max_value']
+        outputs={b_heat_haus: solph.Flow(fix = demand['space_heating_household']['technology_data']['Waermeuebergabestation']['series_flh'],
+                            nominal_value=  demand['space_heating_household']['technology_data']['Waermeuebergabestation']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_haus : scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Waermeuebergabestation'],
-                            }
+        #conversion_factors={b_dist_heat : 1/scalars['Demand_Household_east']['EER_'+ str(YEAR)]['Waermeuebergabestation'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2013,9 +1976,9 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='ST_RW_HH', 
-        outputs={b_heat_haus: solph.Flow(fix=sequences['feed_in_profile']['Solarthermal'], 
-                                          custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
-                                          nominal_value= demand['space_heating_household']['technology_data']['Solarthermie']['max_value']
+        outputs={b_heat_haus: solph.Flow(fix=demand['space_heating_household']['technology_data']['Solarthermie']['series_flh'],
+                                          #custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
+                                          nominal_value=  demand['space_heating_household']['technology_data']['Solarthermie']['max_value']
         )}))
     
     #------------------------------------------------------  GHD   --------------------------------------------------#
@@ -2025,12 +1988,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Festbrennstoffkessel_RW_ghd",
         inputs={b_solidf: solph.Flow()},
-        outputs={b_heat_GHD: solph.Flow(
-                            #nominal_value= demand['space_heating_ghd']['technology_data']['Festbrennstoffkessel']['max_value']
+        outputs={b_heat_GHD: solph.Flow(fix = demand['space_heating_ghd']['technology_data']['Festbrennstoffkessel']['series_flh'],
+                            nominal_value=  demand['space_heating_ghd']['technology_data']['Festbrennstoffkessel']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_GHD: scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel'],
-                            }
+        #conversion_factors={b_solidf: 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel'],                            }
          ))
     #------------------------------------------------------------------------------
     # Heizkessel Gas (GHD)
@@ -2038,12 +2000,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heizkessel_gas_RW_ghd",
         inputs={b_gas: solph.Flow()},
-        outputs={b_heat_GHD: solph.Flow(
-                            #nominal_value= demand['space_heating_ghd']['technology_data']['Heizkessel Gas']['max_value']
+        outputs={b_heat_GHD: solph.Flow(fix = demand['space_heating_ghd']['technology_data']['Heizkessel Gas']['series_flh'],
+                            nominal_value=  demand['space_heating_ghd']['technology_data']['Heizkessel Gas']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_GHD: scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Heizkessel Gas'],
-                            }
+        #conversion_factors={b_gas: 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Heizkessel Gas'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2052,12 +2013,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heizkessel_oel_RW_ghd",
         inputs={b_oil_fuel: solph.Flow()},
-        outputs={b_heat_GHD: solph.Flow(
-                            #nominal_value= demand['space_heating_ghd']['technology_data']['Heizkessel Oel']['max_value']
+        outputs={b_heat_GHD: solph.Flow(fix = demand['space_heating_ghd']['technology_data']['Heizkessel Oel']['series_flh'],
+                            nominal_value=  demand['space_heating_ghd']['technology_data']['Heizkessel Oel']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_GHD: scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Heizkessel Oel'],
-                            }
+        #conversion_factors={b_oil_fuel: 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Heizkessel Oel'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2066,16 +2026,16 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PtH_Erdwaermepumpe_RW_ghd",
         inputs={b_el_out: solph.Flow(),
-                b_uw: solph.Flow()},
-        outputs={b_heat_GHD: solph.Flow(
-                            #nominal_value= demand['space_heating_ghd']['technology_data']['PtH Erdwaermepumpe']['max_value']
+                #b_uw: solph.Flow()
+                },
+        outputs={b_heat_GHD: solph.Flow(fix = demand['space_heating_ghd']['technology_data']['PtH Erdwaermepumpe']['series_flh'],
+                            nominal_value=  demand['space_heating_ghd']['technology_data']['PtH Erdwaermepumpe']['max_value']
                             ),
                  },
-        # conversion_factors={b_el :1/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
+        # #conversion_factors={b_el :1/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
         #                     b_uw: (float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])-1)/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
         #                     }
-        conversion_factors={b_heat_GHD : scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'],
-                              }
+        #conversion_factors={b_el_out : 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'],                              }
          ))
     #------------------------------------------------------------------------------
     # PtH Luftwärmepumpe (GHD)
@@ -2083,16 +2043,16 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PtH_Luftwaermepumpe_RW_ghd",
         inputs={b_el_out: solph.Flow(),
-                b_umgebungsluft: solph.Flow()},
-        outputs={b_heat_GHD: solph.Flow(
-                            #nominal_value= demand['space_heating_ghd']['technology_data']['PtH Luftwaermepumpe']['max_value']
+                #b_umgebungsluft: solph.Flow()
+                },
+        outputs={b_heat_GHD: solph.Flow(fix = demand['space_heating_ghd']['technology_data']['PtH Luftwaermepumpe']['series_flh'],
+                            nominal_value=  demand['space_heating_ghd']['technology_data']['PtH Luftwaermepumpe']['max_value']
                             ),
                  },
-        # conversion_factors={b_el :1/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
+        # #conversion_factors={b_el :1/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
         #                     b_umgebungsluft: (float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])-1)/(float(scalars['Demand_GHD_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
         #                     }
-        conversion_factors={b_heat_GHD : scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'],
-                              }
+        #conversion_factors={b_el_out : 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'],                              }
          ))
     
     #------------------------------------------------------------------------------
@@ -2102,12 +2062,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="PtH_Heizstab_RW_ghd",
         inputs={b_el_out: solph.Flow(),
                 },
-        outputs={b_heat_GHD: solph.Flow(
-                            #nominal_value= demand['space_heating_ghd']['technology_data']['PtH Heizstab']['max_value']
+        outputs={b_heat_GHD: solph.Flow(fix = demand['space_heating_ghd']['technology_data']['PtH Heizstab']['series_flh'],
+                            nominal_value=  demand['space_heating_ghd']['technology_data']['PtH Heizstab']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_GHD : scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Heizstab'],
-                            }
+        #conversion_factors={b_el_out : 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['PtH Heizstab'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2117,12 +2076,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="Waermeuebergabestation_RW_ghd",
         inputs={b_dist_heat: solph.Flow(),
                 },
-        outputs={b_heat_GHD: solph.Flow(
-                            #nominal_value= demand['space_heating_ghd']['technology_data']['Waermeuebergabestation']['max_value']
+        outputs={b_heat_GHD: solph.Flow(fix = demand['space_heating_ghd']['technology_data']['Waermeuebergabestation']['series_flh'],
+                            nominal_value=  demand['space_heating_ghd']['technology_data']['Waermeuebergabestation']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_GHD :scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Waermeuebergabestation'],
-                            }
+        #conversion_factors={b_dist_heat : 1/scalars['Demand_GHD_east']['EER_'+ str(YEAR)]['Waermeuebergabestation'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2130,10 +2088,13 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='ST_RW_ghd', 
-        outputs={b_heat_GHD: solph.Flow(fix=sequences['feed_in_profile']['Solarthermal'], 
-                                          custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
-                                          nominal_value= demand['space_heating_ghd']['technology_data']['Solarthermie']['max_value']
-        )}))
+        outputs={b_heat_GHD: solph.Flow(fix=demand['space_heating_ghd']['technology_data']['Solarthermie']['series_flh'],
+                                          #custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
+                                          nominal_value=  demand['space_heating_ghd']['technology_data']['Solarthermie']['max_value']
+                                          
+        )},
+        
+        ))
     
     #------------------------------------------------------  Industry   --------------------------------------------------#
     #------------------------------------------------------------------------------
@@ -2142,23 +2103,21 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Festbrennstoffkessel_RW_ind",
         inputs={b_solidf: solph.Flow()},
-        outputs={b_heat_ind: solph.Flow(
-                            #nominal_value= demand['space_heating_industry']['technology_data']['Festbrennstoffkessel']['max_value']
+        outputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['technology_data']['Festbrennstoffkessel']['series_flh'],
+                            nominal_value=  demand['space_heating_industry']['technology_data']['Festbrennstoffkessel']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel'],
-                            }
+        #conversion_factors={b_solidf: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel'],                            }
          ))
   
     energysystem.add(solph.components.Converter(
         label="Festbrennstoffkessel_1_RW_ind",
         inputs={b_solidf: solph.Flow()},
-        outputs={b_heat_ind: solph.Flow(
-                            #nominal_value= demand['space_heating_industry']['technology_data']['Festbrennstoffkessel_1']['max_value']
+        outputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['technology_data']['Festbrennstoffkessel_1']['series_flh'],
+                            nominal_value=  demand['space_heating_industry']['technology_data']['Festbrennstoffkessel_1']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel_1'],
-                            }
+        #conversion_factors={b_solidf: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Festbrennstoffkessel_1'],                            }
          ))
     #------------------------------------------------------------------------------
     # Heizkessel Gas (INd)
@@ -2166,23 +2125,21 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heizkessel_gas_RW_ind",
         inputs={b_gas: solph.Flow()},
-        outputs={b_heat_ind: solph.Flow(
-                            #nominal_value= demand['space_heating_industry']['technology_data']['Heizkessel Gas']['max_value']
+        outputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['technology_data']['Heizkessel Gas']['series_flh'],
+                            nominal_value=  demand['space_heating_industry']['technology_data']['Heizkessel Gas']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Gas'],
-                            }
+        #conversion_factors={b_gas: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Gas'],                            }
          ))
     
     energysystem.add(solph.components.Converter(
         label="Heizkessel_gas_1_RW_ind",
         inputs={b_gas: solph.Flow()},
-        outputs={b_heat_ind: solph.Flow(
-                            #nominal_value= demand['space_heating_industry']['technology_data']['Heizkessel Gas_1']['max_value']
+        outputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['technology_data']['Heizkessel Gas_1']['series_flh'],
+                            nominal_value=  demand['space_heating_industry']['technology_data']['Heizkessel Gas_1']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Gas_1'],
-                            }
+        #conversion_factors={b_gas: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Gas_1'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2191,12 +2148,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="Heizkessel_H2_RW_ind",
         inputs={b_H2: solph.Flow()},
-        outputs={b_heat_ind: solph.Flow(
-                            #nominal_value= demand['space_heating_industry']['technology_data']['Heizkessel Wasserstoff']['max_value']
+        outputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['technology_data']['Heizkessel Wasserstoff']['series_flh'],
+                            nominal_value=  demand['space_heating_industry']['technology_data']['Heizkessel Wasserstoff']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_ind: scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Wasserstoff'],
-                            }
+        #conversion_factors={b_H2: 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Heizkessel Wasserstoff'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2205,16 +2161,16 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PtH_Erdwaermepumpe_RW_ind",
         inputs={b_el_out: solph.Flow(),
-                b_uw: solph.Flow()},
-        outputs={b_heat_ind: solph.Flow(
-                            #nominal_value= demand['space_heating_industry']['technology_data']['PtH Erdwaermepumpe']['max_value']
+                #b_uw: solph.Flow()
+                },
+        outputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['technology_data']['PtH Erdwaermepumpe']['series_flh'],
+                            nominal_value=  demand['space_heating_industry']['technology_data']['PtH Erdwaermepumpe']['max_value']
                             ),
                  },
-        # conversion_factors={b_el :1/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
+        # #conversion_factors={b_el :1/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
         #                     b_uw: (float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])-1)/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'])),
         #                     }
-        conversion_factors={b_heat_ind : scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'],
-                             }
+        #conversion_factors={b_el_out : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Erdwaermepumpe'],                             }
          ))
     #------------------------------------------------------------------------------
     # PtH Luftwärmepumpe (Ind)
@@ -2222,16 +2178,16 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     energysystem.add(solph.components.Converter(
         label="PtH_Luftwaermepumpe_RW_ind",
         inputs={b_el_out: solph.Flow(),
-                b_umgebungsluft: solph.Flow()},
-        outputs={b_heat_ind: solph.Flow(
-                            #nominal_value= demand['space_heating_industry']['technology_data']['PtH Luftwaermepumpe']['max_value']
+                #b_umgebungsluft: solph.Flow()
+                },
+        outputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['technology_data']['PtH Luftwaermepumpe']['series_flh'],
+                            nominal_value=  demand['space_heating_industry']['technology_data']['PtH Luftwaermepumpe']['max_value']
                             ),
                  },
-        # conversion_factors={b_el :1/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
+        # #conversion_factors={b_el :1/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
         #                     b_umgebungsluft: (float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])-1)/(float(scalars['Demand_Industry_east_b']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'])),
         #                     }
-        conversion_factors={b_heat_ind : scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'],
-                            }
+        #conversion_factors={b_el_out : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Luftwaermepumpe'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2241,12 +2197,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="PtH_Heizstab_RW_ind",
         inputs={b_el_out: solph.Flow(),
                 },
-        outputs={b_heat_ind: solph.Flow(
-                            #nominal_value= demand['space_heating_industry']['technology_data']['PtH Heizstab']['max_value']
+        outputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['technology_data']['PtH Heizstab']['series_flh'],
+                            nominal_value=  demand['space_heating_industry']['technology_data']['PtH Heizstab']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_ind : scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Heizstab'],
-                            }
+        #conversion_factors={b_el_out : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['PtH Heizstab'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2256,12 +2211,11 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label="Waermeuebergabestation_RW_ind",
         inputs={b_dist_heat: solph.Flow(),
                 },
-        outputs={b_heat_ind: solph.Flow(
-                            #nominal_value= demand['space_heating_industry']['technology_data']['Waermeuebergabestation']['max_value']
+        outputs={b_heat_ind: solph.Flow(fix = demand['space_heating_industry']['technology_data']['Waermeuebergabestation']['series_flh'],
+                            nominal_value=  demand['space_heating_industry']['technology_data']['Waermeuebergabestation']['max_value']
                             ),
                  },
-        conversion_factors={b_heat_ind :scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Waermeuebergabestation'],
-                            }
+        #conversion_factors={b_dist_heat : 1/scalars['Demand_Industry_east']['EER_'+ str(YEAR)]['Waermeuebergabestation'],                            }
          ))
     
     #------------------------------------------------------------------------------
@@ -2269,8 +2223,8 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
     #------------------------------------------------------------------------------
     energysystem.add(solph.components.Source(
         label='ST_RW_ind', 
-        outputs={b_heat_ind: solph.Flow(fix=sequences['feed_in_profile']['Solarthermal'], 
-                                          custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
+        outputs={b_heat_ind: solph.Flow(fix=demand['space_heating_industry']['technology_data']['Solarthermie']['series_flh'], 
+                                          #custom_attributes={'emission_factor': scalars['Parameter_solar_thermal_power_plant']['EE_factor'][model_ID]},
                                           nominal_value= demand['space_heating_industry']['technology_data']['Solarthermie']['max_value']
         )}))
     
@@ -2376,6 +2330,8 @@ def Basisszenario_1_Nutz(PERMUATION: str) -> solph.EnergySystem:
         label='excess_material_usage_industry', 
         inputs={b_stoff_ind: solph.Flow(variable_costs=100000
         )}))
+    
+    
     
     # Prepare a dataset for exporting, to have access after the simulation 
     sim_data = {'Timeseries': sequences,

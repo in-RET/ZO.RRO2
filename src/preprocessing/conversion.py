@@ -192,10 +192,10 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
                                                     (load_profile_nom['Cooling_demand_profile'][r] *(float(scalars['Demand_Household_' + r  ]['Klima- und Prozesskaelte_'+ str(YEAR)+sze]['Summe']) * (float(scalars['Demand_Household_'+ r ]['Klima- und Prozesskaelte_' + str(YEAR)+sze]['Kompressionskaelte'])/100) /float(scalars['Demand_Household_'+ r ]['EER_' + str(YEAR)]['Kompressionskaelte'])))+
                                                     (load_profile_nom['Cooling_demand_profile'][r] *(float(scalars['Demand_Industry_' + r ]['Klima- und Prozesskaelte_'+ str(YEAR)+sze]['Summe']) * (float(scalars['Demand_Industry_'+ r ]['Klima- und Prozesskaelte_' + str(YEAR)+sze]['Kompressionskaelte'])/100) /float(scalars['Demand_Industry_'+ r ]['EER_' + str(YEAR)]['Kompressionskaelte'])))+
                                                     (load_profile_nom['Cooling_demand_profile'][r] *(float(scalars['Demand_GHD_' + r ]['Klima- und Prozesskaelte_'+ str(YEAR)+sze]['Summe']) * (float(scalars['Demand_GHD_'+ r ]['Klima- und Prozesskaelte_' + str(YEAR)+sze]['Kompressionskaelte'])/100) /float(scalars['Demand_GHD_'+ r ]['EER_' + str(YEAR)]['Kompressionskaelte'])))+
-                                                    (load_profile_nom['Mobility_demand_profile']['car_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Personenverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Personenverkehr_'+str(YEAR)]['PKW - Batterie']))))+
-                                                    (load_profile_nom['Mobility_demand_profile']['bus_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Personenverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Personenverkehr_'+str(YEAR)]['Busse - Batterie']))))+
-                                                    (load_profile_nom['Mobility_demand_profile']['train_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Personenverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Personenverkehr_'+str(YEAR)]['Schiene - Batterie']))))+
-                                                    (load_profile_nom['Mobility_demand_profile']['train_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Gueterverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Gueterverkehr_'+str(YEAR)]['Schiene - Batterie']))))+
+                                                    (load_profile_nom['Charging_demand_profile']['car_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Personenverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Personenverkehr_'+str(YEAR)]['PKW - Batterie']))))+
+                                                    (load_profile_nom['Charging_demand_profile']['bus_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Personenverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Personenverkehr_'+str(YEAR)]['Busse - Batterie']))))+
+                                                    (load_profile_nom['Charging_demand_profile']['train_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Personenverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Personenverkehr_'+str(YEAR)]['Schiene - Batterie']))))+
+                                                    (load_profile_nom['Charging_demand_profile']['train_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Gueterverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Gueterverkehr_'+str(YEAR)]['Schiene - Batterie']))))+
                                                     (load_profile_nom['Base_demand_profile']['base_load']* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Gueterverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Gueterverkehr_'+str(YEAR)]['LKW - Batterie']))))
                                                     )*1000000 # TWh to MWh noch GHD 
 
@@ -300,6 +300,7 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
     demand['material_usage_gas'] = demand_profile_dict['material_usage_gas']['north']+demand_profile_dict['material_usage_gas']['east']+demand_profile_dict['material_usage_gas']['middle']+demand_profile_dict['material_usage_gas']['swest']
     demand['material_usage_oil'] = demand_profile_dict['material_usage_oil']['north']+demand_profile_dict['material_usage_oil']['east']+demand_profile_dict['material_usage_oil']['middle']+demand_profile_dict['material_usage_oil']['swest']
     demand['rechnenzentrum'] = demand_profile_dict['rechnenzentrum']['north']+demand_profile_dict['rechnenzentrum']['east']+demand_profile_dict['rechnenzentrum']['middle']+demand_profile_dict['rechnenzentrum']['swest']
+    demand['material_usage_biomasse'] = demand_profile_dict['material_usage_biomasse']['north']+demand_profile_dict['material_usage_biomasse']['east']+demand_profile_dict['material_usage_biomasse']['middle']+demand_profile_dict['material_usage_biomasse']['swest']
     
     print('Demand Electricity: ', demand['electricity'].sum())
     print('Demand Gas: ', demand['gas'].sum())
@@ -313,6 +314,7 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
     print('Demand Fuel: ', demand['fuel'].sum())
     print('Demand Matrialbedarf Gas: ', demand['material_usage_gas'].sum())
     print('Demand Matrialbedarf Oil: ', demand['material_usage_oil'].sum())
+    print('Demand Matrialbedarf Biomasse: ', demand['material_usage_biomasse'].sum())
     print('Demand Rechnenzentrum: ', demand['rechnenzentrum'].sum())
     
     if model_ID.startswith('BS_regionalization'):
@@ -671,7 +673,7 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, model_ID, demand_type = '
                      ))*1000000,
                 
                 'Solarthermie':(
-                    load_profile_nom['Heat_demand_profile']['HA4_' + r] *
+                    load_profile_nom['feed_in_profile']['Solarthermal'] *
                     (float(scalars['Demand_GHD_' + r]['Raumwaerme_' + str(YEAR) + sze]['Summe']) *
                      (float(scalars['Demand_GHD_' + r]['Raumwaerme_' + str(YEAR) + sze]['Solarthermie'])/100) 
                      ))*1000000,
@@ -880,6 +882,7 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, model_ID, demand_type = '
         for tech_name, tech_series in technologies.items():
             technology_data[r][tech_name] = {
                 'series': tech_series,
+                'series_flh': (tech_series/tech_series.max()).fillna(0),
                 'max_value': tech_series.max(),
                 'min_value': tech_series.min(),
                 'max_time': tech_series.idxmax(),
@@ -891,6 +894,7 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, model_ID, demand_type = '
             sector_sum_series = sum(technologies.values())
             sector_sum[r] = {
                 'series': sector_sum_series,
+                'series_flh': (sector_sum_series/sector_sum_series.max()).fillna(0),
                 'max_value': sector_sum_series.max(),
                 'min_value': tech_series.min(),
                 'max_time': sector_sum_series.idxmax(),
@@ -924,6 +928,7 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, model_ID, demand_type = '
                 summed_series = sum(tech_series_list)
                 summed_technology_breakdown[tech_name] = {
                     'series': summed_series,
+                    'series_flh': (summed_series/summed_series.max()).fillna(0),
                     'max_value': summed_series.max(),
                     'min_value': summed_series.min(),
                     'max_time': summed_series.idxmax(),
@@ -944,6 +949,7 @@ def Utility_demand_breakdown(scalars, sequences, YEAR, model_ID, demand_type = '
         return {
             'technology_data': summed_technology_breakdown,
             'demand_data': summed_sector_sum
+            
         }
 
     if region:

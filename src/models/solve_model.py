@@ -2,10 +2,11 @@ import logging
 import os
 
 import pandas as pd
+import numpy as np
 from oemof import solph
-
+from pyomo.environ import Constraint, value
 from energymodels.BS_regionalization import BS_regionalization
-from energymodels.Basic_example_zorro_1_utility_energy import Basisszenario_1_Nutz 
+from energymodels.test_Basic_example_zorro_1_utility_energy import Basisszenario_1_Nutz 
 from energymodels.Basic_example_zorro_1 import Basisszenario_1 as BS_1
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
@@ -14,7 +15,7 @@ from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, Biogas
 from docs.scenario.create_md_file import create_simulation_doc
 from src.postprocessing.so_gehts_plot import so_gehts_bar_plot
 from src.postprocessing.plots import heat_maps
-
+from oemof.solph.constraints import limit_active_flow_count_by_keyword
 def solveModels(
     variations: [str],
     scenario_num :str,
@@ -27,6 +28,7 @@ def solveModels(
     solver_output: bool = True,
     print_graph: bool = False,
     Anteilig_erneuerbar:bool = True,
+    pareto_optimization:bool = True,
     
 ):
 
@@ -58,7 +60,8 @@ def solveModels(
                 ),
                 legend=False,
             )
-
+        
+            
         model = solph.Model(energysystem)
         
         logging.info("Applying model constraints")
@@ -70,20 +73,22 @@ def solveModels(
                import_export_bilanz(model, "import_bilanz", "export_bilanz")
         else:
             logging.info("NICHT Bilanziell erneuerbar")
-                
-        CO2_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['CO2_Grenze_'+str(YEAR)])
+        
+        CO2_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['CO2_Grenze_'+str(YEAR)] )
         BiogasBestand_limit(model, limit = sim_data['Parameter']['Parameter_biogas_upgrading_plant']['potential'][model_ID])
         BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['Biomasse_sub_tot'])
         Biomasse_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['Holzpotential_tot'])
         GuD_time(model, limit = 0, Starttime = 1777, Endtime= 7656)
-        
+    
         logging.info("Solve the model")
         model.solve(
             solver=solver,
             cmdline_options={"MIPGap": gap},
             solve_kwargs={"tee": solver_output},
         )
-
+        
+        Cost_opt = value(model.objective)
+        
         logging.info("Calculating costs")
 
         result = cost_calculation_from_es_and_results(

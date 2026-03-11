@@ -25,7 +25,12 @@ try:
 except ImportError:
     plt = None
 
-
+co2_max = scalars['System_configurations_2024']['System']['CO2_Grenze_'+str(YEAR)]
+co2_min = 0
+if pareto_optimization:
+    co2_range = np.linspace(co2_min, co2_max, 15)
+else:
+    co2_range =[co2_max]
 # name = os.path.basename(__file__)
 # name = name.replace(".py", "")
 # my_path = os.path.abspath(os.path.dirname(__file__))
@@ -38,7 +43,7 @@ energysystem = solph.EnergySystem()
  #                                          'dumps', '2030_BS0001', 'Basic_example_zorro_1_2030_BS0001_005.dump'))
 YEAR = 2030
 model_ID = 'BS0006'
-model_name = "BS_regionalization"
+model_name = "BS"
 # model_name '_' years '_' variations '.dump'
 # img_path = os.path.abspath(os.path.join(os.getcwd(),
 # 'figures','Thuringia_karte_mit_Landkreisen_dull.png'))
@@ -47,19 +52,19 @@ model_name = "BS_regionalization"
 sequences = read_input_files(
     folder_name='data/sequences', sub_folder_name=None)
 scalars = read_input_files(folder_name='data/scalars', sub_folder_name=None)
-demand = load_profile_scaling(scalars,sequences,YEAR,model_name, region = True)
+demand = load_profile_scaling(scalars,sequences,YEAR,model_name, region = False)
 #demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
 
 
-# demands = ['space_heating_household', 'space_heating_industry', 'space_heating_ghd',
-#            'process_heating_industry', 'process_heating_ghd',
-#            'cooling_household', 'cooling_industry', 'cooling_ghd',
-#            'electrical_household', 'electrical_ghd', 'electrical_industry',
-#            'mobility_person', 'mobility_goods', 'material_usage_industry'
-#            ]
-# demand = {}
-# for d in demands:
-#     demand[d] = Utility_demand_breakdown(scalars, sequences, YEAR, demand_type= d, region= True)
+demands = ['space_heating_household', 'space_heating_industry', 'space_heating_ghd',
+           'process_heating_industry', 'process_heating_ghd',
+           'cooling_household', 'cooling_industry', 'cooling_ghd',
+           'electrical_household', 'electrical_ghd', 'electrical_industry',
+           'mobility_person', 'mobility_goods', 'material_usage_industry', 'rechnenzentrum'
+           ]
+demand_ne = {}
+for d in demands:
+    demand_ne[d] = Utility_demand_breakdown(scalars, sequences, YEAR,model_ID, demand_type= d, region= False)
 epc_costs = investment_parameter(scalars, YEAR, model_ID)
 #results = energysystem.results["main"]
 year = [2030, 2040, 2050]
@@ -101,28 +106,63 @@ T_VL_e = T_VL_m = T_VL_n = T_VL_s = T_VL_avg
                 
 # sum_df = pd.DataFrame(sum_2)
 
+sum_ne= (demand_ne['cooling_ghd']['demand_data']['total_value']+
+             demand_ne['cooling_household']['demand_data']['total_value']+
+             demand_ne['cooling_industry']['demand_data']['total_value']+
+             demand_ne['electrical_ghd']['demand_data']['total_value']+
+             demand_ne['electrical_household']['demand_data']['total_value']+
+             demand_ne['electrical_industry']['demand_data']['total_value']+
+             demand_ne['material_usage_industry']['demand_data']['total_value']+
+             demand_ne['process_heating_ghd']['demand_data']['total_value']+
+             demand_ne['process_heating_industry']['demand_data']['total_value']+
+             demand_ne['space_heating_ghd']['demand_data']['total_value']+
+             demand_ne['space_heating_household']['demand_data']['total_value']+
+             demand_ne['space_heating_industry']['demand_data']['total_value'])/1000000
+             #demand_ne['mobility_goods']['demand_data']['total_value']+
+             #demand_ne['mobility_person']['demand_data']['total_value']
+             
     #%%
-# AC_power_nom_1_n = north.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for openfield
-# AC_power_nom_1_e = east.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for rooftop
-# AC_power_nom_1_w = swest.PV_feed_in_profile_openfield['AC_Power']  # Random normalized power values for openfield
-# AC_power_nom_1_m = middle.PV_feed_in_profile_openfield['AC_Power']
-# # Sort the data to create the duration curve (highest values first)
-# sorted_n = np.sort(AC_power_nom_1_n)[::-1]
-# sorted_e = np.sort(AC_power_nom_1_e)[::-1]
-# sorted_w = np.sort(AC_power_nom_1_w)[::-1]
-# sorted_m = np.sort(AC_power_nom_1_m)[::-1]
+ph_ghd = demand_ne['process_heating_ghd']['technology_data']['Waermeuebergabestation']['series']
+ph_ind = demand_ne['process_heating_industry']['technology_data']['Waermeuebergabestation']['series']
+sh_hh  = demand_ne['space_heating_household']['technology_data']['Waermeuebergabestation']['series']
+sh_ghd = demand_ne['space_heating_ghd']['technology_data']['Waermeuebergabestation']['series']
+sh_ind = demand_ne['space_heating_industry']['technology_data']['Waermeuebergabestation']['series']
 
-# # Plotting the duration curves for both Openfield and Rooftop
-# plt.figure(figsize=(10, 6))
-# plt.plot(AC_power_nom_1_n, label='north', color='blue')
-# plt.plot(AC_power_nom_1_e, label='east', color='green')
-# plt.plot(AC_power_nom_1_w, label='w', color='orange')
-# plt.plot(AC_power_nom_1_m, label='m', color='red')
+dist_heat = demand['dist_heating'] * 0.91
 
-# # Adding titles and labels
-# plt.title("Year Duration Curve", fontsize=16)
-# plt.xlabel("Hours of the Year", fontsize=14)
-# plt.ylabel("Normalized Power Output (kW)", fontsize=14)
-# plt.legend()
-# plt.grid(True)
+# Time index
+t = range(len(ph_ghd))
+
+# Stackplot
+plt.figure(figsize=(10, 6))
+plt.stackplot(
+    t,
+    ph_ghd,
+    ph_ind,
+    sh_hh,
+    sh_ghd,
+    sh_ind,
+    labels=[
+        'Process heat GHD',
+        'Process heat Industry',
+        'Space heat Household',
+        'Space heat GHD',
+        'Space heat Industry'
+    ],
+    alpha=0.8
+)
+
+# Overlay district heating demand
+plt.plot(t, dist_heat, linewidth=2, label='District heating demand (×0.91)')
+
+plt.legend(loc='upper right')
+plt.xlabel('Time')
+plt.ylabel('Heat demand')
+plt.title('District heating demand')
+plt.tight_layout()
+plt.show()
 #%%
+plt.figure(figsize=(10, 4))
+plt.plot(dist_heat - (ph_ghd + ph_ind + sh_hh + sh_ghd + sh_ind))
+plt.title('District heating margin (positive = feasible)')
+plt.show()

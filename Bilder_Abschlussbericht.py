@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from src.postprocessing.utils_dump import get_dump_file_path,load_results_from_dump
 from src.postprocessing.plot_report_utils import interpret_results, create_combined_bus_component_dfs, plot_bus_flows, categorize_for_sequence, rename_index_with_category
-from src.postprocessing.plot_report_utils import create_barplot_dict, scalars_bar_plot
+from src.postprocessing.plot_report_utils import create_barplot_dict, scalars_bar_plot, create_bus_dataframes, create_component_dataframes, extract_sankey_flow_data
+from src.postprocessing.plot_report_utils import create_sankey_excel
 import os 
 
 workdir = os.getcwd()
@@ -24,15 +25,19 @@ storage_filename = 'peak_storage_flow_comparison_20260119_1656.csv'
 
 
 #%%
-scenarios =['Ref_BS_RK_25_11_25']
-year = 2030
+scenarios =["final_26_02_26"]
+year = 2045
 variation = "BS0006"
-model_name = "BS"#"_regionalization"   
+model_name = "Basic_example_zorro_1"#"_regionalization"   
 
-plt.style.use('seaborn-v0_8-paper')
-plt.rcParams['figure.figsize'] = (14, 8)
-plt.rcParams['font.size'] = 12
-
+# plt.style.use('seaborn-v0_8-paper')
+# plt.rcParams['figure.figsize'] = (14, 8)
+# plt.rcParams['font.size'] = 12
+model_data={}
+# ref_csv_path = os.path.join(workdir, 'results',
+#                      "sankey", 'Ref.csv')
+# ref_df = pd.read_csv(ref_csv_path, decimal= ',', sep =';', index_col= 0)
+# model_data['ref'] = ref_df
 for scenario_num in scenarios:
     print("Loading results...")
     dump_path = get_dump_file_path(year, variation, model_name, scenario_num)
@@ -45,6 +50,8 @@ for scenario_num in scenarios:
     
         
     bus_sequences, bus_scalars, component_sequences, component_scalars, component_bus_mapping = interpret_results(model)
+    bus_dfs = create_bus_dataframes(bus_sequences, es)
+    component_dfs = create_component_dataframes(component_sequences, es)
     combined_df = create_combined_bus_component_dfs(bus_sequences, component_sequences, es)
     Color_mapping=  {
         # Generation sources
@@ -53,7 +60,7 @@ for scenario_num in scenarios:
         'HYDRO': '#1E90FF',        # Dodger Blue for hydro
         'LAUFWASSER - KW': '#1E90FF',
         'GRID LOSS' : '#C6C3C3',
-        'GESAMTLAST': '#723E04', 
+        'NACHFRAGE': '#723E04', 
         
         # Bioenergy
         'BIOGAS- BHKW': '#32CD32',                   # Lime Green
@@ -128,7 +135,7 @@ for scenario_num in scenarios:
         'Laufwasser - KW' : ['Hydro power plant'],
         'PV': ['PV', 'SOLAR'],
         'WIND': ['WIND'],
-        'Gesamtlast': ['LOAD', 'DEMAND'],
+        'Nachfrage': ['LOAD', 'DEMAND'],
         'Elektrolyse': ['Electrolysis'],
         'Power-to-fuel': ['PtL'],
         'Umweltwaerme': ['UW'],
@@ -140,6 +147,7 @@ for scenario_num in scenarios:
         'Import - Wasserstoff' : ['Import_Hydrogen'],
         'Import - Oil': ['Import_Oil'],
         'Import - Kraftstoff' : ['Import_Synthetic_fuel'],
+        'Import - Braunkohle': ['Import_brown_coal'],
         'Abwärme' : ['AW'],
         'Excess' : ['excess'],
         'Export': ['Export']
@@ -147,18 +155,20 @@ for scenario_num in scenarios:
     }   
     categorized_dict = categorize_for_sequence(category_list, combined_df)
     
-    plot_bus_flows(categorized_dict,
+    summer_weak = plot_bus_flows(categorized_dict,
                    bus_name = 'Electricity',
                    inflow_plot_title = 'Strombereitstellung',
                    outflow_plot_title = 'Stromverwendung',
                    COLOR_MAPPING = Color_mapping,
-                   start_date=str(year)+'-02-01',
-                   end_date = str(year)+'-02-07',
+                   start_date=str(year)+'-02-12',
+                   end_date = str(year)+'-02-19',
                    figsize = (14, 10),
                    title_fontsize=14,
                    label_fontsize=14,
                    figure_bg_color='#159A3433',
-                   axes_bg_color='#159A3400')
+                   axes_bg_color='#159A3400',#'#FFFFFF',
+                   labels_with_info = True)
+
 #%%
 if scalars_comp_plot:
     # Import component peak flow output csv file from Dashboard 
@@ -216,10 +226,10 @@ if scalars_comp_plot:
     category_color = {
             'Erneuerbare Erzeugung': '#A0E24B',      
             'Bioenergie': '#397302',                
-            'Power-to-X (PtX) & Wasserstoff': '#5CFFFF', 
+            'Power-to-X (PtX) & Wasserstoff': '#4DE0E0', 
             'Waermesysteme': '#D14900',              
             #'Importe': '#795548',                   # Braun
-            'Konventionelle Erzeugung': '#BF1515'   # Grau
+            'Konventionelle Erzeugung': '#969696'   # Grau
         }
     
     bar_plot_scalars = create_barplot_dict(component_scalar_df, category_map)
@@ -235,5 +245,60 @@ if scalars_comp_plot:
                      figsize = (14, 10),
                      fontsize=14,
                      figure_bg_color='#159A3433',
-                     axes_bg_color='#159A3400' )
+                     axes_bg_color='#159A3400'#'#FFFFFF',
+                     )
+    san_df = extract_sankey_flow_data(bus_dfs, component_dfs, component_bus_mapping, group_similar=True)
+    PV_mask = san_df['source'].str.startswith('PV')
+    Wind_mask = san_df['source'].str.startswith('Wind')
+    value_PV = san_df.loc[PV_mask, 'value'].sum()
+    value_Wind = san_df.loc[Wind_mask, 'value'].sum()
+
+    PV_row = pd.DataFrame({
+        'source': ['PV_total'],
+        'target': ['ElectricityIN'],
+        'flow_type': ['incoming'],
+        'value': [value_PV]
+    })
+    Wind_row = pd.DataFrame({
+        'source': ['Wind_total'],
+        'target': ['ElectricityIN'],
+        'flow_type': ['incoming'],
+        'value': [value_Wind]
+    })
+
+    san_df = pd.concat([san_df, PV_row], ignore_index=True)
+    san_df = pd.concat([san_df, Wind_row], ignore_index=True)    
    
+    model_data[str(year) +'_'+variation+'_'+ scenario_num] = san_df
+    
+    
+#%%
+
+duration_curve_df = pd.DataFrame()
+duration_curve_df['Strom'] = categorized_dict['ElectricityIn']["IN: Import - Strom"]
+duration_curve_df['Gas'] = categorized_dict['Gas']["IN: Import -Gas"]
+duration_curve_df['Wasserstoff'] = categorized_dict['Hydrogen']["IN: Import - Wasserstoff"]
+duration_curve_df['Oel'] = categorized_dict['Oil_fuel']["IN: Import - Oil"]
+duration_curve_df['Syn. Kraftstoff'] = categorized_dict['Oil_fuel']["IN: Import - Kraftstoff"]
+duration_curve_df['Holz'] = categorized_dict['BioWood']["IN: Import - Holz"]
+duration_curve_df['Biomasse'] = categorized_dict['Biomass']["IN: Import - Biowaste"]
+if year < 2030:
+    duration_curve_df['Kohle'] = categorized_dict['Solidfuel']["IN: Import - Braunkohle"]
+plt.figure(figsize = (8,5))
+for col in duration_curve_df:
+    series = duration_curve_df[col].ffill().bfill() 
+    sorted_series= duration_curve_df[col].sort_values(ascending=False).reset_index(drop=True)
+    sorted_series.index = sorted_series.index/24# len(sorted_series)* 100
+    plt.plot(sorted_series,linewidth=2, label = col)
+
+plt.xlabel("Tage des Jahres")
+plt.ylabel("Leistung in MW")
+plt.title("Jahresdauerlinie")
+plt.grid(True)
+plt.xlim(0,365)
+plt.legend(fontsize = 16)
+plt.tight_layout()
+plt.show()
+
+#%%
+create_sankey_excel(model_data, os.path.join(workdir, 'results', 'sankey', model_name+'_'+variation +'.xlsx'))

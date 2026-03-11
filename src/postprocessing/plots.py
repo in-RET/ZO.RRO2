@@ -153,27 +153,28 @@ def heat_maps(data_dict,YEAR,permutation,scenario_num,profile_type,sector = None
         plt.savefig(os.path.abspath(os.path.join(workdir, 'figures', str(permutation),scenario_num, profile_type + '_Heatmap.png')),dpi=800)
         return min_value, max_value
     
-def grid_energy_map(results, permutation, model_name, scenario_num):
-    
+def grid_energy_map(results, permutation, model_name, scenario_num, heatmap=True):
+    YEAR, model_ID = permutation.split("_")
+    YEAR = int(YEAR)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
-    b_el_n = solph.views.node(results, 'Electricity_n')
-    b_el_s = solph.views.node(results, 'Electricity_s')
-    b_el_e = solph.views.node(results, 'Electricity_e')
-    b_el_m = solph.views.node(results, 'Electricity_m')
-    hs_north_flow = b_el_n['sequences'][('HS<->North', 'Electricity_n'), 'flow']/1000 #in GWh 
-    north_hs_flow = b_el_n['sequences'][('Electricity_n', 'HS<->North'), 'flow']/1000 
-    hs_middle_flow = b_el_m['sequences'][('HS<->Middle', 'Electricity_m'), 'flow']/1000 
-    middle_hs_flow = b_el_m['sequences'][('Electricity_m', 'HS<->Middle'), 'flow']/1000 
-    hs_east_flow = b_el_e['sequences'][('HS<->East', 'Electricity_e'), 'flow']/1000 
-    east_hs_flow = b_el_e['sequences'][('Electricity_e', 'HS<->East'), 'flow']/1000 
-    hs_swest_flow = b_el_s['sequences'][('HS<->Swest', 'Electricity_s'), 'flow']/1000 
-    swest_hs_flow = b_el_s['sequences'][('Electricity_s', 'HS<->Swest'), 'flow']/1000 
-    middle_north_flow = b_el_m['sequences'][('Electricity_m', 'North<->Middle'), 'flow']/1000 
-    north_middle_flow = b_el_n['sequences'][('Electricity_n', 'North<->Middle'), 'flow']/1000 
-    middle_east_flow = b_el_m['sequences'][('Electricity_m', 'East<->Middle'), 'flow']/1000 
-    east_middle_flow = b_el_e['sequences'][('Electricity_e', 'East<->Middle'), 'flow']/1000 
-    middle_swest_flow = b_el_m['sequences'][('Electricity_m', 'Middle<->Swest'), 'flow']/1000 
-    swest_middle_flow = b_el_s['sequences'][('Electricity_s', 'Middle<->Swest'), 'flow']/1000 
+    b_el_n = solph.views.node(results, 'ElectricityIn_n')
+    b_el_s = solph.views.node(results, 'ElectricityIn_s')
+    b_el_e = solph.views.node(results, 'ElectricityIn_e')
+    b_el_m = solph.views.node(results, 'ElectricityIn_m')
+    hs_north_flow = b_el_n['sequences'][('HS<->North', 'ElectricityIn_n'), 'flow']/1000 #in GWh 
+    north_hs_flow = b_el_n['sequences'][('ElectricityIn_n', 'HS<->North'), 'flow']/1000 
+    hs_middle_flow = b_el_m['sequences'][('HS<->Middle', 'ElectricityIn_m'), 'flow']/1000 
+    middle_hs_flow = b_el_m['sequences'][('ElectricityIn_m', 'HS<->Middle'), 'flow']/1000 
+    hs_east_flow = b_el_e['sequences'][('HS<->East', 'ElectricityIn_e'), 'flow']/1000 
+    east_hs_flow = b_el_e['sequences'][('ElectricityIn_e', 'HS<->East'), 'flow']/1000 
+    hs_swest_flow = b_el_s['sequences'][('HS<->Swest', 'ElectricityIn_s'), 'flow']/1000 
+    swest_hs_flow = b_el_s['sequences'][('ElectricityIn_s', 'HS<->Swest'), 'flow']/1000 
+    middle_north_flow = b_el_m['sequences'][('ElectricityIn_m', 'North<->Middle'), 'flow']/1000 
+    north_middle_flow = b_el_n['sequences'][('ElectricityIn_n', 'North<->Middle'), 'flow']/1000 
+    middle_east_flow = b_el_m['sequences'][('ElectricityIn_m', 'East<->Middle'), 'flow']/1000 
+    east_middle_flow = b_el_e['sequences'][('ElectricityIn_e', 'East<->Middle'), 'flow']/1000 
+    middle_swest_flow = b_el_m['sequences'][('ElectricityIn_m', 'Middle<->Swest'), 'flow']/1000 
+    swest_middle_flow = b_el_s['sequences'][('ElectricityIn_s', 'Middle<->Swest'), 'flow']/1000 
     
     all_flows = [
     hs_north_flow, north_hs_flow, hs_middle_flow, middle_hs_flow,
@@ -182,13 +183,15 @@ def grid_energy_map(results, permutation, model_name, scenario_num):
     middle_swest_flow, swest_middle_flow
 ]
 
-    y_min = min(flow.min() for flow in all_flows) * 1.1  # 10% padding
-    y_max = max(flow.max() for flow in all_flows) * 1.1  # 10% padding
+    y_min = min(flow.min() for flow in all_flows) * 1.1*1000  # 10% padding
+    y_max = max(flow.max() for flow in all_flows) * 1.1*1000  # 10% padding
     
     time_index = hs_north_flow.index
-    fig = plt.figure(figsize=(22, 12)) 
-    gs = gridspec.GridSpec(3, 3, width_ratios=[2, 1, 1]) 
-    
+    fig = plt.figure(figsize=(22, 12), constrained_layout = True) 
+    if heatmap:
+        gs = gridspec.GridSpec(3, 4, width_ratios=[2, 1, 1, 0.05], figure = fig) 
+    else:
+        gs = gridspec.GridSpec(3, 3, width_ratios=[2, 1, 1], figure = fig)
     ##### Grid map with arrows ######## 
     
     ax0 = fig.add_subplot(gs[:2, 0]) 
@@ -266,92 +269,50 @@ def grid_energy_map(results, permutation, model_name, scenario_num):
         (middle_swest_flow.values*(-1), swest_middle_flow.values, 'Middle -> Swest', 'Swest -> Middle')
     ]
     
-    for ax, (data1, data2, label1, label2), title in zip(line_axes, plot_data, titles):
-        ax.plot(time_index, data1, label=label1, color='blue')
-        ax.plot(time_index, data2, label=label2, color='orange')
-        ax.set_title(title)
-        ax.legend(fontsize=12)
-        ax.grid(True)
-        ax.tick_params(axis='x', labelrotation=45, labelsize=12)
+    if heatmap:
+        cax = fig.add_subplot(gs[:,3])
+        hours_per_day = 24
+        n_days = int(len(time_index) / hours_per_day)
+        
+        def reshape_heat(data):
+            return data.reshape(n_days, hours_per_day).T
+        flow_limit = max(abs(y_min), abs(y_max))
+        for ax, (data1, data2, label1, label2), title in zip(line_axes, plot_data, titles):
     
-    # Set initial limits for all shared axes
-    ax1.set_xlim(time_index[0], time_index[-1])
-    ax1.set_ylim(y_max*(-1), y_max)
+            heat = reshape_heat((data2 + data1) * 1000)
+        
+            im = ax.imshow(
+                heat,
+                aspect='auto',
+                origin='lower',
+                cmap='RdBu_r',
+                vmin=-1*flow_limit,
+                vmax=flow_limit,
+                interpolation='nearest'
+            )
+        
+            ax.set_title(title)
+            ax.set_ylabel("Hour of Day")
+            ax.set_xlabel("Day")
+            ax.set_yticks(range(0,24,3))
+            ax.set_xticks(range(0,n_days,30))
+        cbar= fig.colorbar(im, cax=cax)
+        cbar.set_label("Flow (MWh)")
     
-    # North region flow plot 
-    # ax1 = fig.add_subplot(gs[0, 1]) 
-    # ax1.plot(time_index, north_hs_flow.values*(-1), label='North -> HS', color='blue') 
-    # ax1.plot(time_index, hs_north_flow.values, label='HS -> North', color='orange') 
-    # ax1.set_title('North Flows (MWh)') 
-    # ax1.legend(fontsize = 12) 
-    # ax1.set_xlim(time_index[0], time_index[-1])  # Fixed x-axis
-    # ax1.set_ylim(y_max*(-1), y_max)
-    # ax1.tick_params(axis='x', labelrotation=45, labelsize = 12) 
-    # ax1.grid(True) 
+    else:
+        for ax, (data1, data2, label1, label2), title in zip(line_axes, plot_data, titles):
+            ax.plot(time_index, data1*1000, label=label1, color='blue')
+            ax.plot(time_index, data2*1000, label=label2, color='orange')
+            ax.set_title(title)
+            ax.legend(fontsize=12)
+            ax.grid(True)
+            ax.tick_params(axis='x', labelrotation=45, labelsize=12)
+        
+        #Set initial limits for all shared axes
+        ax1.set_xlim(time_index[0], time_index[-1])
+        ax1.set_ylim(y_max*(-1), y_max)
     
-    # # Middle region flow plot 
-    # ax2 = fig.add_subplot(gs[0, 2]) 
-    # ax2.plot(time_index, middle_hs_flow.values*(-1), label='Middle -> HS', color='blue') 
-    # ax2.plot(time_index, hs_middle_flow.values, label='HS -> Middle', color='orange') 
-    # ax2.set_title('Middle Flows (MWh)') 
-    # ax2.legend(fontsize = 12)
-    # ax2.set_xlim(time_index[0], time_index[-1])  # Fixed x-axis
-    # ax2.set_ylim(y_max*(-1), y_max)
-    # ax2.tick_params(axis='x', labelrotation=45,labelsize = 12) 
-    # ax2.grid(True) 
     
-    # #Swest 
-    # ax3 = fig.add_subplot(gs[1, 1]) 
-    # ax3.plot(time_index, swest_hs_flow.values*(-1), label='Swest -> HS', color='blue') 
-    # ax3.plot(time_index, hs_swest_flow.values, label='HS -> Swest', color='orange') 
-    # ax3.set_title('Swest Flows (MWh)') 
-    # ax3.legend(fontsize = 12) 
-    # ax3.set_xlim(time_index[0], time_index[-1])  # Fixed x-axis
-    # ax3.set_ylim(y_max*(-1), y_max)
-    # ax3.tick_params(axis='x', labelrotation=45,labelsize = 12) 
-    # ax3.grid(True) 
-    
-    # #East 
-    # ax4 = fig.add_subplot(gs[1, 2]) 
-    # ax4.plot(time_index, east_hs_flow.values*(-1), label='East -> HS', color='blue') 
-    # ax4.plot(time_index, hs_east_flow.values, label='HS -> East', color='orange') 
-    # ax4.set_title('East Flows (MWh)') 
-    # ax4.legend(fontsize = 12) 
-    # ax4.set_xlim(time_index[0], time_index[-1])  # Fixed x-axis
-    # ax4.set_ylim(y_max*(-1), y_max)
-    # ax4.tick_params(axis='x', labelrotation=45,labelsize = 12) 
-    # ax4.grid(True) 
-    
-    # #Leitung north- middle 
-    # ax5 = fig.add_subplot(gs[2, 1]) 
-    # ax5.plot(time_index, north_middle_flow.values*(-1), label='North -> Middle', color='blue') 
-    # ax5.plot(time_index, middle_north_flow.values, label='Middle -> North', color='orange') 
-    # ax5.set_title('North <-> Middle (MWh)') 
-    # ax5.legend(fontsize = 12) 
-    # ax5.set_xlim(time_index[0], time_index[-1])  # Fixed x-axis
-    # ax5.set_ylim(y_max*(-1), y_max)
-    # ax5.tick_params(axis='x', labelrotation=45,labelsize = 12) 
-    # ax5.grid(True) 
-    
-    # ax6 = fig.add_subplot(gs[2, 2]) 
-    # ax6.plot(time_index, east_middle_flow.values*(-1), label='East -> Middle', color='blue') 
-    # ax6.plot(time_index, middle_east_flow.values, label='Middle -> East', color='orange') 
-    # ax6.set_title('East <-> Middle (MWh)') 
-    # ax6.legend(fontsize = 12) 
-    # ax6.set_xlim(time_index[0], time_index[-1])  # Fixed x-axis
-    # ax6.set_ylim(y_max*(-1), y_max)
-    # ax6.tick_params(axis='x', labelrotation=45,labelsize = 12) 
-    # ax6.grid(True) 
-    
-    # ax7 = fig.add_subplot(gs[2,0]) 
-    # ax7.plot(time_index, middle_swest_flow.values*(-1), label='Middle -> Swest', color='blue') 
-    # ax7.plot(time_index, swest_middle_flow.values, label='Swest -> Middle', color='orange') 
-    # ax7.set_title('Middle <-> Swest (MWh)') 
-    # ax7.legend(fontsize = 12) 
-    # ax7.set_xlim(time_index[0], time_index[-1])  
-    # ax7.set_ylim(y_max*(-1), y_max)
-    # ax7.tick_params(axis='x', labelrotation=45,labelsize = 12) 
-    # ax7.grid(True) 
     
     plt.setp(ax1.get_xticklabels(), visible=False)
     plt.setp(ax2.get_xticklabels(), visible=False)
@@ -370,10 +331,10 @@ def grid_energy_map(results, permutation, model_name, scenario_num):
     
     flow_max = { region: flows_sum[region].max() for region in flows_sum} 
     max_def = { 
-        'North <-> HS' :scalars['Electricity_grid']['electricity']['max_power_north'], 
-        'Middle <-> HS': scalars['Electricity_grid']['electricity']['max_power_middle'], 
-        'East <-> HS': scalars['Electricity_grid']['electricity']['max_power_east'], 
-        'Swest <-> HS':scalars['Electricity_grid']['electricity']['max_power_swest'], 
+        'North <-> HS' :scalars['Electricity_grid']['electricity']['max_import_power_north_'+str(YEAR)], 
+        'Middle <-> HS': scalars['Electricity_grid']['electricity']['max_import_power_middle_'+str(YEAR)], 
+        'East <-> HS': scalars['Electricity_grid']['electricity']['max_import_power_east_'+str(YEAR)], 
+        'Swest <-> HS':scalars['Electricity_grid']['electricity']['max_import_power_swest_'+str(YEAR)], 
         'North <-> Middle':scalars['Electricity_grid']['electricity']['connection_north_middle'], 
         'East <-> Middle':scalars['Electricity_grid']['electricity']['connection_east_middle'], 
         'Swest <-> Middle':scalars['Electricity_grid']['electricity']['connection_middle_swest'] 
@@ -389,9 +350,34 @@ def grid_energy_map(results, permutation, model_name, scenario_num):
     
     ax0.text(580,0, table_text, fontsize =12, family = 'monospace', verticalalignment = 'top')
         
-    plt.tight_layout() 
+    #plt.tight_layout() 
     plt.savefig(os.path.join(os.getcwd(), 'figures', permutation, model_name + "_" + scenario_num + '_grid_and_subplots.png'), dpi=500) 
-    plt.show()      
+    plt.show()     
+    
+    duration_curve_df = pd.DataFrame()
+    duration_curve_df['North'] = (north_hs_flow + hs_north_flow)
+    duration_curve_df['Middle'] = (middle_hs_flow + hs_middle_flow)
+    duration_curve_df['East'] = (east_hs_flow + hs_east_flow)
+    duration_curve_df['Swest'] = (swest_hs_flow + hs_swest_flow)
+    duration_curve_df['North <-> Middle'] = (north_middle_flow + middle_north_flow)
+    duration_curve_df['East <-> Middle'] = (east_middle_flow + middle_east_flow)
+    duration_curve_df['Swest <-> Middle'] = (swest_middle_flow + middle_swest_flow)
+    
+    plt.figure(figsize = (8,5))
+    for col in duration_curve_df:
+        series = duration_curve_df[col].ffill().bfill() 
+        sorted_series= duration_curve_df[col].sort_values(ascending=False).reset_index(drop=True)
+        sorted_series.index = sorted_series.index/24# len(sorted_series)* 100
+        plt.plot(sorted_series*1000,linewidth=2, label = col)
+
+    plt.xlabel("Tage des Jahres")
+    plt.ylabel("Leistung in MW")
+    plt.title("Jahresdauerlinie- Netznutzung")
+    plt.grid(True)
+    plt.xlim(0,365)
+    plt.legend(fontsize = 16)
+    #plt.tight_layout()
+    plt.show()
 
 def create_consistent_color_mapping(summarized_bus_sequences, summarized_component_sequences):
     """
