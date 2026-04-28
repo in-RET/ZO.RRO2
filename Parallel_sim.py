@@ -9,30 +9,26 @@ Parallel Simulation
 from datetime import datetime
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from scipy.interpolate import griddata
-from adjustText import adjust_text
 from multiprocessing import Pool
 import multiprocessing as mp
 mp.set_start_method("spawn", force=True)
 from tqdm import tqdm
-import seaborn as sns
+
 # SALib
 from SALib.sample.morris import sample
 from SALib.analyze.morris import analyze
-import math
 from src.models.solve_model import solveModels
 import energymodels.Basic_example_zorro_1 as be
 import src.preprocessing.files as file_module
 import warnings
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.inspection import partial_dependence
 warnings.filterwarnings("ignore")
 import joblib
 import os
 workdir = os.getcwd()
 
 # PARAMETER CONFIG
+Sim_Morris = True
+Sim_MC = False
 max_workers = 4
 model_ID = 'BS0006'
 year = 2045
@@ -248,7 +244,7 @@ def run_parallel(param_values, max_workers=6):
 
 
 #%% -------------------------------
-def main():
+def main_Morris():
 
 # MORRIS ANALYSIS
 # -------------------------------
@@ -264,121 +260,25 @@ def main():
     #results_morris = [o["result"] for o in outputs_morris]
     cost_morris = np.array([o["cost"] for o in outputs_morris])
     params_morris = [o["params"] for o in outputs_morris]
-    
+
     Si_list=[]
     for j, out in enumerate(output_names):
         Y_single = Y_morris[:, j]
         Si = analyze(problem, param_values_morris, Y_single)
         Si_list.append(Si)
     
-    for j, out in enumerate(output_names):
-        Si = Si_list[j]
-        df_sens = pd.DataFrame({
-            "parameter": problem["names"],
-            "mu_star": Si["mu_star"]
-        }).sort_values("mu_star")
-
-        df_sens["normalized"] = df_sens["mu_star"] / df_sens["mu_star"].max() * 100
-
-        plt.figure()
-        plt.barh(df_sens["parameter"], df_sens["normalized"])
-        plt.xlabel(f"Influence on {out} (%)")
-        plt.title(f"Tornado (Morris) - {out}")
-        plt.grid()
-        plt.show()
-    
-    # Parameter plot Morris
-    # Normalize sigma for bubble size
-        size = (Si["sigma"] / Si["sigma"].max()) * 1000
-
-        plt.figure(figsize=(10,7))
-        plt.scatter(Si["mu"], Si["mu_star"], s=size)
-
-        texts = []
-        for i, name in enumerate(problem["names"]):
-            texts.append(
-                plt.text(Si["mu"][i], Si["mu_star"][i], name)
-            )
-        
-        adjust_text(texts, arrowprops=dict(arrowstyle="->", color='gray'))
-
-        plt.axvline(0)
-        plt.axhline(np.mean(Si["mu_star"]), linestyle='--')
-
-        plt.xlabel("μ")
-        plt.ylabel("μ*")
-        plt.title(f"Morris Sensitivity - {out}")
-        plt.grid()
-        plt.show()
-    
     df_morris = pd.DataFrame(param_values_morris, columns=problem['names'])
-    #df_morris['cost'] = cost_morris
-    
-    # Trendmultiplot
     for j, out in enumerate(output_names):
         df_morris[out] = Y_morris[:, j]
-        n_cols = 3
-        n_rows = math.ceil(len(problem['names']) / n_cols)
-        
-        fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows),sharey=True)
-        axes = axes.flatten()
-        
-        for i, col in enumerate(problem['names']):
-            ax = axes[i]
-        
-            ax.scatter(df_morris[col], df_morris[out])
-        
-            z = np.polyfit(df_morris[col], df_morris[out], 1)
-            p = np.poly1d(z)
-            ax.plot(df_morris[col], p(df_morris[col]))
-        
-            ax.set_title(col)
-            ax.set_xlabel("Scaling factor")
-            ax.set_ylabel(out)
-            ax.grid()
-        
-        for k in range(len(problem['names']), len(axes)):
-            fig.delaxes(axes[k])
-        
-        plt.tight_layout()
-        plt.suptitle(out, y=1.02)
-        plt.show()
+    
+    return outputs_morris, Si_list, df_morris, output_names
+    
+    
 
-        #Correlation matrix
-    corr_matrix = df_morris.corr()
-    
-    labels = df_morris.columns.tolist()
-    plt.figure(figsize=(10,8))
-    plt.imshow(corr_matrix, interpolation='none')
-    plt.colorbar()
-    
-    plt.xticks(range(len(labels)), labels, rotation=90, fontsize=10)
-    plt.yticks(range(len(labels)), labels, fontsize=10)
-    
-    plt.title("Correlation Matrix")
-    plt.tight_layout()
-    plt.show()
-
-    plt.figure(figsize=(12,10))
-    sns.heatmap(
-        corr_matrix,
-        annot=True,
-        cmap="coolwarm",
-        center=0,
-        fmt=".2f",
-        square=True
-    )
-    
-    plt.title("Correlation Matrix")
-    plt.xticks(rotation=90)
-    plt.yticks(rotation=0)
-    plt.tight_layout()
-    plt.show()
-    
-    
     #%% -------------------------------
     # MONTE CARLO SAMPLING
     # -------------------------------
+def main_Monte_Carlo():
     def sample_mc(param_config, N):
         samples = []
         for _ in range(N):
@@ -395,10 +295,7 @@ def main():
     
     print("Running Monte Carlo ...")
     outputs_mc = run_parallel(param_values_mc, max_workers=max_workers)
-    # output_names = outputs_mc[0]["df_KPI"].columns.tolist()
-    # output_names.append("cost")
     Y_mc = np.array([list(o["df_KPI"].iloc[0].values) + [o["cost"]] for o in outputs_mc])
-    #results_mc = [o["result"] for o in outputs_mc]
     cost_mc = np.array([o["cost"] for o in outputs_mc])
     params_mc = [o["params"] for o in outputs_mc]
     
@@ -407,125 +304,27 @@ def main():
     for j, out in enumerate(output_names):
         df_mc[out] = Y_mc[:, j]
     
-    # -------------------------------
-    # 2D RESPONSE SURFACE
-    # -------------------------------
-    for j, out in enumerate(output_names):
-        Si = Si_list[j]
-        df_sens = pd.DataFrame({
-            "parameter": problem["names"],
-            "mu_star": Si["mu_star"],
-        })
-
-        top2 = df_sens.sort_values("mu_star", ascending=False)["parameter"].values[:2]
-    
-        x = df_mc[top2[0]]
-        y = df_mc[top2[1]]
-        z = df_mc[out]
-    
-        xi = np.linspace(x.min(), x.max(), 30)
-        yi = np.linspace(y.min(), y.max(), 30)
-        xi, yi = np.meshgrid(xi, yi)
-    
-        zi = griddata((x, y), z, (xi, yi), method='linear')
-    
-        plt.figure()
-        cp = plt.contourf(xi, yi, zi, levels=20)
-        plt.colorbar(cp)
-    
-        plt.xlabel(top2[0])
-        plt.ylabel(top2[1])
-        plt.title(f"2D Response Surface - {out}")
-        plt.grid()
-        plt.show()
-
-    return Si_list, df_morris, df_mc, output_names
+    return  outputs_mc, df_mc
     
     #%%
 if __name__ == "__main__": 
     start_time = datetime.now()
     FORMAT = "%(asctime)s %(message)s"
     print('Simulation Start time: {}'.format(start_time))
-    analyse_morris, result_morris, result_mc, output_names = main()
-    save_dir = os.path.join(workdir,'dumps', 'SALIB', f'results_morris_{len(result_mc)}.joblib')
-    joblib.dump((analyse_morris, result_morris, result_mc, output_names),save_dir)
+    if Sim_Morris:
+        output_morris, analyse_morris, result_morris, output_names = main_Morris()
+        save_dir_morris = os.path.join(workdir,'dumps', 'SALIB', f'results_morris_{len(result_morris)}.joblib')
+        joblib.dump((output_morris, analyse_morris, result_morris, output_names, problem),save_dir_morris)
+    
+    if Sim_MC:
+        output_mc, result_mc = main_Monte_Carlo()
+        save_dir_mc = os.path.join(workdir,'dumps', 'SALIB', f'results_mc_{len(result_mc)}.joblib')
+        joblib.dump((output_mc, result_mc, problem),save_dir_mc)
+    
     end_time = datetime.now()
     print('Execution time: {}'.format(end_time - start_time))
     
-#%% Post analysis
-    
-# -------------------------
-# All Histograms + Importances #understand uncertainity (Histogram)
-# -------------------------
 
-# n_outputs = len(output_names)
-# fig, axes = plt.subplots(n_outputs, 2, figsize=(14, 5 * n_outputs))
-
-# if n_outputs == 1:
-#     axes = [axes]
-
-# models = {}
-
-# for i, out in enumerate(output_names):
-#     # Correlation
-#     corr = result_mc[problem["names"] + [out]].corr()[out].drop(out)
-#     print(f"\n{out}")
-#     print(corr.sort_values())
-
-#     # Train model
-#     model = RandomForestRegressor()
-#     model.fit(result_mc[problem["names"]], result_mc[out])
-#     models[out] = model
-
-#     # Histogram
-#     result_mc[out].hist(bins=20, ax=axes[i][0])
-#     axes[i][0].set_title(f"{out} Histogram")
-
-#     # Feature Importance
-#     importance = pd.Series(model.feature_importances_, index=problem["names"])
-#     importance.sort_values().plot(kind="barh", ax=axes[i][1])
-#     axes[i][1].set_title(f"{out} Feature Importance")
-
-# plt.tight_layout()
-# plt.show()
-# # -------------------------
-# # PDP for each output
-# # -------------------------
-# for out in output_names:
-#     model = models[out]
-
-#     n_features = len(problem["names"])
-#     n_cols = 3
-#     n_rows = math.ceil(n_features / n_cols)
-
-#     fig, axes = plt.subplots(n_rows, n_cols, figsize=(18, 5 * n_rows))
-#     axes = axes.flatten()
-#     global_ymin = float("inf")
-#     global_ymax = float("-inf")
-#     for j, feature in enumerate(problem["names"]):
-#         pd_result = partial_dependence(
-#             model,
-#             result_mc[problem["names"]],
-#             [feature]
-#         )
-
-#         x = pd_result["grid_values"][0]
-#         y = pd_result["average"][0]
-#         global_ymin = min(global_ymin, y.min())
-#         global_ymax = max(global_ymax, y.max())
-#         y_ticks = np.linspace(global_ymin, global_ymax, 3)
-#         axes[j].plot(x, y)
-#         axes[j].set_title(f"{out}: {feature}")
-#         axes[j].set_xlabel(feature)
-#         #axes[j].set_ylabel(out)
-#         axes[j].set_ylim(global_ymin, global_ymax)
-#         axes[j].set_yticks(y_ticks)
-#         axes[j].grid()
-#     for k in range(j + 1, len(axes)):
-#         axes[k].set_visible(False)
-
-#     plt.tight_layout()
-#     plt.show()
 
 
 
