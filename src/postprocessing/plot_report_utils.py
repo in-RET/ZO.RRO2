@@ -290,10 +290,10 @@ def create_barplot_dict(df_original, kategorien_dict):
     
     return kategorie_dict
 
-def scalars_bar_plot(bar_plot_dict, Category_color_mapping, Technology_color_mapping, fig_title = None,
+def scalars_bar_plot(bar_plot_dict, Category_color_mapping, Technology_color_mapping, fig_title = None, x_title = None,
                      fontsize = 14, figsize = (14,7), figure_bg_color = '#159A3433',axes_bg_color='#159A3400'):
     
-    years = bar_plot_dict[next(iter(bar_plot_dict))].columns.astype(int)
+    years = bar_plot_dict[next(iter(bar_plot_dict))].columns
     x = np.arange(len(years))
     width = 0.25
     
@@ -355,8 +355,10 @@ def scalars_bar_plot(bar_plot_dict, Category_color_mapping, Technology_color_map
 
     ax.set_xticks(x)
     ax.set_xticklabels(years)
+    #x_label = bar_plot_dict[next(iter(bar_plot_dict))].columns.name
+    #ax.set_xticklabels(x_label if x_label else "", fontsize=fontsize)
     ax.set_ylabel("Leistung in MW", fontsize =fontsize)
-    ax.set_xlabel("Simulationsjahr", fontsize =fontsize)
+    ax.set_xlabel(x_title, fontsize =fontsize)
     ax.set_title(fig_title, fontsize = fontsize, fontweight = 'bold')
     ax.set_ylim(0, max(tech_totals)*1.1)
     ax.tick_params(axis='y', labelsize=fontsize-2)
@@ -612,7 +614,7 @@ def plot_bus_flows(combined_dfs, bus_name, inflow_plot_title, outflow_plot_title
         handles_in, labels_in = ax1.get_legend_handles_labels()
         handles_in.reverse()
         labels_in.reverse()
-        ax1.legend(handles_in, labels_in, loc='upper left', fontsize=label_fontsize-2, 
+        ax1.legend(handles_in, labels_in, loc='upper left', fontsize=label_fontsize-2, facecolor=axes_bg_color, framealpha=0,
           bbox_to_anchor=(1.02, 1), borderaxespad=0.)
         
     ax2 = axes[1]
@@ -712,7 +714,7 @@ def plot_bus_flows(combined_dfs, bus_name, inflow_plot_title, outflow_plot_title
         handles_out, labels_out = ax2.get_legend_handles_labels()
         handles_out.reverse()
         labels_out.reverse()
-        ax2.legend(handles_out, labels_out, loc='upper left', fontsize=label_fontsize-2, 
+        ax2.legend(handles_out, labels_out, loc='upper left', fontsize=label_fontsize-2, facecolor=axes_bg_color, framealpha=0,
           bbox_to_anchor=(1.02, 1), borderaxespad=0.)
         ax2.text(1.02, 0.05, "Info: (Zahlen in Klammern = Jahresvolllaststunden)",
          transform=ax2.transAxes, fontsize=label_fontsize-2, ha="left", va="top", clip_on = False)

@@ -1,0 +1,12 @@
+Storage,Peak Flow (MWh),Peak Flow (MWh),Peak Flow (MWh)
+,BP - 2026,BP - 2023,BP - 2021
+Battery,5000,5000,5000
+Gas_storage,633150,505823,429470
+H2_storage,1255000,1255000,1075157
+Heat storage_dist_heat,534,3714,608
+Heat storage_seasonal,596560,642579,456130
+Li-Ion_Battery,0,0,0
+Natrium_Battery,4747,7300,7609
+Pumped_hydro_storage,0,0,0
+Pumped_hydro_storage_bestand,2376,2376,2376
+Red-OX_Battery,0,0,0

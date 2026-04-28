@@ -28,16 +28,17 @@ def solveModels(
     solver_output: bool = True,
     print_graph: bool = False,
     Anteilig_erneuerbar:bool = True,
-    pareto_optimization:bool = True,
-    
 ):
 
     # Hier steht ein Code kommentar
     permutations = [str(x) + "_" + y for x in years for y in variations]
-    print(permutations)
+    #print(permutations)
 
     for permutation in permutations:
-        DUMP_PATH = os.path.abspath(os.path.join(os.getcwd(), "dumps", permutation))
+        if scenario_num == "SALIB":
+            DUMP_PATH = os.path.abspath(os.path.join(os.getcwd(), "dumps", scenario_num, permutation))
+        else:
+            DUMP_PATH = os.path.abspath(os.path.join(os.getcwd(), "dumps", permutation))
         FIGURE_PATH = os.path.abspath(os.path.join(os.getcwd(), "figures", permutation, scenario_num))
         YEAR, model_ID = permutation.split("_")
         YEAR = int(YEAR)
@@ -115,7 +116,7 @@ def solveModels(
             csv=None
             logging.info("Plotting different plots")
             #so_gehts_bar_plot(csv, permutation, scenario_num)
-            profile = ['Wind', 'PV_Rooftop','PV_Openfield', 'loadprofile']
+            profile = []#'Wind', 'PV_Rooftop','PV_Openfield', 'loadprofile']
             
             for i in range (len(profile)):
                 profile_type = profile[i]
@@ -129,4 +130,4 @@ def solveModels(
         logging.info("Creating simulation doc...")    
         #create_simulation_doc(permutation,scenario_num, hypothese, sim_remarks,csv)
         
-        return sim_data,result
+        return sim_data,result, energysystem.results["main"]

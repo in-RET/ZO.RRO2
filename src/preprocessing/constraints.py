@@ -7,6 +7,8 @@ Created on Wed Oct  2 11:21:33 2024
 from oemof.solph import constraints
 import pyomo.environ as po
 from oemof.solph._plumbing import sequence 
+import warnings
+warnings.filterwarnings("ignore")
 
 #------------------------------------------------------------------------------
 # Constraint CO2 Begrenzung 

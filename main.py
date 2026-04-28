@@ -10,17 +10,16 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
     years = [2045]#, 2025, 2030, 2035, 2040, 2045]
     for y in years:
-        sim_data, result = solveModels(
+        sim_data, result, sim_result = solveModels(
             variations=["BS0006"],
-            scenario_num = "final_26_03_09",
+            scenario_num = "REF-04(Test)",
             years=[y],# 2040, 2050],
-            model_name='BS_regionalization',#"Basic_example_zorro_1",#"test_Basic_example_zorro_1_utility_energy",
+            model_name="Basic_example_zorro_1",#'BS_regionalization',#"Basic_example_zorro_1",#,#"test_Basic_example_zorro_1_utility_energy",
             solver="gurobi",
             gap=0.0,
             solver_output=False,
             print_graph=False,
             Anteilig_erneuerbar = True,
-            pareto_optimization = True,
             hypothese = "Modelerweiterung auf Nutzenergie",
             sim_remarks = "- The techno-economical parameters are updated. \n"+
                             "- All changes made in Basic exapmple by TR is updated in this scenario. \n"+

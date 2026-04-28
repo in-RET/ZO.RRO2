@@ -88,7 +88,7 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
     region = ['north', 'middle', 'east', 'swest']
     
     demand_profile_dict={}
-    
+
     if model_ID.startswith('BS'):
         sze = 'b'
     elif model_ID.startswith('IS'):
@@ -97,6 +97,33 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
         sze = ''
     else:
         sze =sze
+    # ------------------------------------- Ind. Cooling Demand Aufteilung ----------------------------------
+    cooling_demand_ind = {}
+    for r in region:
+        cooling_demand_ind[r] = {}
+        cooling_demand_ind[r]['total_demand']=(float(scalars['Demand_Industry_' + r ]['Klima- und Prozesskaelte_'+ str(YEAR)+sze]['Summe']) * (float(scalars['Demand_Industry_'+ r ]['Klima- und Prozesskaelte_' + str(YEAR)+sze]['Kompressionskaelte'])/100)) 
+        cooling_demand_ind[r]['EER'] = float(scalars['Demand_Industry_'+ r ]['EER_' + str(YEAR)]['Kompressionskaelte'])
+        cooling_demand_ind[r]['demand_cool_elec'] = cooling_demand_ind[r]['total_demand']/cooling_demand_ind[r]['EER']
+    # Sandhaas, A.; Kim, H.; Hartmann, N. Methodology for Generating Synthetic Load Profiles for Different Industry Types. Energies 2022, 15, 3683. https://doi.org/10.3390/en15103683 
+        data_cool_aufteilung = {                                                            
+            "industry": ["Slaughtering","Meat","Dairy","Baked","Steel","Machinery"],
+            "p_SC": [0.0, 0.0, 0.0, 0.0, 3.91, 4.4],
+            "p_PC": [51.0, 39.9, 31.0, 30.0, 0, 13.2]
+        }
+        df = pd.DataFrame(data_cool_aufteilung)
+        
+        df["w"] = df["p_SC"] + df["p_PC"]
+        df["W_norm"] = df["w"] / df["w"].sum()
+        
+        df["Q_total"] = df["W_norm"] * cooling_demand_ind[r]['total_demand']
+        df["Q_SC"] = df["Q_total"] * (df["p_SC"] / df["w"])
+        df["Q_PC"] = df["Q_total"] * (df["p_PC"] / df["w"])
+        df["E_SC"] = df["Q_SC"] / cooling_demand_ind[r]['EER']
+        df["E_PC"] = df["Q_PC"] / cooling_demand_ind[r]['EER']
+        
+        cooling_demand_ind[r]['space_cooling']= df['E_SC'].sum(axis= 0)
+        cooling_demand_ind[r]['process_cooling']= df['E_PC'].sum(axis= 0)
+        
         
     for s in sector:
         demand_profile_dict[s] = {}
@@ -190,7 +217,8 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
                                                     (load_profile_nom['Heat_demand_profile']['Heat+TWW_'+ r] *(float(scalars['Demand_Household_' + r ]['Raumwaerme_'+ str(YEAR)+sze]['Summe']) * (float(scalars['Demand_Household_'+ r ]['Raumwaerme_' + str(YEAR)+sze]['PtH Luftwaermepumpe'])/100) /float(scalars['Demand_Household_'+ r ]['EER_' + str(YEAR)]['PtH Luftwaermepumpe'])))+
                                                     (load_profile_nom['Heat_demand_profile']['Heat+TWW_'+ r] *(float(scalars['Demand_Household_' + r ]['Raumwaerme_'+ str(YEAR)+sze]['Summe']) * (float(scalars['Demand_Household_'+ r ]['Raumwaerme_' + str(YEAR)+sze]['PtH Erdwaermepumpe'])/100) /float(scalars['Demand_Household_'+ r ]['EER_' + str(YEAR)]['PtH Erdwaermepumpe'])))+
                                                     (load_profile_nom['Cooling_demand_profile'][r] *(float(scalars['Demand_Household_' + r  ]['Klima- und Prozesskaelte_'+ str(YEAR)+sze]['Summe']) * (float(scalars['Demand_Household_'+ r ]['Klima- und Prozesskaelte_' + str(YEAR)+sze]['Kompressionskaelte'])/100) /float(scalars['Demand_Household_'+ r ]['EER_' + str(YEAR)]['Kompressionskaelte'])))+
-                                                    (load_profile_nom['Cooling_demand_profile'][r] *(float(scalars['Demand_Industry_' + r ]['Klima- und Prozesskaelte_'+ str(YEAR)+sze]['Summe']) * (float(scalars['Demand_Industry_'+ r ]['Klima- und Prozesskaelte_' + str(YEAR)+sze]['Kompressionskaelte'])/100) /float(scalars['Demand_Industry_'+ r ]['EER_' + str(YEAR)]['Kompressionskaelte'])))+
+                                                    (load_profile_nom['Cooling_demand_profile'][r] *cooling_demand_ind[r]['space_cooling'])+
+                                                    (load_profile_nom['Base_demand_profile']['base_load'] *cooling_demand_ind[r]['process_cooling'])+
                                                     (load_profile_nom['Cooling_demand_profile'][r] *(float(scalars['Demand_GHD_' + r ]['Klima- und Prozesskaelte_'+ str(YEAR)+sze]['Summe']) * (float(scalars['Demand_GHD_'+ r ]['Klima- und Prozesskaelte_' + str(YEAR)+sze]['Kompressionskaelte'])/100) /float(scalars['Demand_GHD_'+ r ]['EER_' + str(YEAR)]['Kompressionskaelte'])))+
                                                     (load_profile_nom['Charging_demand_profile']['car_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Personenverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Personenverkehr_'+str(YEAR)]['PKW - Batterie']))))+
                                                     (load_profile_nom['Charging_demand_profile']['bus_'+str(YEAR)]* (float(scalars['Demand_Transport_endenergie_'+ r + '_b']['Personenverkehr_'+str(YEAR)]['Summe'])*(float(scalars['Demand_Transport_endenergie_'+r+'_b']['Personenverkehr_'+str(YEAR)]['Busse - Batterie']))))+
@@ -302,20 +330,20 @@ def load_profile_scaling(scalars, sequences, YEAR, model_ID, region = True):
     demand['rechnenzentrum'] = demand_profile_dict['rechnenzentrum']['north']+demand_profile_dict['rechnenzentrum']['east']+demand_profile_dict['rechnenzentrum']['middle']+demand_profile_dict['rechnenzentrum']['swest']
     demand['material_usage_biomasse'] = demand_profile_dict['material_usage_biomasse']['north']+demand_profile_dict['material_usage_biomasse']['east']+demand_profile_dict['material_usage_biomasse']['middle']+demand_profile_dict['material_usage_biomasse']['swest']
     
-    print('Demand Electricity: ', demand['electricity'].sum())
-    print('Demand Gas: ', demand['gas'].sum())
+    #print('Demand Electricity: ', demand['electricity'].sum())
+    #print('Demand Gas: ', demand['gas'].sum())
     
-    print('Demand Biomasse: ', demand['biomass'].sum())
-    print('Demand Oil: ', demand['oil'].sum())
+    #print('Demand Biomasse: ', demand['biomass'].sum())
+    #print('Demand Oil: ', demand['oil'].sum())
     
-    print('Demand Heat: ', demand['dist_heating'].sum())
-    print('Demand H2: ', demand['H2'].sum())
+    #print('Demand Heat: ', demand['dist_heating'].sum())
+    #print('Demand H2: ', demand['H2'].sum())
     
-    print('Demand Fuel: ', demand['fuel'].sum())
-    print('Demand Matrialbedarf Gas: ', demand['material_usage_gas'].sum())
-    print('Demand Matrialbedarf Oil: ', demand['material_usage_oil'].sum())
-    print('Demand Matrialbedarf Biomasse: ', demand['material_usage_biomasse'].sum())
-    print('Demand Rechnenzentrum: ', demand['rechnenzentrum'].sum())
+    #print('Demand Fuel: ', demand['fuel'].sum())
+    #print('Demand Matrialbedarf Gas: ', demand['material_usage_gas'].sum())
+    #print('Demand Matrialbedarf Oil: ', demand['material_usage_oil'].sum())
+    #print('Demand Matrialbedarf Biomasse: ', demand['material_usage_biomasse'].sum())
+    #print('Demand Rechnenzentrum: ', demand['rechnenzentrum'].sum())
     
     if model_ID.startswith('BS_regionalization'):
         print('Region')
@@ -333,10 +361,7 @@ def CO2_price_addition(scalars,sequences,YEAR, filename):
         data_dict['import_brown_coal_price'] = sequences[filename]['Brown_coal_'+str(YEAR)] + (scalars['System_configurations_2024']['System']['Emission_Braunkohle']*sequences[filename]['CO2_'+str(YEAR)])
         data_dict['import_biomass_price'] = sequences[filename]['Biomass_'+ str(YEAR)]
         data_dict['import_synt_fuel_price'] = sequences[filename]['Synthetic_fuel_'+ str(YEAR)]
-        #data_dict['import_electricity_price_alt'] = sequences['Energy_price']['Electricity_'+str(YEAR)]
-        #data_dict['import_electricity_price_2019'] = sequences['Energy_price']['Electricity_brain_'+str(YEAR)]
         data_dict['import_electricity_price'] = sequences[filename]['Electricity_'+str(YEAR)]
-        #data_dict['export_electricity_price_2019'] = [i *(-1) for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]]
         data_dict['export_electricity_price'] =  [i *(-1) for i in sequences[filename]['Electricity_'+str(YEAR)]]
         data_dict['export_hydrogen_price'] = [i*(-1) for i in sequences[filename]['Hydrogen_' + str(YEAR)]]
         data_dict['import_hydrogen_price'] = [i+scalars['Hydrogen_grid']['hydrogen']['grid_operating_fee'] for i in sequences[filename]['Hydrogen_' + str(YEAR)]]
@@ -352,10 +377,7 @@ def CO2_price_addition(scalars,sequences,YEAR, filename):
         data_dict['import_brown_coal_price'] = sequences[filename]['Brown_coal_'+str(YEAR)] + (scalars['System_configurations_2024']['System']['Emission_Braunkohle']*sequences[filename]['CO2_'+str(YEAR)])+1000000000
         data_dict['import_biomass_price'] = sequences[filename]['Biomass_'+ str(YEAR)]
         data_dict['import_synt_fuel_price'] = sequences[filename]['Synthetic_fuel_'+ str(YEAR)]
-        # data_dict['import_electricity_price_alt'] = sequences['Energy_price']['Electricity_'+str(YEAR)]
-        # data_dict['import_electricity_price_2019'] = sequences['Energy_price']['Electricity_brain_'+str(YEAR)]
         data_dict['import_electricity_price'] = sequences[filename]['Electricity_'+str(YEAR)]
-        # data_dict['export_electricity_price_2019'] = [i *(-1) for i in sequences['Energy_price']['Electricity_brain_'+str(YEAR)]]
         data_dict['export_electricity_price'] = [i *(-1) for i in sequences[filename]['Electricity_'+str(YEAR)]]
         data_dict['export_hydrogen_price'] = [i*(-1) for i in sequences[filename]['Hydrogen_' + str(YEAR)]]
         data_dict['import_hydrogen_price'] = [i+scalars['Hydrogen_grid']['hydrogen']['grid_operating_fee'] for i in sequences[filename]['Hydrogen_' + str(YEAR)]]

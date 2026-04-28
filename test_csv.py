@@ -9,7 +9,7 @@ import matplotlib.colors as mcolors
 import matplotlib
 import pandas as pd
 #from src.preprocessing.location import Location
-from src .preprocessing.conversion import investment_parameter,COP_calculation, load_profile_scaling,  Utility_demand_breakdown
+from src .preprocessing.conversion import investment_parameter,COP_calculation, load_profile_scaling,  Utility_demand_breakdown, CO2_price_addition
 from src.preprocessing.files import read_input_files
 from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
 from src.preprocessing.location import Location
@@ -25,12 +25,12 @@ try:
 except ImportError:
     plt = None
 
-co2_max = scalars['System_configurations_2024']['System']['CO2_Grenze_'+str(YEAR)]
-co2_min = 0
-if pareto_optimization:
-    co2_range = np.linspace(co2_min, co2_max, 15)
-else:
-    co2_range =[co2_max]
+# co2_max = scalars['System_configurations_2024']['System']['CO2_Grenze_'+str(YEAR)]
+# co2_min = 0
+# if pareto_optimization:
+#     co2_range = np.linspace(co2_min, co2_max, 15)
+# else:
+#     co2_range =[co2_max]
 # name = os.path.basename(__file__)
 # name = name.replace(".py", "")
 # my_path = os.path.abspath(os.path.dirname(__file__))
@@ -41,9 +41,9 @@ my_path = os.path.abspath(os.path.dirname(__file__))
 energysystem = solph.EnergySystem()
 #energysystem.restore(my_path, os.path.join(workdir,
  #                                          'dumps', '2030_BS0001', 'Basic_example_zorro_1_2030_BS0001_005.dump'))
-YEAR = 2030
+YEAR = 2045
 model_ID = 'BS0006'
-model_name = "BS"
+model_name = "BS_regionalization"
 # model_name '_' years '_' variations '.dump'
 # img_path = os.path.abspath(os.path.join(os.getcwd(),
 # 'figures','Thuringia_karte_mit_Landkreisen_dull.png'))
@@ -52,9 +52,11 @@ model_name = "BS"
 sequences = read_input_files(
     folder_name='data/sequences', sub_folder_name=None)
 scalars = read_input_files(folder_name='data/scalars', sub_folder_name=None)
-demand = load_profile_scaling(scalars,sequences,YEAR,model_name, region = False)
+demand = load_profile_scaling(scalars,sequences,YEAR,model_name, region = True)
 #demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
-
+import_price_2021 = CO2_price_addition(scalars,sequences, YEAR, 'Energy_price_brainpool_2021')
+import_price_2023 = CO2_price_addition(scalars,sequences, YEAR, 'Energy_price_brainpool_2023')
+import_price_2026 = CO2_price_addition(scalars,sequences, YEAR, 'Energy_price_brainpool_2026')
 
 demands = ['space_heating_household', 'space_heating_industry', 'space_heating_ghd',
            'process_heating_industry', 'process_heating_ghd',
@@ -90,22 +92,6 @@ COP_n = COP_m = COP_e = COP_s = COP_avg
 T_VL_e = T_VL_m = T_VL_n = T_VL_s = T_VL_avg
 
 #%%
-# sum_2 =[]
-# for sector, data in demand.items():
-#     for name, data_dict in data.items():
-#         for region, data_info in data_dict.items():
-#             if name == 'demand_data':
-#                 sum_2.append({
-#                     'Sector': sector,
-#                     'Region': region,
-#                     'Sum': data_info['total_value']/1000000
-#                 })
-#             else:
-#                 continue
-            
-                
-# sum_df = pd.DataFrame(sum_2)
-
 sum_ne= (demand_ne['cooling_ghd']['demand_data']['total_value']+
              demand_ne['cooling_household']['demand_data']['total_value']+
              demand_ne['cooling_industry']['demand_data']['total_value']+
@@ -122,47 +108,108 @@ sum_ne= (demand_ne['cooling_ghd']['demand_data']['total_value']+
              #demand_ne['mobility_person']['demand_data']['total_value']
              
     #%%
-ph_ghd = demand_ne['process_heating_ghd']['technology_data']['Waermeuebergabestation']['series']
-ph_ind = demand_ne['process_heating_industry']['technology_data']['Waermeuebergabestation']['series']
-sh_hh  = demand_ne['space_heating_household']['technology_data']['Waermeuebergabestation']['series']
-sh_ghd = demand_ne['space_heating_ghd']['technology_data']['Waermeuebergabestation']['series']
-sh_ind = demand_ne['space_heating_industry']['technology_data']['Waermeuebergabestation']['series']
+cool_HH = demand_ne['cooling_household']['demand_data']['series']*0
+cool_ind = demand_ne['cooling_industry']['demand_data']['series']    
+cool_ghd = demand_ne['cooling_ghd']['demand_data']['series']*0
 
-dist_heat = demand['dist_heating'] * 0.91
 
+space_cool = (cool_HH+cool_ind+cool_ghd)/3.7
+print(space_cool.sum())
 # Time index
-t = range(len(ph_ghd))
+t = range(len(cool_HH))
 
 # Stackplot
 plt.figure(figsize=(10, 6))
 plt.stackplot(
     t,
-    ph_ghd,
-    ph_ind,
-    sh_hh,
-    sh_ghd,
-    sh_ind,
+    cool_HH,
+    cool_ind,
+    cool_ghd,
     labels=[
-        'Process heat GHD',
-        'Process heat Industry',
-        'Space heat Household',
-        'Space heat GHD',
-        'Space heat Industry'
+        'Space cool Household',
+        'Space cool Industry',
+        'Space cool GHD',
     ],
     alpha=0.8
 )
 
 # Overlay district heating demand
-plt.plot(t, dist_heat, linewidth=2, label='District heating demand (×0.91)')
+plt.plot(t, space_cool, linewidth=2, label='Space cooling demand (endenergy)')
 
 plt.legend(loc='upper right')
 plt.xlabel('Time')
-plt.ylabel('Heat demand')
-plt.title('District heating demand')
+plt.ylabel('Cooling demand')
+plt.title('Space cooling demand')
 plt.tight_layout()
 plt.show()
 #%%
-plt.figure(figsize=(10, 4))
-plt.plot(dist_heat - (ph_ghd + ph_ind + sh_hh + sh_ghd + sh_ind))
-plt.title('District heating margin (positive = feasible)')
+
+plt.figure(figsize=(10, 6))
+plt.plot(t, demand['electricity'], linewidth=2, label='Electricity')
+plt.legend(loc='upper right')
+plt.xlabel('Time')
+plt.ylabel('Cooling demand')
+plt.title('Space cooling demand')
+plt.tight_layout()
 plt.show()
+
+#%% PKW Emob share calc
+
+s = scalars['Demand_Transport_nutzenergie_east_b']['NE_Personenverkehr_2045']
+
+exclude = ["Summe_EE ", "Summe_NE"]
+base = s.drop(index=exclude, errors="ignore")
+
+# baseline total electrified vs combustion if needed
+total = base.sum()
+
+electric = [
+    "PKW - Batterie",
+    "Busse - Batterie",
+    "Schiene - Elektrisch",
+]
+
+combustion = [
+    "PKW - Verbrenner",
+    "PKW - Verbrenner CNG",
+    "Busse - Verbrenner",
+    "Schiene - Verbrenner",
+]
+
+elec_base = base.loc[electric]
+comb_base = base.loc[combustion]
+
+elec_share = elec_base / elec_base.sum()
+comb_share = comb_base / comb_base.sum()
+
+alpha = 1
+total_demand = base.sum()
+elec_total = total_demand * (elec_base.sum()/total_demand + alpha*(1 - elec_base.sum()/total_demand))
+
+comb_total = total_demand - elec_total
+new = pd.Series(index=base.index, dtype=float)
+
+new.loc[electric] = elec_share * elec_total
+new.loc[combustion] = comb_share * comb_total
+
+
+#%%
+
+df_msss = scalars['Demand_Transport_endenergie_east_b']
+df_mod = df_msss.copy()
+base_cols = [c for c in df_mod.columns if c.startswith("Personenverkehr")]
+
+base = df_mod[base_cols]
+emob = df_mod["Voll_Emob"]
+
+# broadcast emob to all columns
+emob_df = pd.DataFrame(
+    np.repeat(emob.values[:, None], len(base_cols), axis=1),
+    index=df_mod.index,
+    columns=base_cols
+)
+
+# linear interpolation
+df_mod.loc[:, base_cols] = (1 - x) * base + x * emob_df
+
+# data[key] = df_mod

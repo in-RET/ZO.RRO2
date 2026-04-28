@@ -18,7 +18,7 @@ import pandas as pd
 import os
 workdir = os.getcwd()
 
-scenarios = ["final_26_03_09"]#, "ref"]
+scenarios = ["REG-BASE"]#, "ref"]
 year = 2045
 variation = "BS0006"
 model_name = "BS_regionalization"    

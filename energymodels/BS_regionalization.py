@@ -26,7 +26,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
     demand = load_profile_scaling(scalars,sequences,YEAR,model_name, region = True)
     epc_costs = investment_parameter(scalars, YEAR, model_ID)
-    import_price = CO2_price_addition(scalars,sequences, YEAR, 'Energy_price_brainpool_2024')
+    import_price = CO2_price_addition(scalars,sequences, YEAR, 'Energy_price_brainpool_2026')
     strompreiszeitreihe = pd.Series([0 if x<0 else x for x in import_price['import_electricity_price']])
     
     # Wetterdaten für Einspeiseprofil Berechnung (aber momentan nicht im Simulation verwendet)
@@ -163,7 +163,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
                                         variable_costs= import_price['grid_operating_fee_HS<2500h']),
                   b_hös: solph.Flow(variable_costs= import_price['grid_operating_fee_HS<2500h'])
                   },
-        conversion_factors = {(b_hös,b_el_n_in): 1, (b_el_n_in,b_hös):1}
+        conversion_factors = {(b_hös,b_el_n_in): 0.98, (b_el_n_in,b_hös):0.98}
         ))
 
     """Link between HS & East""" 
@@ -176,7 +176,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
                                         variable_costs= import_price['grid_operating_fee_HS<2500h']),
                   b_hös: solph.Flow(variable_costs= import_price['grid_operating_fee_HS<2500h'])
                   },
-        conversion_factors = {(b_hös,b_el_e_in): 1, (b_el_e_in,b_hös):1}
+        conversion_factors = {(b_hös,b_el_e_in): 0.98, (b_el_e_in,b_hös):0.98}
         ))
 
     """Link between HS & Middle""" 
@@ -189,7 +189,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
                                           variable_costs= import_price['grid_operating_fee_HS<2500h']),
                   b_hös: solph.Flow(variable_costs= import_price['grid_operating_fee_HS<2500h'])
                   },
-        conversion_factors = {(b_hös,b_el_m_in): 1, (b_el_m_in, b_hös): 1}
+        conversion_factors = {(b_hös,b_el_m_in): 0.98, (b_el_m_in, b_hös): 0.98}
         ))
 
     """Link between HS & Swest""" 
@@ -202,7 +202,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
                                          variable_costs= import_price['grid_operating_fee_HS<2500h']),
                   b_hös: solph.Flow(variable_costs= import_price['grid_operating_fee_HS<2500h'])
                   },
-        conversion_factors = {(b_hös,b_el_s_in): 1, (b_el_s_in, b_hös):1}
+        conversion_factors = {(b_hös,b_el_s_in): 0.98, (b_el_s_in, b_hös):0.98}
         ))
 
 
@@ -216,7 +216,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
                  b_el_n_in: solph.Flow(nominal_value = scalars['Electricity_grid']['electricity']['connection_north_middle'],
                                         variable_costs= import_price['grid_operating_fee_HS<2500h'])
                                         },
-        conversion_factors = {(b_el_n_in, b_el_m_in): 1, (b_el_m_in, b_el_n_in):1}
+        conversion_factors = {(b_el_n_in, b_el_m_in): 0.97, (b_el_m_in, b_el_n_in):0.97}
         
         ))
 
@@ -229,7 +229,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
                  b_el_m_in: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['connection_middle_swest'],
                                          variable_costs= import_price['grid_operating_fee_HS<2500h'])
                   },
-        conversion_factors = {(b_el_m_in,b_el_s_in): 1, (b_el_s_in,b_el_m_in):1}
+        conversion_factors = {(b_el_m_in,b_el_s_in): 0.97, (b_el_s_in,b_el_m_in):0.97}
         
         ))
 
@@ -242,7 +242,7 @@ def BS_regionalization(PERMUATION: str, model_name: str) -> solph.EnergySystem:
                   b_el_e_in: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['connection_east_middle'],
                                         variable_costs= import_price['grid_operating_fee_HS<2500h'])
                    },
-         conversion_factors = {(b_el_e_in, b_el_m_in): 1, (b_el_m_in, b_el_e_in):1}
+         conversion_factors = {(b_el_e_in, b_el_m_in): 0.97, (b_el_m_in, b_el_e_in):0.97}
          
          ))   
     

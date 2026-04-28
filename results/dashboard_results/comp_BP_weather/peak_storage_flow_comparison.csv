@@ -1,0 +1,12 @@
+Storage,Peak Flow (MWh),Peak Flow (MWh),Peak Flow (MWh),Peak Flow (MWh)
+,BP-2026,Feed-in (unskaliert),Wind-Neu (unskaliert),Feed-in (Skaliert)
+Battery,0,1997,272,956
+Gas_storage,370133,276428,271633,295167
+H2_storage,1255000,1255000,1255000,1221258
+Heat storage_dist_heat,7355,6991,7397,7176
+Heat storage_seasonal,723861,455892,500000,468611
+Li-Ion_Battery,0,0,0,0
+Natrium_Battery,2248,1339,1069,562
+Pumped_hydro_storage,0,0,0,0
+Pumped_hydro_storage_bestand,2376,2376,2376,2376
+Red-OX_Battery,0,0,0,0

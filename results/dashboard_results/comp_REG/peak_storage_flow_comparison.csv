@@ -1,0 +1,12 @@
+Storage,Peak Flow (MWh),Peak Flow (MWh),Peak Flow (MWh)
+,Base Scenario,Reg-REf,Reg-Base
+Battery,0,0,1250
+Gas_storage,350742,359993,442850
+H2_storage,1255000,1255000,1255000
+Heat storage_dist_heat,7474,9046,18501
+Heat storage_seasonal,716060,744028,154922
+Li-Ion_Battery,0,0,0
+Natrium_Battery,2326,2322,7713
+Pumped_hydro_storage,0,0,0
+Pumped_hydro_storage_bestand,2376,2376,2376
+Red-OX_Battery,0,0,0
