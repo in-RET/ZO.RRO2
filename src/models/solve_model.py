@@ -103,9 +103,9 @@ def solveModels(
         #energysystem.results['meta'] = solph.processing.meta_results(model) % TODO: Why is it bugging?
         energysystem.results["costs"] = df_costs.to_dict()
 
-        energysystem.dump(
-            dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + "_" + scenario_num + ".dump"
-        )
+        #energysystem.dump(
+        #    dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + "_" + scenario_num + ".dump"
+        #)
         
         logging.info("Export overview - CSV file")
         if model_name == 'BS_regionalization':
