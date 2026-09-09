@@ -1,0 +1,76 @@
+,,Installed Capacity (MW or MWh),Installed Capacity (MW or MWh),Installed Capacity (MW or MWh),Installed Capacity (MW or MWh)
+,,2045,2040,2035,2030
+Component,Bus,,,,
+AW,Recovery heat,0.0,0.0,0.0,0.0
+Battery,None,0.0,0.0,9.2,9.2
+Battery,ElectricityIn,0.0,0.0,0.45999999999999996,0.45999999999999996
+BioTransformer,Solidfuel,0.0,0.0,0.0,0.0
+Biogas- BHKW,District heating,0.0,0.0,0.0,0.0
+Biogas- BHKW,ElectricityIn,0.0,0.0,0.0,0.0
+Biogas_feedin_existing,Gas,127.92839671992375,127.9,127.9,0.0
+Biogas_feedin_new,Gas,0.0,0.0,0.0,0.0
+Biomasse_elec,ElectricityIn,0.0,0.0,0.0,0.0
+Biomasse_elec_heat,District heating,0.0,0.0,0.0,0.0
+Biomasse_elec_heat,ElectricityIn,113.02619613640525,113.0,279.9,279.9
+Biomasse_heat,District heating,0.0,0.0,414.4,414.4
+BtL_Holz,Oil_fuel,162.6376891973617,0.0,0.0,0.0
+BtL_substrat,Oil_fuel,327.3696835417935,178.73317636308565,178.7,0.0
+Electric boiler,District heating,3133.5035341692974,1586.3373399733077,494.91702840805095,494.9
+Electrolysis,Hydrogen,1657.6790878537406,881.6760706370181,205.05162379395748,120.57425252678482
+Fuelcell,ElectricityIn,0.0,0.0,0.0,0.0
+Gas_storage,None,259602.55711216346,143891.39515653,32679.7267158125,0.0
+Gas_storage,Gas,324.5031963902043,179.8642439456625,40.849658394765626,0.0
+GuD,District heating,0.0,0.0,0.0,0.0
+GuD,ElectricityIn,0.0,0.0,712.5,712.5
+H2_storage,None,1255000.0,890698.6568376555,245881.15539599097,148331.75866587026
+H2_storage,Hydrogen,983.0030547505286,697.6569725367395,192.5911767807558,116.18372261758459
+Heat storage_dist_heat,None,7402.789914397246,7403.0,4595.802395813577,4596.0
+Heat storage_dist_heat,District heating,308.4495797665519,308.4583333333333,191.49176649223236,191.5
+Heat storage_seasonal,None,564152.8633792578,487684.16758761014,55307.68866164044,55308.0
+Heat storage_seasonal,Preheater,1783.0368627663017,1541.3532477484518,174.80306150960948,174.80404551201013
+Heatpump_air,District heating,68.49964703514009,68.5,23.8,23.8
+Heatpump_recovery_heat,District heating,0.0,0.0,0.0,0.0
+Heatpump_water,District heating,0.0,0.0,0.0,0.0
+Hydro power plant,ElectricityIn,31.0,31.0,31.0,31.0
+Hös<->HS,ElectricityIn,0.0,0.0,0.0,0.0
+Hös<->HS,Electricity_Hös,0.0,0.0,0.0,0.0
+Import_Electricity,Electricity_Hös,3626.9,3206.5,2832.9,2142.1
+Import_Gas,Gas,0.0,1276.8,3245.3,4240.4
+Import_Hydrogen,Hydrogen,0.0,0.0,0.0,0.0
+Import_Oil,Oil_fuel,0.0,853.4,1410.9,2250.9
+Import_Synthetic_fuel,Oil_fuel,0.0,0.0,0.0,0.0
+Import_Wood,BioWood,1476.115557734356,1202.737091387298,1754.3286802438283,2006.6410067369602
+Import_brown_coal,Solidfuel,0.0,,,
+Import_solid_fuel,Biomass,0.0,0.0,0.0,0.0
+Li-Ion_Battery,None,0.0,0.0,344.2,344.2
+Li-Ion_Battery,ElectricityIn,0.0,0.0,344.2,344.2
+Methanisation,Gas,189.2558290324568,144.17715337567836,0.0,0.0
+Natrium_Battery,None,0.0,0.0,0.0,0.0
+Natrium_Battery,ElectricityIn,0.0,0.0,0.0,0.0
+Netzverluste,ElectricityOut,0.0,0.0,0.0,0.0
+PV_open_east,ElectricityIn,4740.0,2845.965298458443,257.7,257.7
+PV_open_middle,ElectricityIn,263.7593328946496,263.8,207.8,207.8
+PV_open_north,ElectricityIn,1673.665287580973,333.48740589942935,333.5,333.5
+PV_open_swest,ElectricityIn,2680.0,2680.0,2298.2078309273716,1262.7122999803573
+PV_rooftop_east,ElectricityIn,0.0,0.0,498.9,498.9
+PV_rooftop_middle,ElectricityIn,0.0,0.0,447.7,447.7
+PV_rooftop_north,ElectricityIn,0.0,0.0,373.4,373.4
+PV_rooftop_swest,ElectricityIn,0.0,0.0,382.2,382.2
+Preheater- Electric boiler,District heating,307.8041872830106,307.8,174.8030615096095,133.0084265597885
+Preheater- WP,District heating,0.0,0.0,0.0,0.0
+PtL,Oil_fuel,327.3696835417935,0.0,0.0,0.0
+Pumped_hydro_storage,None,0.0,0.0,0.0,0.0
+Pumped_hydro_storage,Pumped-Hydro,0.0,0.0,0.0,0.0
+Pumped_hydro_storage_bestand,None,2376.0,2376.0,2376.0,2376.0
+Pumped_hydro_storage_bestand,ElectricityIn,297.0,297.0,297.0,297.0
+Pumped_hydro_technology,Electricity_Hös,0.0,0.0,0.0,0.0
+Pumped_hydro_technology,Pumped-Hydro,0.0,0.0,0.0,0.0
+Red-OX_Battery,None,0.0,0.0,0.0,0.0
+Red-OX_Battery,ElectricityIn,0.0,0.0,0.0,0.0
+ST,District heating,0.0,0.0,328.2,328.2
+UW,Environmental heat,0.0,0.0,0.0,0.0
+Umgebungsluft,Umgebungsluftbus,0.0,0.0,0.0,0.0
+Wind_east,ElectricityIn,2432.0,2432.0,2432.0,2432.0
+Wind_middle,ElectricityIn,2411.0,2411.0,2411.0,2411.0
+Wind_north,ElectricityIn,3321.0,3321.0,1394.759640457474,1394.8
+Wind_swest,ElectricityIn,2530.0,2530.0,2530.0,2530.0

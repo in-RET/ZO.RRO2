@@ -1,0 +1,41 @@
+Workshop Robuste Transformationspfade: 
+
+19 Personen mit (mehrjährige Erfahrung nur im Bereich Sensitivitätsanalyse)
+Jülich, RWTH Aachen, Fraunhofer, DLR
+
+Philipp Härtel: 
+Flow Projekt- Seasonal Forecast operation & markets 
+Rewards- Stochastic Transformation paths 
+
+Logit Ansatzes??
+Rapid Monte Carlo Analysis (RMCA)
+MGA mit Kostenslack und alle alternativ anschauen
+
+Sobol Index- Haupteffekt und Totaleffekt
+
+Transformationspfade als unsicherheit??? Mit Transformationspfade Baum?? (Anderen machen ja so) Wichtig!!
+
+Die Fragen zu mir kam?:
+Basisszenario nicht so detailliert.. Sensistivätsanalyse für allen Szenario???
+Regionalisierung als BS wäre schön gewesen bzw. relevante für Robustoptimierung (Meine Meinung)
+Preise mit Nachfrage zusammen variieren?
+Mehrere Kennzahlen(KPIs)
+
+
+Wolfgang Renz:
+Zeitreihen Prognose.... (Wäre fast mein Promotionsthema gewesen) aber mit Neural Netz
+wind ? Wie kriegt man diese Verteilung? Wahrscheinlichkeiten? wie viele Datensatze sind analysiert?
+
+Kopernikus projekte  Lokale Proiessignale Veröffentlichung
+Allocation and Pricing in Electricity Markets (APEM) Simulator- Day ahead Price aber erweitbar
+
+Tag 2:
+
+Richard:
+EMPRISE - Open source toolingEnvironment for modelling and planning robust Investment of sector-Intergrated energy systems
+Down sampling (2/3 h) fast -0.005 % abweichung von systemergebnisse (Besser als TSAM)
+
+European Energy Market (EEM) Konferenz möglichkeiten
+
+Base Scenario	2861.809643069832	2106.8210155279476	882.5732815860442	-127.58465404415989
+Scenario 1	2764.089407621166	2026.2466591579694	919.8110037408851	-181.96825527768846

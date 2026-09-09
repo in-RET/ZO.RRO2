@@ -26,6 +26,52 @@ def emission_factor(om, flows=None, limit=None):
                            keyword='emission_factor',
                            flows=flows,
                            limit=limit)
+
+def blackout(om, keyword, flows=None, limit=None, Starttime=None, Endtime=None):
+    
+
+    if flows is None:
+        flows = {}
+        for (i, o) in om.flows:
+            if hasattr(om.flows[i, o], keyword):
+                flows[(i, o)] = om.flows[i, o]
+
+    else:
+        for (i, o) in flows:
+            if not hasattr(flows[i, o], keyword):
+                raise AttributeError(
+                    ('Flow with source: {0} and target: {1} '
+                      'has no attribute {2}.').format(i.label,o.label, keyword))
+                
+    limit_name = "integral_limit_"+ keyword
+    
+    reduced_timesteps =[]
+    for p, t in om.TIMEINDEX:
+        if t > Starttime and t < Endtime:
+            reduced_timesteps.append(om.TIMEINDEX[t])
+    
+    setattr(
+            om,
+            limit_name,
+            po.Expression(
+                expr=sum(
+                    om.flow[inflow, outflow,p, t]
+                    * om.timeincrement[t]
+                    * sequence(getattr(flows[inflow, outflow], keyword))[t]
+                    for (inflow, outflow) in flows
+                    for p,t in reduced_timesteps
+                )
+            ),
+        )
+    
+    setattr(
+            om,
+            limit_name + "_constraint",
+            po.Constraint(expr=(getattr(om, limit_name) <= limit)),
+        )
+
+
+    return om
     
 
 def calculate_keyword_limit_sum(om, keyword_limit, flows=None):
@@ -42,6 +88,7 @@ def calculate_keyword_limit_sum(om, keyword_limit, flows=None):
 def import_export_bilanz(om, keyword, keyword_limit, flows=None):
     flows_main = _check_and_set_flows(om, flows, keyword)
     limit_name = "integral_limit_" + keyword
+    limit_name_rhs = "integral_limit_" + keyword_limit
 
     # Integral-Ausdruck für das Hauptkeyword
     setattr(
@@ -59,13 +106,27 @@ def import_export_bilanz(om, keyword, keyword_limit, flows=None):
     )
 
     # Limit berechnen (intern)
-    limit = calculate_keyword_limit_sum(om, keyword_limit, flows)
+    flows_rhs = _check_and_set_flows(om, flows, keyword_limit)
+    setattr(
+        om,
+        limit_name_rhs,
+        po.Expression(
+            expr=sum(
+                om.flow[inflow, outflow, p, t]
+                * om.timeincrement[t]
+                * sequence(getattr(flows_rhs[inflow, outflow], keyword_limit))[t]
+                for (inflow, outflow) in flows_rhs
+                for p, t in om.TIMEINDEX
+            )
+        ),
+    )
+
 
     # Constraint mit dynamischer Schranke
     setattr(
         om,
         limit_name + "_constraint",
-        po.Constraint(expr=(getattr(om, limit_name) <= limit)),
+        po.Constraint(expr=(getattr(om, limit_name) == getattr(om, limit_name_rhs))),
     )
 
     return om

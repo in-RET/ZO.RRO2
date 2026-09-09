@@ -17,6 +17,7 @@ from openpyxl import Workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import get_column_letter
 from openpyxl import load_workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
 workdir = os.getcwd()
 
 def interpret_results(results):          
@@ -398,9 +399,9 @@ def scalars_bar_plot(bar_plot_dict, Category_color_mapping, Technology_color_map
                              
     plt.show()
 
-def plot_bus_flows(combined_dfs, bus_name, inflow_plot_title, outflow_plot_title, COLOR_MAPPING, 
+def plot_bus_flows(combined_dfs,scenario_path, bus_name, inflow_plot_title, outflow_plot_title, COLOR_MAPPING, 
                    start_date=None, end_date=None, figsize=(14, 10), title_fontsize=14, 
-                   label_fontsize=10, figure_bg_color='#159A3433', axes_bg_color='#159A3400',
+                   label_fontsize=10, figure_bg_color='#159A3433', axes_bg_color='#FFFFFF',
                    sort_by_flh=True, capacity_dict=None, labels_with_info = True):
     def calculate_full_load_hours(column_name, component_type="IN"):
         """
@@ -570,7 +571,7 @@ def plot_bus_flows(combined_dfs, bus_name, inflow_plot_title, outflow_plot_title
     
     ax1 = axes[0]
     ax1.set_facecolor(axes_bg_color)
-    ax1.set_frame_on(False)
+    ax1.set_frame_on(True)
     
     if not df_in.empty and len(in_columns) > 0:    
         if sort_by_flh:
@@ -608,18 +609,18 @@ def plot_bus_flows(combined_dfs, bus_name, inflow_plot_title, outflow_plot_title
         ax1.yaxis.set_label_coords(-0.05, 1.05)  
         ax1.text(0, 1.02, '[MWh/h]', transform=ax1.transAxes, 
                  fontsize=label_fontsize, ha='right', va='bottom')
-        ax1.grid(True, alpha=1, linestyle='-')
+        ax1.grid(True, alpha=0.5, linestyle='-')
         ax1.set_xlim(start_date, end_date - pd.Timedelta(days=1))
         # Add legend inside plot
         handles_in, labels_in = ax1.get_legend_handles_labels()
         handles_in.reverse()
         labels_in.reverse()
-        ax1.legend(handles_in, labels_in, loc='upper left', fontsize=label_fontsize-2, facecolor=axes_bg_color, framealpha=0,
+        ax1.legend(handles_in, labels_in, loc='upper left', fontsize=label_fontsize-2, framealpha=1,facecolor=axes_bg_color,
           bbox_to_anchor=(1.02, 1), borderaxespad=0.)
         
     ax2 = axes[1]
     ax2.set_facecolor(axes_bg_color)
-    ax2.set_frame_on(False)
+    ax2.set_frame_on(True)
     
     if not df_out.empty and len(out_columns) > 0:
         df_out_sorted = df_out[out_columns].reindex(sorted(out_columns), axis=1)
@@ -708,16 +709,16 @@ def plot_bus_flows(combined_dfs, bus_name, inflow_plot_title, outflow_plot_title
         ax2.text(0, 1.02, '[MWh/h]', transform=ax2.transAxes, 
                  fontsize=label_fontsize, ha='right', va='bottom')
         ax2.set_xlabel('Zeit', fontsize=label_fontsize)
-        ax2.grid(True, alpha=1, linestyle='-')
+        ax2.grid(True, alpha=0.5, linestyle='-')
         ax2.set_xlim(start_date, end_date - pd.Timedelta(days=1))
         # Add legend inside plot
         handles_out, labels_out = ax2.get_legend_handles_labels()
         handles_out.reverse()
         labels_out.reverse()
-        ax2.legend(handles_out, labels_out, loc='upper left', fontsize=label_fontsize-2, facecolor=axes_bg_color, framealpha=0,
+        ax2.legend(handles_out, labels_out, loc='upper left', fontsize=label_fontsize-2, framealpha=1, facecolor=axes_bg_color,
           bbox_to_anchor=(1.02, 1), borderaxespad=0.)
-        ax2.text(1.02, 0.05, "Info: (Zahlen in Klammern = Jahresvolllaststunden)",
-         transform=ax2.transAxes, fontsize=label_fontsize-2, ha="left", va="top", clip_on = False)
+        #ax2.text(1.02, 0.05, "Info: (Zahlen in Klammern = Jahresvolllaststunden)",
+         #transform=ax2.transAxes, fontsize=label_fontsize-2, ha="left", va="top", clip_on = False)
         
     
     if 'total_in' in locals():
@@ -764,30 +765,9 @@ def plot_bus_flows(combined_dfs, bus_name, inflow_plot_title, outflow_plot_title
     #plt.tight_layout(rect=[0, 0, 0.85, 0.96])
     plt.tight_layout()
     plt.show()
-    #plt.savefig(os.path.join(workdir, 'figures', 'Abschlussbericht', 'sequence.svg'), dpi = 800)
+    plt.savefig(os.path.join(scenario_path, 'sequence.pgf'), dpi = 800)
     
-    fig_1, ax_1 = plt.subplots(figsize=figsize)
-    inflow = df_in_sorted
-    outflow = df_out_sorted_final*-1
-    
-    ax_1.stackplot(df_in_sorted.index, df_in_sorted.T.values, 
-                 labels=in_labels, 
-                 colors=in_colors,  # Explicitly pass colors
-                 alpha=0.85)
-
-    # Plot outflows (negative)
-    ax_1.stackplot(df_out_sorted_final.index, df_out_sorted_final.T.values*-1, 
-                 labels=out_labels, 
-                 colors=out_colors,  # Explicitly pass colors
-                 alpha=0.85)
-    
-    ax_1.axhline(0, color='black', linewidth=1)
-    ax_1.set_title(f"{inflow_plot_title} & {outflow_plot_title}")
-    ax_1.set_ylabel("Leistung [MW]")
-    ax_1.legend(loc="upper left", bbox_to_anchor=(1, 1))
-    plt.tight_layout()
-    plt.show()
-    return fig, axes, fig_1, ax_1
+    return fig, axes
 
 def create_bus_dataframes(bus_sequences, energysystem):
     """Convert bus sequences to DataFrames with proper time index"""
@@ -1082,4 +1062,124 @@ def create_sankey_excel(model_data: dict, output_file: str):
     # Hide helper column
     main_sheet.column_dimensions["Z"].hidden = True
     adjust_column_width_for_all_sheets(wb)
+    wb.save(output_file)
+
+def create_sankey_excel_new(model_data: dict, output_file: str):
+
+    # ------------------------------------------------------------
+    # Open existing workbook or create a new one
+    # ------------------------------------------------------------
+    if os.path.exists(output_file):
+        wb = load_workbook(output_file)
+    else:
+        wb = Workbook()
+        # Remove default sheet if present
+        if "Sheet" in wb.sheetnames:
+            del wb["Sheet"]
+
+    # ------------------------------------------------------------
+    # Update/create model sheets
+    # ------------------------------------------------------------
+    for model_name, df in model_data.items():
+
+        # If sheet already exists, delete it first
+        # so the existing sheet is replaced/updated
+        if model_name in wb.sheetnames:
+            del wb[model_name]
+
+        # Create new sheet with the same name
+        ws = wb.create_sheet(model_name)
+
+        # Model name in A1
+        ws["A1"] = model_name
+
+        # Write dataframe starting from row 2
+        for r_idx, row in enumerate(
+            dataframe_to_rows(df, index=False, header=True),
+            start=2
+        ):
+            for c_idx, value in enumerate(row, start=1):
+                ws.cell(row=r_idx, column=c_idx, value=value)
+
+    # ------------------------------------------------------------
+    # Get model names
+    # ------------------------------------------------------------
+    model_names = [
+        s for s in wb.sheetnames
+        if s != "Main"
+    ]
+
+    # ------------------------------------------------------------
+    # Recreate Main sheet
+    # ------------------------------------------------------------
+    if "Main" in wb.sheetnames:
+        del wb["Main"]
+
+    main_sheet = wb.create_sheet("Main", 0)
+
+    main_sheet["A1"] = "Info: Use the drop down box to select the scenario"
+    main_sheet["A3"] = "Select Scenario:"
+
+    # Store dropdown values in hidden helper column
+    for i, name in enumerate(model_names, start=1):
+        main_sheet[f"Z{i}"] = name
+
+    dv = DataValidation(
+        type="list",
+        formula1=f"=Z1:Z{len(model_names)}",
+        allow_blank=False
+    )
+
+    main_sheet.add_data_validation(dv)
+    dv.add("B3")
+
+    if model_names:
+        main_sheet["B3"] = model_names[0]
+
+    main_sheet["A5"] = "Displaying data for:"
+    main_sheet["B5"] = '=INDIRECT("\'"&B3&"\'!A1")'
+
+    # ------------------------------------------------------------
+    # Update A1 of each model sheet
+    # ------------------------------------------------------------
+    for model_name in model_data:
+        ws = wb[model_name]
+        ws["A1"] = model_name
+
+    # ------------------------------------------------------------
+    # Display selected model data on Main sheet
+    # ------------------------------------------------------------
+    sample_df = next(iter(model_data.values()))
+
+    max_rows = len(sample_df) + 1
+    max_cols = len(sample_df.columns)
+
+    start_row_main = 7
+
+    for r in range(2, max_rows + 2):
+
+        for c in range(1, max_cols + 1):
+
+            col_letter = get_column_letter(c)
+
+            formula = (
+                f'=INDIRECT("\'"&$B$3&"\'!{col_letter}{r}")'
+            )
+
+            main_sheet.cell(
+                row=start_row_main + r - 2,
+                column=c,
+                value=formula
+            )
+
+    # ------------------------------------------------------------
+    # Hide helper column
+    # ------------------------------------------------------------
+    main_sheet.column_dimensions["Z"].hidden = True
+
+    # ------------------------------------------------------------
+    # Adjust widths and save
+    # ------------------------------------------------------------
+    adjust_column_width_for_all_sheets(wb)
+
     wb.save(output_file)

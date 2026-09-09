@@ -17,12 +17,12 @@ from src.preprocessing.location import Location
 def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
     YEAR, model_ID = PERMUATION.split("_")
     YEAR = int(YEAR)
-    
+    innovative = 'IS0006'
     sequences = read_input_files(folder_name = 'data/sequences', sub_folder_name=None)
     scalars = read_input_files(folder_name = 'data/scalars', sub_folder_name=None)
     demand = load_profile_scaling(scalars,sequences, YEAR, model_ID, region=False)
     epc_costs = investment_parameter(scalars, YEAR, model_ID)
-    import_price = CO2_price_addition(scalars,sequences, YEAR,'Energy_price_brainpool_2021')
+    import_price = CO2_price_addition(scalars,sequences, YEAR,'Energy_price_brainpool_2026')
     feed_in_profile_new = False
     
     strompreiszeitreihe = pd.Series([0 if x<0 else x for x in import_price['import_electricity_price']])
@@ -251,11 +251,11 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
             label='Wind_north', 
             outputs={b_el_in: solph.Flow(fix=sequences['feed_in_profile_2009']['Wind_north_scaled'],
                                             custom_attributes={'emission_factor': scalars['Parameter_onshore_wind_power_plant']['EE_factor'][model_ID]},
-                                            investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
+                                            investment=solph.Investment(
+                                                                        ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                         #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_north_min'][model_ID],
                                                                         maximum=scalars['Parameter_onshore_wind_power_plant']['potential_north_max_'+ str(YEAR)][model_ID]
-                                                                        # maximum = windpotential_gesamt*0
-                                                                        )
+                                                                                 )
             )}))
         
         energysystem.add(solph.components.Source(
@@ -265,6 +265,7 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
                                             investment=solph.Investment(ep_costs=epc_costs['onshore_wind_power_plant']['epc'], 
                                                                         #minimum = scalars['Parameter_onshore_wind_power_plant']['potential_east_min'][model_ID],
                                                                         maximum=scalars['Parameter_onshore_wind_power_plant']['potential_east_max_'+ str(YEAR)][model_ID])
+                                            
             )}))
         
         energysystem.add(solph.components.Source(
@@ -431,7 +432,8 @@ def Basisszenario_1(PERMUATION: str) -> solph.EnergySystem:
        outputs={b_hös: solph.Flow(nominal_value= scalars['Electricity_grid']['electricity']['max_Bezug_'+str(YEAR)],
                                  variable_costs = strompreiszeitreihe + import_price['grid_operating_fee_HöS<2500h'],
                                  custom_attributes={'CO2_factor': scalars['System_configurations_2024']['System']['Emission_Strom_'+ str(YEAR)],
-                                                    'import_bilanz': -1},
+                                                    'import_bilanz': -1,
+                                                    'grid_cutoff': 1},
                                  
            )}))
     

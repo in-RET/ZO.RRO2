@@ -8,13 +8,13 @@ FORMAT = "%(asctime)s %(message)s"
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
-    years = [2045]#, 2025, 2030, 2035, 2040, 2045]
+    years = [2045]#, 2035, 2040, 2045]
     for y in years:
-        sim_data, result, sim_result = solveModels(
+        sim_data, result, sim_result, sys_cost, energy_model = solveModels(
             variations=["BS0006"],
-            scenario_num = "REF-04(Test)",
+            scenario_num = "MVB",
             years=[y],# 2040, 2050],
-            model_name="Basic_example_zorro_1",#'BS_regionalization',#"Basic_example_zorro_1",#,#"test_Basic_example_zorro_1_utility_energy",
+            model_name="basic_example_zorro_1_BE",#"Basic_example_zorro_backward_pathway",#'BS_regionalization',,#,#"test_Basic_example_zorro_1_utility_energy",
             solver="gurobi",
             gap=0.0,
             solver_output=False,

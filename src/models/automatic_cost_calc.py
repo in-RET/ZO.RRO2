@@ -15,30 +15,30 @@ dict_costs = {"investment costs": {}, "variable costs": {}, "profits": {}}
 def __cost_calculation(energysystem, results) -> pd.DataFrame:
     for node in energysystem.nodes:
         for item in node.outputs.data.values():
-            if type(node) is not solph.components._generic_storage.GenericStorage:
-                if item.investment:
-                    # Speicher wird zweimal aufgeführt, weil invest nicht im Flow() steht
-                    # jetzt nur noch einmal
-                    investcosts = (
-                        item.investment.ep_costs[0]
-                        * solph.views.node(results, item.input)["scalars"].iloc[0]
-                        + item.investment.offset[0]
-                        if (
-                            len(item.investment.offset) > 0
-                            and solph.views.node(results, item.input)["scalars"].iloc[0]
-                            > 0.0
-                        )
-                        else 0
+            
+            if item.investment:
+                # Speicher wird zweimal aufgeführt, weil invest nicht im Flow() steht
+                # jetzt nur noch einmal
+                investcosts = (
+                    item.investment.ep_costs[0]
+                    * solph.views.node(results, item.input)["scalars"].iloc[0]
+                    + item.investment.offset[0]
+                    if (
+                        len(item.investment.offset) > 0
+                        and solph.views.node(results, item.input)["scalars"].iloc[0]
+                        > 0.0
                     )
-                    dict_costs["investment costs"].update(
-                        {
-                            "("
-                            + str(item.input)
-                            + ", "
-                            + str(item.output)
-                            + ")": investcosts
-                        }
-                    )
+                    else 0
+                )
+                dict_costs["investment costs"].update(
+                    {
+                        "("
+                        + str(item.input)
+                        + ", "
+                        + str(item.output)
+                        + ")": investcosts
+                    }
+                )
                     # sum_investcosts += investcosts
 
             if hasattr(item, "variable_costs"):

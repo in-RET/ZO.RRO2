@@ -1,0 +1,12 @@
+Storage;Peak Flow (MWh);Peak Flow (MWh);Peak Flow (MWh);Peak Flow (MWh);Peak Flow (MWh);Peak Flow (MWh);Peak Flow (MWh);;;;;
+;Base Scenario;PV_partial;No Hydro;No Battery;No BtL;No partial import (El);No Biogas;No Electric Boiler;No Flex tech (B, H2_sto, Sea_Sto);No heat storage;No PtL;No partial wind
+Battery;0;0;0;0;816;5000;0;0;0;0;0;3291
+Gas_storage;259603;329116;259603;259603;1100000;706654;228340;518739;862470;462294;511748;505611
+H2_storage;1255000;1255000;1255000;1255000;1255000;1255000;1255000;1255000;0;1255000;1255000;1255000
+Heat storage_dist_heat;7403;4700;7403;7403;4800;273;6411;6571;16422;0;10947;3981
+Heat storage_seasonal;564153;713803;564153;564153;467436;268135;500000;0;0;0;723962;677139
+Li-Ion_Battery;0;0;0;0;0;372;0;0;0;0;0;0
+Natrium_Battery;0;0;0;0;0;5228;0;0;0;0;0;1072
+Pumped_hydro_storage;0;0;0;0;0;38640;0;0;0;0;0;0
+Pumped_hydro_storage_bestand;2376;2376;2376;2376;2376;2376;2376;2376;2376;2376;2376;2376
+Red-OX_Battery;0;0;0;0;0;0;0;0;0;0;0;0

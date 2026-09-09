@@ -52,7 +52,7 @@ model_name = "BS_regionalization"
 sequences = read_input_files(
     folder_name='data/sequences', sub_folder_name=None)
 scalars = read_input_files(folder_name='data/scalars', sub_folder_name=None)
-demand = load_profile_scaling(scalars,sequences,YEAR,model_name, region = True)
+demand = load_profile_scaling(scalars,sequences,YEAR,model_name, region = False)
 #demand = zorro_1_loadprofile_scaling(YEAR, new_profile=True)
 import_price_2021 = CO2_price_addition(scalars,sequences, YEAR, 'Energy_price_brainpool_2021')
 import_price_2023 = CO2_price_addition(scalars,sequences, YEAR, 'Energy_price_brainpool_2023')
@@ -194,22 +194,3 @@ new.loc[combustion] = comb_share * comb_total
 
 
 #%%
-
-df_msss = scalars['Demand_Transport_endenergie_east_b']
-df_mod = df_msss.copy()
-base_cols = [c for c in df_mod.columns if c.startswith("Personenverkehr")]
-
-base = df_mod[base_cols]
-emob = df_mod["Voll_Emob"]
-
-# broadcast emob to all columns
-emob_df = pd.DataFrame(
-    np.repeat(emob.values[:, None], len(base_cols), axis=1),
-    index=df_mod.index,
-    columns=base_cols
-)
-
-# linear interpolation
-df_mod.loc[:, base_cols] = (1 - x) * base + x * emob_df
-
-# data[key] = df_mod

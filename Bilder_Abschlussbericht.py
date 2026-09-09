@@ -10,7 +10,7 @@ from datetime import datetime
 from src.postprocessing.utils_dump import get_dump_file_path,load_results_from_dump
 from src.postprocessing.plot_report_utils import interpret_results, create_combined_bus_component_dfs, plot_bus_flows, categorize_for_sequence, rename_index_with_category
 from src.postprocessing.plot_report_utils import create_barplot_dict, scalars_bar_plot, create_bus_dataframes, create_component_dataframes, extract_sankey_flow_data
-from src.postprocessing.plot_report_utils import create_sankey_excel
+from src.postprocessing.plot_report_utils import create_sankey_excel_new
 from src .preprocessing.conversion import CO2_price_addition
 from src.preprocessing.files import read_input_files
 import os 
@@ -21,17 +21,46 @@ workdir = os.getcwd()
 
 #%%
 scalars_comp_plot = True
-folder_name = 'comp_BP_weather'
+folder_name = 'comp_BS'
 plot_variable = 'peak' #/total
 component_filename = 'component_'+ plot_variable +'_flow_comparison.csv'
 storage_filename = 'peak_storage_flow_comparison.csv'
 
+plt.rcParams.update({
+    "font.family": "serif",
+    "font.serif": [
+        "Times New Roman",
+        "Times",
+        "DejaVu Serif"
+    ],
 
+    "font.size": 9,
+
+    "axes.labelsize": 9,
+    "axes.titlesize": 10,
+
+    "xtick.labelsize": 8,
+    "ytick.labelsize": 8,
+
+    "legend.fontsize": 8,
+
+    "axes.linewidth": 0.8,
+
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+
+    "axes.grid": True,
+    "grid.alpha": 0.18,
+    "grid.linewidth": 0.5,
+
+    "savefig.dpi": 400,
+    "savefig.bbox": "tight",
+})
 
 
 
 #%%
-scenarios =["REF-04", "REF-04(Test)"]
+scenarios =["REF-04"]
 year = 2045
 variation = "BS0006"
 model_name = "Basic_example_zorro_1"#"_regionalization"   
@@ -159,19 +188,19 @@ for scenario_num in scenarios:
     }   
     categorized_dict = categorize_for_sequence(category_list, combined_df)
     
-    # summer_weak = plot_bus_flows(categorized_dict,
-    #                bus_name = 'Electricity',
-    #                inflow_plot_title = 'Strombereitstellung',
-    #                outflow_plot_title = 'Stromverwendung',
-    #                COLOR_MAPPING = Color_mapping,
-    #                start_date=str(year)+'-02-12',
-    #                end_date = str(year)+'-02-19',
-    #                figsize = (14, 10),
-    #                title_fontsize=14,
-    #                label_fontsize=14,
-    #                figure_bg_color='#159A3433',
-    #                axes_bg_color='#159A3400',#'#FFFFFF',
-    #                labels_with_info = True)
+    summer_weak = plot_bus_flows(categorized_dict,
+                   bus_name = 'Electricity',
+                   inflow_plot_title = 'Strombereitstellung',
+                   outflow_plot_title = 'Stromverwendung',
+                   COLOR_MAPPING = Color_mapping,
+                   start_date=str(year)+'-02-12',
+                   end_date = str(year)+'-02-19',
+                   figsize = (14, 10),
+                   title_fontsize=14,
+                   label_fontsize=14,
+                   figure_bg_color='#159A3433',
+                   axes_bg_color='#FFFFFF',#'#159A3400',#'#FFFFFF',
+                   labels_with_info = True)
     
     san_df = extract_sankey_flow_data(bus_dfs, component_dfs, component_bus_mapping, group_similar=True)
     PV_mask = san_df['source'].str.startswith('PV')
@@ -198,20 +227,20 @@ for scenario_num in scenarios:
     model_data[str(year) +'_'+variation+'_'+ scenario_num] = san_df
     results_dict[scenario_num] = combined_df  
   
-create_sankey_excel(model_data, os.path.join(workdir, 'results', 'sankey', model_name+'_'+variation +'.xlsx')) 
+create_sankey_excel_new(model_data, os.path.join(workdir, 'results', 'sankey', model_name+'_'+variation +'_report.xlsx')) 
 
 #%% Scalar Bar Plot
 if scalars_comp_plot:
     # Import component peak flow output csv file from Dashboard 
     component_csv_path = os.path.join(workdir, 'results',
                          "dashboard_results", folder_name, component_filename)
-    raw_component_scalar_df = pd.read_csv(component_csv_path, decimal= '.', sep =',', index_col = 0, skiprows = [0])
+    raw_component_scalar_df = pd.read_csv(component_csv_path, decimal= '.', sep =';', index_col = 0, skiprows = [0])
     component_scalar_df = rename_index_with_category(raw_component_scalar_df, category_list)
     
     # Import storage peak flow output csv file from Dashboard 
     storage_csv_path = os.path.join(workdir, 'results',
                          "dashboard_results",folder_name, storage_filename)
-    raw_storage_scalar_df = pd.read_csv(storage_csv_path, decimal= '.', sep =',', index_col = 0, skiprows = [0])
+    raw_storage_scalar_df = pd.read_csv(storage_csv_path, decimal= '.', sep =';', index_col = 0, skiprows = [0])
     storage_scalar_df = rename_index_with_category(raw_storage_scalar_df, category_list)
     
     category_map = {
@@ -265,9 +294,9 @@ if scalars_comp_plot:
     
     bar_plot_scalars = create_barplot_dict(component_scalar_df, category_map)
     bar_storage = create_barplot_dict(storage_scalar_df, category_map)
-    del_list = ['Importe','Netzinfrastruktur', 'Speichertechnologien', 'Sonstige']
-    for l in del_list:
-        bar_plot_scalars.pop(l)
+    # del_list = ['Importe','Netzinfrastruktur', 'Speichertechnologien', 'Sonstige']
+    # for l in del_list:
+    #     bar_plot_scalars.pop(l)
     
     bar_plot_scalars_sort = {
         k: df.loc[(df != 0).any(axis=1)]
@@ -282,7 +311,7 @@ if scalars_comp_plot:
                      figsize = (14, 10),
                      fontsize=14,
                      figure_bg_color='#159A3433',
-                     axes_bg_color='#159A3400'#'#FFFFFF',
+                     axes_bg_color='#FFFFFF'#'#159A3400'#'#FFFFFF',
                      )
     
     #%% Storage Comparison plot

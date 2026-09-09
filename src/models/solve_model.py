@@ -7,15 +7,19 @@ from oemof import solph
 from pyomo.environ import Constraint, value
 from energymodels.BS_regionalization import BS_regionalization
 from energymodels.test_Basic_example_zorro_1_utility_energy import Basisszenario_1_Nutz 
+from energymodels.Basic_example_zorro_pathway import Basisszenario_pathway
+from energymodels.Basic_example_zorro_backward_pathway import Basisszenario_pathway_B
 from energymodels.Basic_example_zorro_1 import Basisszenario_1 as BS_1
+from energymodels.basic_example_zorro_1_BE import Basisszenario_1 as BS_1_BE
 from src.models.automatic_cost_calc import cost_calculation_from_es_and_results
 from src.postprocessing.plot_energysystemgraph import draw_energy_system
 from src.postprocessing.export_results import export_csv_region, grid_energy_map, export_csv
-from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, BiogasNeuanlagen_limit,Biomasse_limit, Bilanziell_erneuerbar, GuD_time, import_export_bilanz
+from src.preprocessing.constraints import CO2_limit, BiogasBestand_limit, BiogasNeuanlagen_limit,Biomasse_limit, Bilanziell_erneuerbar, GuD_time, import_export_bilanz, blackout
 from docs.scenario.create_md_file import create_simulation_doc
 from src.postprocessing.so_gehts_plot import so_gehts_bar_plot
 from src.postprocessing.plots import heat_maps
 from oemof.solph.constraints import limit_active_flow_count_by_keyword
+from datetime import datetime
 def solveModels(
     variations: [str],
     scenario_num :str,
@@ -51,6 +55,12 @@ def solveModels(
             energysystem,sim_data = BS_regionalization(permutation, model_name)
         elif model_name.endswith('utility_energy'):
             energysystem,sim_data = Basisszenario_1_Nutz(permutation)
+        # elif model_name.endswith('pathway'):
+        #     energysystem,sim_data = Basisszenario_pathway(permutation)
+        elif model_name.endswith('backward_pathway'):
+            energysystem,sim_data = Basisszenario_pathway_B(permutation)
+        elif model_name.endswith('BE'):
+            energysystem,sim_data = BS_1_BE(permutation)    
         else:
             energysystem,sim_data = BS_1(permutation)
         if print_graph:
@@ -80,6 +90,13 @@ def solveModels(
         BiogasNeuanlagen_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['Biomasse_sub_tot'])
         Biomasse_limit(model, limit = sim_data['Parameter']['System_configurations_2024']['System']['Holzpotential_tot'])
         GuD_time(model, limit = 0, Starttime = 1777, Endtime= 7656)
+        
+        def date_to_hour(year, month, day, hour=0):
+            date = datetime(year, month, day, hour)
+            days_since = (date - datetime(year, 1, 1)).days
+            return days_since * 24 + hour
+        
+        #blackout(model, 'grid_cutoff', limit = 0, Starttime = date_to_hour(YEAR, 6, 24, 0), Endtime= date_to_hour(YEAR, 7, 9, 0))
     
         logging.info("Solve the model")
         model.solve(
@@ -89,7 +106,9 @@ def solveModels(
         )
         
         Cost_opt = value(model.objective)
-        
+        import pyomo as po
+        #print("Import:", value(model.integral_limit_import_bilanz))
+        #print("Export:", value(model.integral_limit_export_bilanz))
         logging.info("Calculating costs")
 
         result = cost_calculation_from_es_and_results(
@@ -103,9 +122,9 @@ def solveModels(
         #energysystem.results['meta'] = solph.processing.meta_results(model) % TODO: Why is it bugging?
         energysystem.results["costs"] = df_costs.to_dict()
 
-        #energysystem.dump(
-        #    dpath=DUMP_PATH, filename=model_name + "_" + str(permutation) + "_" + scenario_num + ".dump"
-        #)
+        energysystem.dump(
+            dpath= DUMP_PATH, filename=model_name + "_" + str(permutation) + "_" + scenario_num + ".dump"
+        )
         
         logging.info("Export overview - CSV file")
         if model_name == 'BS_regionalization':
@@ -130,4 +149,4 @@ def solveModels(
         logging.info("Creating simulation doc...")    
         #create_simulation_doc(permutation,scenario_num, hypothese, sim_remarks,csv)
         
-        return sim_data,result, energysystem.results["main"]
+        return sim_data,result, energysystem.results["main"], Cost_opt,model

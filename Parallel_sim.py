@@ -27,12 +27,12 @@ import os
 workdir = os.getcwd()
 
 # PARAMETER CONFIG
-Sim_Morris = True
-Sim_MC = False
+Sim_Morris = False
+Sim_MC = True
 max_workers = 4
 model_ID = 'BS0006'
 year = 2045
-Morris_runs = 1
+Morris_runs = 100
 model_name = "Basic_example_zorro_1"
 param_config = {
     "demand_HH_waerme": [0.8, 1.2],
@@ -50,7 +50,7 @@ param_config = {
     "import_biomasse": [1, 1.2]  # kann nur teuer werden
 }
 names = list(param_config.keys())
-MC_runs = ((len(names)+1) * Morris_runs)
+MC_runs = ((len(names)+1) * Morris_runs)*2
 
 problem = {
     "num_vars": len(names),
@@ -206,7 +206,7 @@ def run_single(X):
     file_module.read_input_files = patched_read_input_files
     be.read_input_files = patched_read_input_files
 
-    sim_data,cost, result = solveModels(
+    sim_data,cost, result, sys_cost = solveModels(
         variations=[model_ID],
         scenario_num="Senitivity_analysis",
         years=[year], 
@@ -253,6 +253,7 @@ def main_Morris():
     print("Running Morris ...")
     
     outputs_morris = run_parallel(param_values_morris, max_workers=max_workers)
+    joblib.dump(outputs_morris, "morris_raw_outputs.joblib")
     if output_names is None:
         output_names = outputs_morris[0]["df_KPI"].columns.tolist() + ["cost"]
         
@@ -295,6 +296,8 @@ def main_Monte_Carlo():
     
     print("Running Monte Carlo ...")
     outputs_mc = run_parallel(param_values_mc, max_workers=max_workers)
+    joblib.dump(outputs_mc, "mc_raw_outputs.joblib")
+    output_names = (outputs_mc[0]["df_KPI"].columns.tolist() + ["cost"])
     Y_mc = np.array([list(o["df_KPI"].iloc[0].values) + [o["cost"]] for o in outputs_mc])
     cost_mc = np.array([o["cost"] for o in outputs_mc])
     params_mc = [o["params"] for o in outputs_mc]
@@ -324,7 +327,3 @@ if __name__ == "__main__":
     end_time = datetime.now()
     print('Execution time: {}'.format(end_time - start_time))
     
-
-
-
-
